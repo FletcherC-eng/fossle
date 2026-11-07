@@ -92,7 +92,9 @@ def try_build(rnd, avail, by_id):
     twists = [e for e in avail if e.get("twist") and (not e.get("pair") or e["pair"] in ids)]
     nets = [e for e in avail if e.get("net")]
     noss = [e for e in avail if e.get("nos")]
-    regs = [e for e in avail if kind(e) == "reg"]
+    # events a waiting curveball needs as its pair are saved for that curveball
+    reserved = {e["pair"] for e in twists if e.get("pair")}
+    regs = [e for e in avail if kind(e) == "reg" and e["id"] not in reserved]
     if not twists or not nets or not noss:
         return None
     for _ in range(400):

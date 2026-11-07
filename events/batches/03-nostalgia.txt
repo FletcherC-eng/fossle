@@ -1,0 +1,61 @@
+# Nostalgia picks (flag o), for every generation.
+# title | year | topic | diff | flags | nudge | link clue | short name | fact
+SpongeBob SquarePants premieres | 1999 | TV | E | o | SpongeBob first aired at the end of the 1990s. | SpongeBob premiered the year Neopets launched. | SpongeBob | -
+The Nintendo Wii launches | 2006 | Games | E | o g:wii | The Wii arrived in the mid 2000s. | The Wii launched the year Twitter did. | The Wii | -
+The PlayStation 2 launches | 2000 | Games | E | o | The PlayStation 2 arrived at the turn of the millennium. | The PS2 launched the year the Nokia 3310 came out. | The PlayStation 2 | It became the best selling console of all time.
+The Nintendo Switch launches | 2017 | Games | E | o | The Switch arrived in the late 2010s. | The Switch launched the year Fortnite Battle Royale did. | The Switch | -
+Bluey premieres | 2018 | TV | E | o | Bluey first aired in the late 2010s. | Bluey premiered the year Yanny or Laurel split the internet. | Bluey | It's made in Brisbane.
+Sesame Street premieres | 1969 | TV | E | o | Sesame Street first aired at the end of the 1960s. | Sesame Street premiered the year Apollo 11 landed on the Moon. | Sesame Street | -
+The Lion King is released | 1994 | Film | E | o | The Lion King came out in the mid 1990s. | The Lion King came out the year Friends premiered. | The Lion King | -
+Home Alone is released | 1990 | Film | E | o | Home Alone came out at the start of the 1990s. | Home Alone came out the year Nelson Mandela was released. | Home Alone | -
+The first Harry Potter film is released | 2001 | Film | E | o g:harry-potter | The first Harry Potter film came out at the start of the 2000s. | The Philosopher's Stone film came out the same year as Shrek. | The first Harry Potter film | -
+Pokémon Red and Green come out in Japan | 1996 | Games | M | o g:pokemon | The first Pokémon games came out in the mid 1990s. | Pokémon came out the year the Tamagotchi craze began. | The first Pokémon games | -
+Hannah Montana premieres | 2006 | TV | M | o | Hannah Montana first aired in the mid 2000s. | Hannah Montana premiered the year Twitter launched. | Hannah Montana | -
+iCarly premieres | 2007 | TV | M | o | iCarly first aired in the late 2000s. | iCarly premiered the year the first iPhone went on sale. | iCarly | -
+Dora the Explorer premieres | 2000 | TV | M | o | Dora first aired at the turn of the millennium. | Dora premiered the year the PlayStation 2 launched. | Dora | -
+Peppa Pig first airs | 2004 | TV | M | o | Peppa Pig first aired in the mid 2000s. | Peppa Pig premiered the year Facebook launched. | Peppa Pig | -
+The Muppet Show premieres | 1976 | TV | M | o | The Muppet Show first aired in the mid 1970s. | The Muppet Show premiered the year Apple was founded. | The Muppet Show | -
+Thomas the Tank Engine arrives on TV | 1984 | TV | M | o | Thomas first chuffed onto TV in the mid 1980s. | Thomas premiered the year Tetris was created. | Thomas the Tank Engine | The books are much older, from 1945.
+Power Rangers premieres | 1993 | TV | M | o | Power Rangers first aired in the early 1990s. | Power Rangers premiered the year Jurassic Park came out. | Power Rangers | -
+Rugrats premieres | 1991 | TV | M | o | Rugrats first aired at the start of the 1990s. | Rugrats premiered the year the first website went live. | Rugrats | -
+Scooby-Doo first airs | 1969 | TV | M | o | Scooby-Doo first aired at the end of the 1960s. | Scooby-Doo premiered the year of Woodstock. | Scooby-Doo | -
+The Fresh Prince of Bel-Air premieres | 1990 | TV | M | o | The Fresh Prince first aired at the start of the 1990s. | The Fresh Prince premiered the year the Hubble Space Telescope launched. | The Fresh Prince | -
+The Super Nintendo launches | 1990 | Games | M | o | The Super Nintendo arrived at the start of the 1990s. | The Super Nintendo launched the year after the Game Boy. | The Super Nintendo | -
+The Famicom, Nintendo's first console, launches | 1983 | Games | M | o | Nintendo's first home console arrived in the early 1980s. | The Famicom launched the year the Cabbage Patch Kids craze began. | The Famicom | -
+The Legend of Zelda is released | 1986 | Games | M | o | The first Zelda game came out in the mid 1980s. | Zelda came out the year after Super Mario Bros. | The Legend of Zelda | -
+Sonic the Hedgehog debuts | 1991 | Games | M | o | Sonic first ran onto screens at the start of the 1990s. | Sonic debuted the year the Soviet Union collapsed. | Sonic | -
+Super Mario Kart is released | 1992 | Games | M | o | The first Mario Kart came out in the early 1990s. | Mario Kart came out the year the first text message was sent. | Mario Kart | -
+The Sims is released | 2000 | Games | M | o | The Sims came out at the turn of the millennium. | The Sims came out the year the Nokia 3310 did. | The Sims | -
+World of Warcraft launches | 2004 | Games | M | o | World of Warcraft arrived in the mid 2000s. | World of Warcraft launched the year Facebook did. | World of Warcraft | -
+Halo is released | 2001 | Games | M | o | The first Halo came out at the start of the 2000s. | Halo launched alongside the first Xbox. | Halo | -
+Donkey Kong arrives in arcades | 1981 | Games | M | o | Donkey Kong arrived in arcades in the early 1980s. | Donkey Kong came out the year MTV launched. | Donkey Kong | It was the first game to feature Mario, then called Jumpman.
+Bratz dolls launch | 2001 | Toys | M | o | Bratz dolls arrived at the start of the 2000s. | Bratz launched the year the first iPod was released. | Bratz | -
+Hot Wheels cars launch | 1968 | Toys | M | o | Hot Wheels arrived in the late 1960s. | Hot Wheels launched the year before Apollo 11 landed on the Moon. | Hot Wheels | -
+Twister goes on sale | 1966 | Toys | M | o | Twister arrived in the mid 1960s. | Twister went on sale the year before the first Super Bowl. | Twister | -
+Uno is invented | 1971 | Toys | M | o | Uno was invented at the start of the 1970s. | Uno was invented the year the first email was sent. | Uno | It was invented by a barber in Ohio.
+Tickle Me Elmo causes a toy frenzy | 1996 | Toys | M | o | The Tickle Me Elmo frenzy happened in the mid 1990s. | Tickle Me Elmo was the year the Spice Girls released Wannabe. | Tickle Me Elmo | -
+Rainbow Loom bands take over | 2013 | Toys | M | o | Rainbow Loom bands were everywhere in the early 2010s. | Rainbow Loom took over the year of the Harlem Shake. | Rainbow Loom | -
+The Razor scooter craze begins | 2000 | Toys | M | o | Razor scooters zoomed in at the turn of the millennium. | The Razor craze began the year the PlayStation 2 launched. | The Razor scooter | -
+VHS tapes go on sale | 1976 | Tech | M | o | VHS tapes arrived in the mid 1970s. | VHS arrived the year Concorde carried its first passengers. | VHS | -
+Solitaire comes free with Windows | 1990 | Games | M | o | Solitaire came bundled with Windows at the start of the 1990s. | Solitaire arrived the year the Hubble Space Telescope launched. | Windows Solitaire | -
+Mean Girls is released | 2004 | Film | M | o | Mean Girls came out in the mid 2000s. | Mean Girls came out the year Facebook launched. | Mean Girls | -
+Space Jam is released | 1996 | Film | M | o | Space Jam came out in the mid 1990s. | Space Jam came out the year Dolly the sheep was cloned. | Space Jam | -
+The Sega Mega Drive launches | 1988 | Games | N | o | The Mega Drive arrived in the late 1980s. | The Mega Drive launched the year before the Game Boy. | The Mega Drive | -
+The Commodore 64 goes on sale | 1982 | Tech | N | o | The Commodore 64 arrived in the early 1980s. | The Commodore 64 came out the year Thriller was released. | The Commodore 64 | -
+Street Fighter II hits arcades | 1991 | Games | N | o | Street Fighter II arrived at the start of the 1990s. | Street Fighter II came out the year the first website went live. | Street Fighter II | -
+Crash Bandicoot debuts | 1996 | Games | N | o | Crash Bandicoot first appeared in the mid 1990s. | Crash debuted the year the Nintendo 64 launched. | Crash Bandicoot | -
+Moshi Monsters launches | 2008 | Games | N | o | Moshi Monsters arrived in the late 2000s. | Moshi Monsters launched the year Spotify did. | Moshi Monsters | -
+Mr. Potato Head becomes the first toy advertised on TV | 1952 | Toys | N | o | Mr. Potato Head arrived in the early 1950s. | Mr. Potato Head launched the year before Queen Elizabeth II's coronation. | Mr. Potato Head | The first kits came without a plastic potato. Kids used real vegetables.
+The Easy-Bake Oven goes on sale | 1963 | Toys | N | o | The Easy-Bake Oven arrived in the early 1960s. | The Easy-Bake Oven came out the year the Beatles released their first album. | The Easy-Bake Oven | It cooked with a light bulb.
+Connect Four goes on sale | 1974 | Toys | N | o | Connect Four arrived in the mid 1970s. | Connect Four came out the year the Rubik's Cube was invented. | Connect Four | -
+Nerf balls go on sale | 1969 | Toys | N | o | The first Nerf ball arrived at the end of the 1960s. | Nerf arrived the year of Woodstock. | Nerf | -
+Zhu Zhu Pets are the year's must have toy | 2009 | Toys | N | o | Zhu Zhu Pets were the hot toy of the late 2000s. | Zhu Zhu Pets were the year Angry Birds was released. | Zhu Zhu Pets | -
+Hatchimals cause a Christmas frenzy | 2016 | Toys | N | o | Hatchimals were the hot toy of the mid 2010s. | Hatchimals hatched the year Pokémon Go came out. | Hatchimals | -
+Squishmallows go on sale | 2017 | Toys | N | o | Squishmallows arrived in the late 2010s. | Squishmallows launched the year fidget spinners took over schools. | Squishmallows | -
+Heelys roll into schools | 2000 | Toys | N | o | Heelys arrived around the turn of the millennium. | Heelys launched the year the Nokia 3310 came out. | Heelys | -
+The first Blockbuster video store opens | 1985 | Film | N | o | Blockbuster opened its first store in the mid 1980s. | Blockbuster opened the year Back to the Future came out. | Blockbuster's first store | The last Blockbuster, in Bend, Oregon, is still open.
+Sony's Discman goes on sale | 1984 | Music | N | o | The first portable CD player arrived in the mid 1980s. | The Discman came out the year the first Macintosh went on sale. | The Discman | -
+Yu-Gi-Oh! cards launch | 1999 | Toys | N | o | Yu-Gi-Oh! cards arrived at the end of the 1990s. | Yu-Gi-Oh! cards launched the year Neopets did. | Yu-Gi-Oh! | -
+Roblox launches | 2006 | Games | N | o | Roblox launched in the mid 2000s, long before it was huge. | Roblox launched the year Twitter did. | Roblox | -
+Lizzie McGuire premieres | 2001 | TV | N | o | Lizzie McGuire first aired at the start of the 2000s. | Lizzie McGuire premiered the year Shrek came out. | Lizzie McGuire | -
+High School Musical premieres | 2006 | Film | M | o | High School Musical came out in the mid 2000s. | High School Musical premiered the year the Wii launched. | High School Musical | -
