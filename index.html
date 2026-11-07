@@ -388,15 +388,17 @@ body.dug .fade .skeleton{display:none}
 .was.near{background:var(--gold-deep)}
 .was.far{background:var(--pole-red)}
 .card.cmp-off::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--pole-red)}
-.log.picker{display:flex;gap:3px;padding:3px;border-radius:12px;background:rgba(23,53,82,.14);box-shadow:inset 0 1px 2px rgba(23,53,82,.18)}
-.seg{flex:1 1 0;min-width:0;font:inherit;border:none;background:none;border-radius:9px;padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--sky-ink);cursor:pointer;transition:background-color .15s,box-shadow .15s,transform .1s}
-.seg b{font-family:var(--f-display);font-weight:400;font-size:.98rem;letter-spacing:.02em;line-height:1.1;white-space:nowrap}
-.seg small{font-family:var(--f-mono);font-size:.62rem;font-weight:700;color:#3F5F7E;line-height:1.2;min-height:1.2em}
-.seg:not(.on):hover{background:rgba(255,255,255,.3)}
+.log.picker{display:flex;gap:4px;padding:4px;border-radius:14px;background:var(--soil-2);box-shadow:0 0 0 2px var(--line) inset,0 4px 0 #120c0a}
+.seg{flex:1 1 0;min-width:0;font:inherit;border:none;background:none;border-radius:10px;padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--text);cursor:pointer;transition:background-color .15s,box-shadow .15s,transform .1s}
+.seg b{display:flex;align-items:baseline;justify-content:center;height:1.3rem;font-family:var(--f-display);font-weight:400;font-size:1.3rem;line-height:1;color:var(--moss);font-variant-numeric:tabular-nums}
+.seg b small{font-size:.72rem;color:var(--muted)}
+.seg b svg{width:20px;height:20px;align-self:center}
+.seg span{font-family:var(--f-mono);font-size:.55rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.seg:not(.on):hover{background:rgba(246,238,225,.06)}
+.seg.on{background:var(--gold);box-shadow:0 3px 0 var(--gold-deep);transform:translateY(-1px)}
+.seg.on b,.seg.on b small,.seg.on span{color:#2A1A08}
 .seg:active{transform:translateY(1px)}
-.seg.on{background:#fff;box-shadow:0 1px 0 rgba(23,53,82,.2),0 2px 6px rgba(23,53,82,.18)}
-.seg.on small{color:var(--moss-deep)}
-.seg:focus-visible{outline:2px solid var(--gold-deep);outline-offset:1px}
+.seg:focus-visible{outline:2px solid var(--text);outline-offset:2px}
 </style>
 
 <div class="sky">
@@ -1596,9 +1598,9 @@ body.dug .fade .skeleton{display:none}
     $("dock").hidden = done; $("log").hidden = done && !h.length; $("status").hidden = done && !h.length;
     $("log").classList.toggle("picker", done);
     if(done){
-      const seg = (i, top, sub, label) => '<button type="button" class="seg'+((i<0 ? cmp===null : cmp===i) ? ' on' : '')+'" data-i="'+i+'" role="radio" aria-checked="'+(i<0 ? cmp===null : cmp===i)+'" aria-label="'+label+'"><b>'+top+'</b><small>'+sub+'</small></button>';
+      const seg = (i, top, sub, label) => '<button type="button" class="seg'+((i<0 ? cmp===null : cmp===i) ? ' on' : '')+'" data-i="'+i+'" role="radio" aria-checked="'+(i<0 ? cmp===null : cmp===i)+'" aria-label="'+label+'"><b>'+top+'</b><span>'+sub+'</span></button>';
       $("log").setAttribute("role", "radiogroup"); $("log").setAttribute("aria-label", "Compare a dig with the answer");
-      $("log").innerHTML = seg(-1, "Answer", "&nbsp;", "Answer only") + h.map((d,i)=>seg(i, "Dig "+(i+1), d.count+"/"+N, "Dig "+(i+1)+", "+d.count+" of "+N+" right")).join("");
+      $("log").innerHTML = seg(-1, AMMONITE, "Answer", "Answer only") + h.map((d,i)=>seg(i, d.count+"<small>/"+N+"</small>", "Dig "+(i+1), "Dig "+(i+1)+", "+d.count+" of "+N+" right")).join("");
       $("status").innerHTML = cmp===null ? 'Pick a dig to compare' : 'Where you put each card in dig '+(cmp+1);
       renderHints();
       return;
