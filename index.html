@@ -281,10 +281,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 
 .history{display:flex;flex-direction:column;gap:8px}
 .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
-.rows{display:flex;flex-direction:column;gap:5px}
-.row{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
 .io{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);margin-left:6px}
-.row b{font-family:var(--f-mono);font-size:.7rem;color:var(--muted);width:18px;font-variant-numeric:tabular-nums}
 .sq{width:20px;height:20px;border-radius:5px}
 .sq.ok{background:var(--moss);box-shadow:0 2px 0 var(--moss-deep)}.sq.far{background:var(--l6);box-shadow:0 2px 0 #3a281c}
 
@@ -385,17 +382,21 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
 body.dug .dig-pit,body.dug .actions{display:none}
 body.dug .fade{min-height:72px;padding-bottom:6px}
 body.dug .fade .skeleton{display:none}
-.row{font:inherit;color:inherit;background:none;border:1.5px solid transparent;border-radius:10px;padding:5px 8px;margin:0 -8px;cursor:pointer;text-align:left;transition:background-color .15s,border-color .15s}
-.row:hover{background:var(--soil-2)}
-.row.on{border-color:var(--gold);background:rgba(242,184,75,.1)}
-.row:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.cmp-cta{margin-left:auto;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
 .was{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:38px;padding:3px 6px 2px;border-radius:8px;font-family:var(--f-display);font-size:.95rem;line-height:1;color:var(--bone);white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 .was small{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:2px}
 .was.ok{background:var(--moss-deep)}
 .was.near{background:var(--gold-deep)}
 .was.far{background:var(--pole-red)}
 .card.cmp-off::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--pole-red)}
+.log.picker{display:flex;gap:3px;padding:3px;border-radius:12px;background:rgba(23,53,82,.14);box-shadow:inset 0 1px 2px rgba(23,53,82,.18)}
+.seg{flex:1 1 0;min-width:0;font:inherit;border:none;background:none;border-radius:9px;padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--sky-ink);cursor:pointer;transition:background-color .15s,box-shadow .15s,transform .1s}
+.seg b{font-family:var(--f-display);font-weight:400;font-size:.98rem;letter-spacing:.02em;line-height:1.1;white-space:nowrap}
+.seg small{font-family:var(--f-mono);font-size:.62rem;font-weight:700;color:#3F5F7E;line-height:1.2;min-height:1.2em}
+.seg:not(.on):hover{background:rgba(255,255,255,.3)}
+.seg:active{transform:translateY(1px)}
+.seg.on{background:#fff;box-shadow:0 1px 0 rgba(23,53,82,.2),0 2px 6px rgba(23,53,82,.18)}
+.seg.on small{color:var(--moss-deep)}
+.seg:focus-visible{outline:2px solid var(--gold-deep);outline-offset:1px}
 </style>
 
 <div class="sky">
@@ -465,10 +466,6 @@ body.dug .fade .skeleton{display:none}
     <p class="help">Drag a card up or down to move it, or tap a card then tap where it should go. Each dig tells you how many cards are in the right layer, but not which.</p>
   </div>
 
-  <section class="history" id="history" hidden>
-    <p class="label">Your digs · tap to compare</p>
-    <div class="rows" id="rows"></div>
-  </section>
 
   <section class="result" id="result" hidden aria-live="polite">
     <div>
@@ -1597,12 +1594,16 @@ body.dug .fade .skeleton{display:none}
   function renderDock(live){
     const done = game.status!=="playing", h = game.history;
     $("dock").hidden = done; $("log").hidden = done && !h.length; $("status").hidden = done && !h.length;
+    $("log").classList.toggle("picker", done);
     if(done){
-      $("log").innerHTML = h.map((d,i)=>'<button type="button" class="dchip done'+(cmp===i?' on':'')+'" data-i="'+i+'" aria-pressed="'+(cmp===i)+'" aria-label="Dig '+(i+1)+': '+d.count+' of '+N+' right. Compare with the answer"><span class="cn">'+d.count+'<small>/'+N+'</small></span><span class="cl">Dig '+(i+1)+'</span>'+bulbs(i)+'</button>').join("");
-      $("status").innerHTML = cmp===null ? 'Tap a dig to compare it' : 'Dig '+(cmp+1)+': <b>'+h[cmp].count+'</b> of '+N+' right';
+      const seg = (i, top, sub, label) => '<button type="button" class="seg'+((i<0 ? cmp===null : cmp===i) ? ' on' : '')+'" data-i="'+i+'" role="radio" aria-checked="'+(i<0 ? cmp===null : cmp===i)+'" aria-label="'+label+'"><b>'+top+'</b><small>'+sub+'</small></button>';
+      $("log").setAttribute("role", "radiogroup"); $("log").setAttribute("aria-label", "Compare a dig with the answer");
+      $("log").innerHTML = seg(-1, "Answer", "&nbsp;", "Answer only") + h.map((d,i)=>seg(i, "Dig "+(i+1), d.count+"/"+N, "Dig "+(i+1)+", "+d.count+" of "+N+" right")).join("");
+      $("status").innerHTML = cmp===null ? 'Pick a dig to compare' : 'Where you put each card in dig '+(cmp+1);
       renderHints();
       return;
     }
+    $("log").setAttribute("role", "group"); $("log").setAttribute("aria-label", "Your digs. Tap one to see the order you tried");
     const logHtml = Array.from({length:MAX},(_,i)=>{
       if(i<h.length) return '<button type="button" class="dchip done'+(peek===i?' on':'')+'" data-i="'+i+'" aria-label="Dig '+(i+1)+': '+h[i].count+' of '+N+' right. Show this order"><span class="cn">'+h[i].count+'<small>/'+N+'</small></span><span class="cl">Dig '+(i+1)+'</span>'+bulbs(i)+'</button>';
       if(i===h.length && live!==undefined) return '<span class="dchip live"><span class="cn">'+live+'<small>/'+N+'</small></span><span class="cl">Dig '+(i+1)+'</span>'+bulbs(i)+'</span>';
@@ -1690,12 +1691,12 @@ body.dug .fade .skeleton{display:none}
   }
   function setCompare(i){
     if(busy || game.status==="playing") return;
-    cmp = (cmp===i) ? null : i;
-    renderBoard(false); renderDock(); renderRows(); Sound.tick(); buzz(6);
+    const next = i < 0 ? null : i; if(next===cmp) return;
+    cmp = next;
+    renderBoard(false); renderDock(); Sound.tick(); buzz(6);
     if(cmp!==null && !reduced) cards.forEach((c,r)=>{ const w = c.querySelector(".was"); if(w) w.animate([{transform:"scale(.4)",opacity:0},{transform:"scale(1.12)",opacity:1,offset:.6},{transform:"none"}],{duration:320,delay:r*35,easing:"ease-out",fill:"backwards"}); });
   }
-  $("log").addEventListener("click", e=>{ const b = e.target.closest(".dchip.done"); if(!b) return; const i = Number(b.dataset.i); if(game.status==="playing") setPeek(i); else setCompare(i); });
-  $("rows").addEventListener("click", e=>{ const b = e.target.closest(".row[data-i]"); if(b) setCompare(Number(b.dataset.i)); });
+  $("log").addEventListener("click", e=>{ const sg = e.target.closest(".seg"); if(sg){ setCompare(Number(sg.dataset.i)); return; } const b = e.target.closest(".dchip.done"); if(!b) return; const i = Number(b.dataset.i); if(game.status==="playing") setPeek(i); else setCompare(i); });
   $("peekBack").addEventListener("click", ()=>{ peek = null; renderBoard(true); renderDock(); Sound.tick(); });
   $("peekUse").addEventListener("click", ()=>{ if(peek===null) return; game.order = game.history[peek].order.slice(); peek = null; save(); renderBoard(true); renderDock(); Sound.drop(); buzz(10); });
   function setButtons(){ $("check").disabled = busy; $("shuffle").disabled = busy; if(game){ $("hint").disabled = busy || peek!==null; } }
@@ -1711,17 +1712,12 @@ body.dug .fade .skeleton{display:none}
     renderBoard(animate, fromRects);
     const done = game.status !== "playing";
     setButtons();
-    $("history").hidden = !done || game.history.length===0;
     document.body.classList.toggle("dug", done);
-    renderRows();
     renderDock();
     $("result").hidden = !done;
     if(done) renderResult();
   }
 
-  function renderRows(){
-    $("rows").innerHTML = game.history.map((h,i)=>'<button type="button" class="row'+(cmp===i?' on':'')+'" data-i="'+i+'" aria-pressed="'+(cmp===i)+'" aria-label="Compare dig '+(i+1)+' with the answer"><b>'+(i+1)+'</b>'+Array.from({length:N},(_,j)=>'<span class="sq '+(j<h.count?"ok":"far")+'"></span>').join("")+'<span class="io">'+h.count+' of '+N+'</span><span class="cmp-cta">'+(cmp===i?'Hide':'Compare')+'</span></button>').join("");
-  }
   function stats(){ return store.get("fossle:stats") || {played:0,wins:0,streak:0,best:0,lastPlayed:-1,lastWin:-2}; }
   function statValues(){
     const s = stats();
