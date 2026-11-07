@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Fossle</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -399,6 +403,10 @@ body.dug .fade .skeleton{display:none}
 .seg.on b,.seg.on b small,.seg.on span{color:#2A1A08}
 .seg:active{transform:translateY(1px)}
 .seg:focus-visible{outline:2px solid var(--text);outline-offset:2px}
+body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nodig .actions{display:none!important}
+.nodig-msg{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9);color:var(--sky-ink)}
+.nodig-msg strong{font-family:var(--f-display);font-weight:400;font-size:1.4rem;letter-spacing:.02em}
+.btnrow #share{flex:1}
 </style>
 
 <div class="sky">
@@ -425,6 +433,7 @@ body.dug .fade .skeleton{display:none}
   <div class="brief">
     <p>Sort the layers: <strong>newest at the surface, oldest at the bedrock.</strong></p>
   </div>
+  <div class="nodig-msg" id="nodig" hidden><strong>Still excavating</strong><span>Today's dig isn't ready yet. Check back soon.</span></div>
   <div class="log" id="log" role="group" aria-label="Your digs. Tap one to see the order you tried"></div>
   <div class="dock-status" id="status" aria-live="polite"></div>
 
@@ -500,7 +509,7 @@ body.dug .fade .skeleton{display:none}
       <div class="stat"><strong id="sStreak">0</strong><span>Streak</span></div>
       <div class="stat"><strong id="sBest">0</strong><span>Best</span></div>
     </div>
-    <div class="btnrow"><button class="btn btn-ghost btn-gold-outline" id="share" type="button">Copy result</button><button class="btn btn-primary" id="again" type="button">Random dig</button></div>
+    <div class="btnrow"><button class="btn btn-primary" id="share" type="button">Copy result</button></div>
     <textarea class="fallback" id="fallback" hidden readonly aria-label="Result to copy"></textarea>
     <div class="next">Next dig in <b id="countdown">--:--:--</b></div>
   </section>
@@ -518,13 +527,11 @@ body.dug .fade .skeleton{display:none}
     </ul>
   </details>
 
-  <div class="proto">
-    <span class="ctl sets" role="group" aria-label="Event set"><button type="button" data-set="A">Set A</button><button type="button" data-set="B">Set B</button><button type="button" data-set="C">Set C</button><button type="button" data-set="mix">Mix</button></span>
+  <div class="proto" hidden>
     <span id="protoLabel">Prototype · today's dig</span>
     <span class="ctl">
       <button type="button" id="prev" aria-label="Previous dig">‹</button>
       <button type="button" id="next" aria-label="Next dig">›</button>
-      <button type="button" id="random">Random</button>
       <button type="button" id="reset">Reset</button>
     </span>
   </div>
@@ -537,723 +544,6 @@ body.dug .fade .skeleton{display:none}
   const MAX = 5;
   const N = 8;
   function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
-  // Event pool. Every dig is generated from it: 3 easy (E), 2 medium (M), 3 niche (N), at least two close calls (cards within 10 years),
-  // with exactly one internet moment (net), one nostalgia pick (nos) and one curveball (twist) dealt alongside the event its fact refers to (pair).
-  // e(title, year (negative = BC), topic, difficulty, extras {c: circa, fact, twist, net, nos})
-  const e = (t,y,topic,diff,x) => Object.assign({t,y,topic,diff,c:false,fact:"",twist:false,net:false,nos:false,pair:"",set:"A"}, x||{});
-  const POOL = [
-    // easy
-    e("The Great Pyramid of Giza is completed",-2560,"Ancient world","E",{c:true}),
-    e("Julius Caesar is assassinated",-44,"Ancient world","E"),
-    e("Columbus reaches the Americas",1492,"Exploration","E"),
-    e("Leonardo da Vinci begins the Mona Lisa",1503,"Art","E",{c:true}),
-    e("The US Declaration of Independence is adopted",1776,"Politics","E"),
-    e("The French Revolution begins",1789,"Politics","E"),
-    e("Bell makes the first telephone call",1876,"Inventions","E"),
-    e("The Eiffel Tower opens",1889,"Architecture","E"),
-    e("The Wright brothers make the first powered flight",1903,"Flight","E"),
-    e("The Titanic sinks",1912,"History","E"),
-    e("World War I begins",1914,"History","E"),
-    e("World War II begins",1939,"History","E"),
-    e("World War II ends",1945,"History","E"),
-    e("Hillary and Norgay summit Everest",1953,"Exploration","E"),
-    e("Disneyland opens",1955,"Culture","E"),
-    e("The Beatles release their debut album",1963,"Music","E"),
-    e("Martin Luther King Jr. gives his \"I Have a Dream\" speech",1963,"Politics","E"),
-    e("Apollo 11 lands on the Moon",1969,"Space","E"),
-    e("Woodstock takes place",1969,"Music","E"),
-    e("Sydney Opera House opens",1973,"Architecture","E"),
-    e("Star Wars premieres in cinemas",1977,"Film","E"),
-    e("Charles and Diana marry",1981,"Culture","E"),
-    e("Michael Jackson releases Thriller",1982,"Music","E"),
-    e("The Chernobyl nuclear disaster happens",1986,"History","E"),
-    e("The Berlin Wall falls",1989,"Politics","E"),
-    e("Nelson Mandela is released from prison",1990,"Politics","E"),
-    e("Jurassic Park hits cinemas",1993,"Film","E"),
-    e("Toy Story is released",1995,"Film","E"),
-    e("Google is founded",1998,"Tech","E"),
-    e("Facebook launches",2004,"Tech","E"),
-    e("YouTube launches",2005,"Tech","E"),
-    e("The first iPhone goes on sale",2007,"Tech","E"),
-    e("Netflix starts streaming video",2007,"Tech","E"),
-    e("Barack Obama is elected US president",2008,"Politics","E"),
-    e("Instagram launches",2010,"Tech","E"),
-    e("Pokémon Go takes over the world",2016,"Games","E"),
-    e("Fortnite Battle Royale launches",2017,"Games","E"),
-    e("The WHO declares COVID-19 a pandemic",2020,"Health","E"),
-    e("ChatGPT is released",2022,"Tech","E"),
-    e("Queen Elizabeth II dies",2022,"History","E"),
-    // medium
-    e("Rome is founded, according to legend",-753,"Ancient world","M"),
-    e("Alexander the Great dies",-323,"Ancient world","M"),
-    e("The Western Roman Empire falls",476,"History","M"),
-    e("William the Conqueror wins at Hastings",1066,"History","M"),
-    e("Magna Carta is sealed",1215,"History","M"),
-    e("The Black Death reaches Europe",1347,"Health","M"),
-    e("Gutenberg prints his Bible",1455,"Inventions","M",{c:true}),
-    e("Galileo spots the moons of Jupiter",1610,"Science","M"),
-    e("William Shakespeare dies",1616,"Books","M"),
-    e("The Mayflower lands at Plymouth",1620,"History","M"),
-    e("The Great Fire of London breaks out",1666,"History","M"),
-    e("Isaac Newton publishes the Principia",1687,"Science","M"),
-    e("Napoleon is defeated at Waterloo",1815,"History","M"),
-    e("Darwin publishes On the Origin of Species",1859,"Science","M"),
-    e("The American Civil War begins",1861,"History","M"),
-    e("Coca-Cola is first sold, in Atlanta",1886,"Food","M"),
-    e("The Statue of Liberty is dedicated",1886,"Architecture","M"),
-    e("The first modern Olympics are held in Athens",1896,"Sport","M"),
-    e("Marie Curie wins her first Nobel Prize",1903,"Science","M"),
-    e("Einstein publishes special relativity",1905,"Science","M"),
-    e("The Ford Model T goes on sale",1908,"Cars","M"),
-    e("The Panama Canal opens",1914,"Engineering","M"),
-    e("American women win the right to vote",1920,"Politics","M"),
-    e("Fleming discovers penicillin",1928,"Science","M"),
-    e("Ferrari builds its first car",1947,"Cars","M"),
-    e("Queen Elizabeth II is crowned",1953,"History","M"),
-    e("Sputnik 1 reaches orbit",1957,"Space","M"),
-    e("The Hubble Space Telescope launches",1990,"Space","M"),
-    e("The first Harry Potter book is published",1997,"Books","M"),
-    e("Wikipedia launches",2001,"Tech","M"),
-    e("The euro enters circulation",2002,"Money","M"),
-    e("Usain Bolt sets the 100m world record",2009,"Sport","M"),
-    e("Minecraft gets its full release",2011,"Games","M"),
-    // niche
-    e("The University of Bologna is founded",1088,"Education","N"),
-    e("The Aztecs found Tenochtitlan",1325,"History","N"),
-    e("Machu Picchu is built",1450,"Architecture","N",{c:true}),
-    e("The first photograph is taken",1826,"Photography","N",{c:true,fact:"Nicéphore Niépce's view from a window in France needed an exposure of many hours."}),
-    e("Edison invents the phonograph",1877,"Inventions","N"),
-    e("The first speeding ticket is issued",1896,"Cars","N",{fact:"An English driver was fined for doing about 8 mph in a 2 mph zone."}),
-    e("The first Nobel Prizes are awarded",1901,"Science","N"),
-    e("The first crossword puzzle is published",1913,"Culture","N"),
-    e("The Ottoman Empire comes to an end",1922,"History","N"),
-    e("The microwave oven goes on sale",1947,"Inventions","N",{fact:"The first one, the Raytheon Radarange, stood almost as tall as a person."}),
-    e("Velcro is patented",1955,"Inventions","N",{fact:"Its Swiss inventor got the idea from burrs stuck to his dog's fur."}),
-    e("Bubble wrap is invented",1957,"Inventions","N",{fact:"Its inventors were originally trying to make textured wallpaper."}),
-    e("The first email spam is sent",1978,"Tech","N",{fact:"A marketer sent a computer ad to a few hundred users of ARPANET, the internet's ancestor."}),
-    e("The first webcam is pointed at a coffee pot",1991,"Tech","N",{fact:"Cambridge researchers set it up so they could check the pot wasn't empty before walking over."}),
-    e("The first text message is sent",1992,"Tech","N",{fact:"It said \"Merry Christmas\"."}),
-    e("The first emoji set is designed in Japan",1999,"Tech","N",{fact:"Shigetaka Kurita drew 176 tiny icons for Japanese mobile phones."}),
-    // curveballs
-    e("The last woolly mammoths die out",-1650,"Nature","N",{c:true,twist:true,pair:"The Great Pyramid of Giza is completed",fact:"Mammoths outlived the building of the Great Pyramid by roughly 900 years, hanging on until about 1650 BC on Wrangel Island in the Arctic."}),
-    e("Cleopatra dies",-30,"Ancient world","M",{twist:true,pair:"The Great Pyramid of Giza is completed",fact:"The Great Pyramid was already about 2,500 years old when Cleopatra was born."}),
-    e("Oxford University begins teaching",1096,"Education","M",{c:true,twist:true,pair:"The Aztecs found Tenochtitlan",fact:"Oxford was already teaching students more than 200 years before the Aztecs founded Tenochtitlan."}),
-    e("Harvard University is founded",1636,"Education","N",{twist:true,pair:"Isaac Newton publishes the Principia",fact:"Harvard was founded before Isaac Newton was even born, let alone wrote the Principia."}),
-    e("Alexander Bain patents an early fax machine",1843,"Inventions","N",{twist:true,pair:"Bell makes the first telephone call",fact:"The fax machine is more than 30 years older than the telephone."}),
-    e("Japan bans samurai from carrying swords",1876,"History","N",{twist:true,pair:"Edison invents the phonograph",fact:"Samurai were still carrying swords until 1876, just a year before Edison first recorded sound."}),
-    e("Nintendo is founded",1889,"Games","N",{twist:true,pair:"The Statue of Liberty is dedicated",fact:"Nintendo is only three years younger than the Statue of Liberty. It started out in 1889 making playing cards."}),
-    e("Pepsi-Cola gets its name",1898,"Food","N",{twist:true,pair:"Ferrari builds its first car",fact:"Pepsi is nearly 50 years older than Ferrari."}),
-    e("Oreo cookies go on sale",1912,"Food","N",{twist:true,pair:"World War I begins",fact:"Oreos were already on shelves two years before World War I began."}),
-    e("Pre-sliced bread goes on sale",1928,"Food","N",{twist:true,pair:"American women win the right to vote",fact:"Sliced bread is younger than American women's right to vote. It only went on sale in 1928."}),
-    e("The last Union veteran of the US Civil War dies",1956,"History","N",{twist:true,pair:"Disneyland opens",fact:"Albert Woolson fought in the Civil War and lived until 1956, a year after Disneyland opened."}),
-    e("The first video game, Tennis for Two, is shown",1958,"Games","N",{twist:true,pair:"Apollo 11 lands on the Moon",fact:"Video games are older than the Moon landing: this one ran on an oscilloscope in a US lab in 1958."}),
-    e("Swiss women win the right to vote nationally",1971,"Politics","N",{twist:true,pair:"Apollo 11 lands on the Moon",fact:"Swiss women couldn't vote in national elections until 1971, two years after the Moon landing."}),
-    // internet moments
-    e("Rickrolling becomes the internet's favourite prank",2007,"Internet","E",{net:true,fact:"Disguised links to Rick Astley's 1987 hit started catching people out in 2007, and still do."}),
-    e("Charlie Bit My Finger is uploaded",2007,"Internet","M",{net:true,fact:"The clip of two British brothers became one of YouTube's first viral hits."}),
-    e("Gangnam Style becomes the first YouTube video to hit a billion views",2012,"Internet","E",{net:true,fact:"PSY's horse dance video crossed one billion views in December 2012, a first for YouTube."}),
-    e("The Harlem Shake craze sweeps the internet",2013,"Internet","E",{net:true,fact:"Thousands of short videos showed one person dancing alone before the whole room erupted."}),
-    e("The Ice Bucket Challenge takes over the internet",2014,"Internet","E",{net:true,fact:"People filmed themselves getting drenched in ice water to raise money for ALS research, from teenagers to presidents and CEOs."}),
-    e("The Dress splits the internet into blue and black vs white and gold",2015,"Internet","E",{net:true,fact:"The dress was actually blue and black, but millions of people swore it was white and gold."}),
-    e("Harambe the gorilla becomes a meme",2016,"Internet","E",{net:true,fact:"After the Cincinnati Zoo gorilla's death in 2016, Harambe became one of the internet's most enduring memes."}),
-    e("Skibidi Toilet's first episode is uploaded",2023,"Internet","M",{net:true,fact:"The bizarre series of singing heads in toilets became a Gen Alpha obsession."}),
-    e("The Grimace Shake trend takes over TikTok",2023,"Internet","E",{net:true,fact:"McDonald's purple birthday shake turned into a horror meme, with people filming fake disasters after one sip."}),
-    e("\"Rizz\" is named Oxford's Word of the Year",2023,"Internet","M",{net:true,fact:"Short for charisma, the slang for charm beat \"Swiftie\" to the title."}),
-    e("The Hawk Tuah girl goes viral",2024,"Internet","E",{net:true,fact:"A street interview clip from Nashville turned Haliey Welch into an overnight celebrity."}),
-    e("Moo Deng the baby pygmy hippo goes viral",2024,"Internet","M",{net:true,fact:"A grumpy baby hippo at a Thai zoo became the internet's favourite animal."}),
-    e("\"6 7\" is named Word of the Year",2025,"Internet","E",{net:true,fact:"Dictionary.com picked the Gen Alpha catchphrase \"6 7\" as its 2025 Word of the Year, even though nobody can quite define it."}),
-    e("Clavicular gets frame mogged by an ASU frat leader",2026,"Internet","M",{net:true,fact:"In February 2026 a clip of looksmaxxing streamer Clavicular standing next to an Arizona State frat leader went viral and became an instant copypasta."}),
-    // nostalgia
-    e("Lego patents its famous brick",1958,"Toys","N",{nos:true}),
-    e("The Rubik's Cube is invented",1974,"Toys","M",{nos:true}),
-    e("Sony's Walkman goes on sale",1979,"Music","E",{nos:true}),
-    e("Pac-Man hits arcades",1980,"Games","M",{nos:true}),
-    e("MTV launches",1981,"Music","E",{nos:true}),
-    e("The Cabbage Patch Kids craze begins",1983,"Toys","M",{nos:true}),
-    e("Tetris is created in the Soviet Union",1984,"Games","N",{nos:true}),
-    e("The first Super Mario Bros. game is released",1985,"Games","E",{nos:true}),
-    e("Live Aid is held in London and Philadelphia",1985,"Music","M",{nos:true}),
-    e("The Game Boy goes on sale",1989,"Games","E",{nos:true}),
-    e("The Simpsons premieres",1989,"TV","E",{nos:true}),
-    e("Beanie Babies are launched",1993,"Toys","N",{nos:true}),
-    e("Friends premieres on TV",1994,"TV","E",{nos:true}),
-    e("The Tamagotchi craze begins",1996,"Toys","E",{nos:true}),
-    e("Furby hits toy shelves",1998,"Toys","M",{nos:true}),
-    e("The Nokia 3310 is released",2000,"Tech","M",{nos:true}),
-    // ---- set B ----
-    e("Mount Vesuvius buries Pompeii",79,"Ancient world","E",{"set": "B"}),
-    e("Abraham Lincoln is assassinated",1865,"History","E",{"set": "B"}),
-    e("Japan attacks Pearl Harbor",1941,"History","E",{"set": "B"}),
-    e("India gains independence",1947,"Politics","E",{"set": "B"}),
-    e("Yuri Gagarin becomes the first person in space",1961,"Space","E",{"set": "B"}),
-    e("JFK is assassinated",1963,"Politics","E",{"set": "B"}),
-    e("Apple is founded",1976,"Tech","E",{"set": "B"}),
-    e("James Cameron's Titanic hits cinemas",1997,"Film","E",{"set": "B"}),
-    e("Shrek is released",2001,"Film","E",{"set": "B"}),
-    e("Twitter launches",2006,"Tech","E",{"set": "B"}),
-    e("Spotify launches",2008,"Music","E",{"set": "B"}),
-    e("Avatar hits cinemas",2009,"Film","E",{"set": "B"}),
-    e("Michael Jackson dies",2009,"Music","E",{"set": "B"}),
-    e("London hosts the Olympic Games",2012,"Sport","E",{"set": "B"}),
-    e("The UK votes for Brexit",2016,"Politics","E",{"set": "B"}),
-    e("Notre Dame cathedral catches fire",2019,"Architecture","E",{"set": "B"}),
-    e("Taylor Swift's Eras Tour begins",2023,"Music","E",{"set": "B"}),
-    e("The Colosseum opens in Rome",80,"Architecture","M",{"set": "B"}),
-    e("Vikings raid the monastery at Lindisfarne",793,"History","M",{"set": "B"}),
-    e("Charlemagne is crowned emperor",800,"History","M",{"set": "B"}),
-    e("Henry VIII breaks with the Catholic Church",1534,"History","M",{"set": "B"}),
-    e("Elizabeth I becomes queen",1558,"History","M",{"set": "B"}),
-    e("The Spanish Armada is defeated",1588,"History","M",{"set": "B"}),
-    e("The Taj Mahal is completed",1653,"Architecture","M",{"c": true, "set": "B"}),
-    e("Mozart is born",1756,"Music","M",{"set": "B"}),
-    e("The Boston Tea Party",1773,"History","M",{"set": "B"}),
-    e("The first steam passenger railway opens",1830,"Inventions","M",{"set": "B"}),
-    e("Queen Victoria takes the throne",1837,"History","M",{"set": "B"}),
-    e("Dickens publishes A Christmas Carol",1843,"Books","M",{"set": "B"}),
-    e("The California Gold Rush begins",1848,"History","M",{"set": "B"}),
-    e("Karl Benz patents the first car",1886,"Cars","M",{"set": "B"}),
-    e("Superman makes his comic book debut",1938,"Culture","M",{"set": "B"}),
-    e("The Wizard of Oz premieres",1939,"Film","M",{"set": "B"}),
-    e("Mount Rushmore is completed",1941,"Architecture","M",{"set": "B"}),
-    e("The first atomic bomb is tested",1945,"Science","M",{"set": "B"}),
-    e("Elvis releases Heartbreak Hotel",1956,"Music","M",{"set": "B"}),
-    e("The first James Bond film is released",1962,"Film","M",{"set": "B"}),
-    e("The first Super Bowl is played",1967,"Sport","M",{"set": "B"}),
-    e("Ray Tomlinson sends the first email",1971,"Tech","M",{"set": "B"}),
-    e("Watergate forces Nixon to resign",1974,"Politics","M",{"set": "B"}),
-    e("Jaws becomes the first summer blockbuster",1975,"Film","M",{"set": "B"}),
-    e("The first Space Shuttle launches",1981,"Space","M",{"set": "B"}),
-    e("The first CDs go on sale",1982,"Music","M",{"set": "B"}),
-    e("The first Macintosh goes on sale",1984,"Tech","M",{"set": "B"}),
-    e("Tim Berners-Lee proposes the World Wide Web",1989,"Tech","M",{"set": "B"}),
-    e("The Channel Tunnel opens",1994,"Engineering","M",{"set": "B"}),
-    e("Dolly the sheep is cloned",1996,"Science","M",{"set": "B"}),
-    e("Myspace launches",2003,"Tech","M",{"set": "B"}),
-    e("Google Maps launches",2005,"Tech","M",{"set": "B"}),
-    e("Angry Birds is released",2009,"Games","M",{"set": "B"}),
-    e("The James Webb Space Telescope launches",2021,"Space","M",{"set": "B"}),
-    e("The PlayStation launches in Japan",1994,"Games","M",{"set": "B"}),
-    e("The first newspaper is printed",1605,"Media","N",{"set": "B"}),
-    e("The Rosetta Stone is discovered",1799,"History","N",{"set": "B"}),
-    e("Beethoven's Fifth Symphony premieres",1808,"Music","N",{"set": "B"}),
-    e("The stethoscope is invented",1816,"Science","N",{"set": "B"}),
-    e("The first dinosaur is scientifically named",1824,"Science","N",{"set": "B"}),
-    e("The friction match is invented",1826,"Inventions","N",{"set": "B"}),
-    e("The first Christmas card is sent",1843,"Culture","N",{"set": "B"}),
-    e("The first traffic light is installed",1868,"Inventions","N",{"set": "B"}),
-    e("Levi Strauss patents blue jeans",1873,"Fashion","N",{"set": "B"}),
-    e("Marconi sends a radio signal across the Atlantic",1901,"Inventions","N",{"set": "B"}),
-    e("The teddy bear is invented",1902,"Toys","N",{"set": "B"}),
-    e("The first Tour de France is held",1903,"Sport","N",{"set": "B"}),
-    e("Ronald Reagan is born",1911,"Politics","N",{"set": "B"}),
-    e("The first Oscars are held",1929,"Film","N",{"set": "B"}),
-    e("Scotch tape is invented",1930,"Inventions","N",{"set": "B"}),
-    e("Monopoly goes on sale",1935,"Games","N",{"set": "B"}),
-    e("The ballpoint pen is patented",1938,"Inventions","N",{"set": "B"}),
-    e("The first mobile phone call is made",1973,"Tech","N",{"set": "B"}),
-    e("The first barcode is scanned in a shop",1974,"Inventions","N",{"set": "B"}),
-    e("The first computer virus spreads",1982,"Tech","N",{"set": "B"}),
-    e("The first website goes live",1991,"Tech","N",{"set": "B"}),
-    e("Vikings reach North America",1000,"Exploration","N",{"c": true, "twist": true, "pair": "Vikings raid the monastery at Lindisfarne", "fact": "Vikings reached North America only about two centuries after their first raid on England, and nearly 500 years before Columbus.", "set": "B"}),
-    e("The first lighter is invented",1823,"Inventions","N",{"twist": true, "pair": "The friction match is invented", "fact": "Lighters came before matches: Döbereiner's lamp beat the friction match by about three years.", "set": "B"}),
-    e("The first selfie is taken",1839,"Photography","N",{"twist": true, "pair": "Queen Victoria takes the throne", "fact": "The first selfie was taken in 1839, just two years into Queen Victoria's reign.", "set": "B"}),
-    e("Ada Lovelace publishes the first computer program",1843,"Tech","N",{"twist": true, "pair": "The first steam passenger railway opens", "fact": "Ada Lovelace wrote the first computer program in 1843, only 13 years after the first passenger railway opened.", "set": "B"}),
-    e("Harriet Tubman dies",1913,"History","N",{"twist": true, "pair": "Ronald Reagan is born", "fact": "Harriet Tubman lived until 1913, two years after Ronald Reagan was born.", "set": "B"}),
-    e("Orville Wright dies",1948,"Flight","N",{"twist": true, "pair": "The first atomic bomb is tested", "fact": "Orville Wright, who flew the first plane in 1903, lived to see the atomic age.", "set": "B"}),
-    e("Post-it Notes go on sale",1980,"Inventions","N",{"twist": true, "pair": "Ray Tomlinson sends the first email", "fact": "Email is almost ten years older than the Post-it Note.", "set": "B"}),
-    e("Salvador Dalí dies",1989,"Art","N",{"twist": true, "pair": "The PlayStation launches in Japan", "fact": "Salvador Dalí was alive until 1989, just five years before the PlayStation launched.", "set": "B"}),
-    e("The Numa Numa video goes viral",2004,"Internet","M",{"net": true, "fact": "A webcam lip sync to a Romanian pop song made Gary Brolsma one of the internet's first viral stars.", "set": "B"}),
-    e("Nyan Cat is uploaded",2011,"Internet","E",{"net": true, "fact": "A pixel art cat with a Pop Tart body trailed rainbows across the internet.", "set": "B"}),
-    e("Grumpy Cat becomes famous",2012,"Internet","E",{"net": true, "fact": "A cat with a permanently annoyed face became the internet's most famous feline.", "set": "B"}),
-    e("Doge becomes a meme",2013,"Internet","E",{"net": true, "fact": "A Shiba Inu surrounded by broken English captions like such wow later inspired a cryptocurrency.", "set": "B"}),
-    e("Damn Daniel goes viral",2016,"Internet","M",{"net": true, "fact": "A teen's compliments about his friend's white Vans became a nationwide catchphrase.", "set": "B"}),
-    e("The mannequin challenge spreads",2016,"Internet","E",{"net": true, "fact": "People froze mid action while the camera moved around them, often to the song Black Beatles.", "set": "B"}),
-    e("The Among Us craze peaks",2020,"Internet","E",{"net": true, "fact": "Friends stuck at home in lockdown accused each other of being sus.", "set": "B"}),
-    e("Wordle goes viral",2022,"Internet","E",{"net": true, "fact": "A daily word game one engineer made for his partner ended up being bought by The New York Times.", "set": "B"}),
-    e("Barbenheimer becomes a meme",2023,"Internet","E",{"net": true, "fact": "Barbie and Oppenheimer opened on the same weekend, and fans turned them into a double feature.", "set": "B"}),
-    e("Italian brainrot takes over TikTok",2025,"Internet","E",{"net": true, "fact": "AI generated creatures like a shark in sneakers became Gen Alpha's favourite nonsense.", "set": "B"}),
-    e("The Labubu craze sweeps the world",2025,"Internet","E",{"net": true, "fact": "Grinning little monster dolls dangling from bags sold out around the world.", "set": "B"}),
-    e("Barbie goes on sale",1959,"Toys","M",{"nos": true, "set": "B"}),
-    e("The Etch A Sketch hits shelves",1960,"Toys","M",{"nos": true, "set": "B"}),
-    e("Atari releases Pong",1972,"Games","M",{"nos": true, "set": "B"}),
-    e("The Atari 2600 goes on sale",1977,"Games","M",{"nos": true, "set": "B"}),
-    e("Space Invaders hits arcades",1978,"Games","M",{"nos": true, "set": "B"}),
-    e("The Care Bears first appear",1981,"Toys","N",{"nos": true, "set": "B"}),
-    e("The Ninja Turtles first appear in comics",1984,"Culture","N",{"nos": true, "set": "B"}),
-    e("Polly Pocket hits shelves",1989,"Toys","N",{"nos": true, "set": "B"}),
-    e("The Spice Girls release Wannabe",1996,"Music","E",{"nos": true, "set": "B"}),
-    e("The first iPod is released",2001,"Tech","E",{"nos": true, "set": "B"}),
-    e("The Nintendo DS launches",2004,"Games","M",{"nos": true, "set": "B"}),
-    e("Club Penguin launches",2005,"Games","N",{"nos": true, "set": "B"}),
-    // ---- set C ----
-    e("The Hindenburg airship bursts into flames",1937,"Flight","E",{"set": "C"}),
-    e("The Empire State Building opens",1931,"Architecture","E",{"set": "C"}),
-    e("Steamboat Willie introduces Mickey Mouse",1928,"Film","E",{"set": "C"}),
-    e("Elvis Presley dies",1977,"Music","E",{"set": "C"}),
-    e("The Beatles break up",1970,"Music","E",{"set": "C"}),
-    e("Princess Diana dies",1997,"Culture","E",{"set": "C"}),
-    e("Finding Nemo is released",2003,"Film","E",{"set": "C"}),
-    e("Frozen is released",2013,"Film","E",{"set": "C"}),
-    e("Avengers: Endgame becomes the biggest film ever",2019,"Film","E",{"set": "C"}),
-    e("TikTok launches worldwide",2017,"Tech","E",{"set": "C"}),
-    e("Snapchat launches",2011,"Tech","E",{"set": "C"}),
-    e("Amazon is founded",1994,"Tech","E",{"set": "C"}),
-    e("Microsoft is founded",1975,"Tech","E",{"set": "C"}),
-    e("The Berlin Wall is built",1961,"Politics","E",{"set": "C"}),
-    e("Michael Phelps wins eight Olympic golds",2008,"Sport","E",{"set": "C"}),
-    e("The Fellowship of the Ring hits cinemas",2001,"Film","E",{"set": "C"}),
-    e("The Soviet Union collapses",1991,"Politics","E",{"set": "C"}),
-    e("WhatsApp launches",2009,"Tech","M",{"set": "C"}),
-    e("Leicester City win the Premier League",2016,"Sport","M",{"set": "C"}),
-    e("Martin Luther posts his 95 Theses",1517,"History","M",{"set": "C"}),
-    e("Copernicus publishes his sun centred model",1543,"Science","M",{"set": "C"}),
-    e("Michelangelo finishes the Sistine Chapel ceiling",1512,"Art","M",{"set": "C"}),
-    e("Constantinople falls to the Ottomans",1453,"History","M",{"set": "C"}),
-    e("Genghis Khan founds the Mongol Empire",1206,"History","M",{"set": "C"}),
-    e("Marco Polo reaches China",1275,"Exploration","M",{"c": true, "set": "C"}),
-    e("The Salem witch trials",1692,"History","M",{"set": "C"}),
-    e("Benjamin Franklin flies his kite in a storm",1752,"Science","M",{"set": "C"}),
-    e("The US makes the Louisiana Purchase",1803,"Politics","M",{"set": "C"}),
-    e("The Great Exhibition opens in London",1851,"Culture","M",{"set": "C"}),
-    e("The Suez Canal opens",1869,"Engineering","M",{"set": "C"}),
-    e("Edison demonstrates his light bulb",1879,"Inventions","M",{"set": "C"}),
-    e("The Brooklyn Bridge opens",1883,"Architecture","M",{"set": "C"}),
-    e("Van Gogh paints The Starry Night",1889,"Art","M",{"set": "C"}),
-    e("Queen Victoria dies",1901,"History","M",{"set": "C"}),
-    e("Captain Scott reaches the South Pole",1912,"Exploration","M",{"set": "C"}),
-    e("Tutankhamun's tomb is discovered",1922,"History","M",{"set": "C"}),
-    e("Lindbergh flies solo across the Atlantic",1927,"Flight","M",{"set": "C"}),
-    e("Amelia Earhart disappears",1937,"Flight","M",{"set": "C"}),
-    e("Watson and Crick describe DNA's double helix",1953,"Science","M",{"set": "C"}),
-    e("Rosa Parks refuses to give up her bus seat",1955,"Politics","M",{"set": "C"}),
-    e("The Cuban Missile Crisis",1962,"Politics","M",{"set": "C"}),
-    e("The first heart transplant is performed",1967,"Science","M",{"set": "C"}),
-    e("Concorde carries its first passengers",1976,"Flight","M",{"set": "C"}),
-    e("The first IVF baby is born",1978,"Science","M",{"set": "C"}),
-    e("Mount St. Helens erupts",1980,"Nature","M",{"set": "C"}),
-    e("Deep Blue beats Kasparov at chess",1997,"Tech","M",{"set": "C"}),
-    e("The Large Hadron Collider switches on",2008,"Science","M",{"set": "C"}),
-    e("SpaceX lands a rocket booster for the first time",2015,"Space","M",{"set": "C"}),
-    e("The first image of a black hole is released",2019,"Science","M",{"set": "C"}),
-    e("The first recorded Olympic Games",-776,"Sport","N",{"set": "C"}),
-    e("Tutankhamun becomes pharaoh",-1332,"Ancient world","N",{"c": true, "set": "C"}),
-    e("Confucius is born",-551,"Ancient world","N",{"set": "C"}),
-    e("The Parthenon is completed",-432,"Architecture","N",{"set": "C"}),
-    e("Work begins on Hadrian's Wall",122,"Architecture","N",{"set": "C"}),
-    e("The Domesday Book is completed",1086,"History","N",{"set": "C"}),
-    e("Work begins on the Leaning Tower of Pisa",1173,"Architecture","N",{"set": "C"}),
-    e("Eyeglasses are invented in Italy",1286,"Inventions","N",{"c": true, "set": "C"}),
-    e("The flush toilet is invented for Elizabeth I",1596,"Inventions","N",{"set": "C"}),
-    e("London's first coffee house opens",1652,"Food","N",{"set": "C"}),
-    e("The first manned hot air balloon flight",1783,"Flight","N",{"set": "C"}),
-    e("Edward Jenner tests the first vaccine",1796,"Science","N",{"set": "C"}),
-    e("The Penny Black, the first stamp, is issued",1840,"Culture","N",{"set": "C"}),
-    e("The first Ferris wheel turns in Chicago",1893,"Engineering","N",{"set": "C"}),
-    e("The Lumière brothers screen the first film to a paying audience",1895,"Film","N",{"set": "C"}),
-    e("Gideon Sundback invents the modern zip",1913,"Inventions","N",{"set": "C"}),
-    e("Insulin is first given to a patient",1922,"Science","N",{"set": "C"}),
-    e("Bubble gum is invented",1928,"Food","N",{"set": "C"}),
-    e("The first jet airliner takes to the sky",1949,"Flight","N",{"set": "C"}),
-    e("Stonehenge's great stones are raised",-2500,"Ancient world","N",{"c": true, "twist": true, "pair": "Tutankhamun becomes pharaoh", "fact": "Stonehenge's great stones were already more than 1,100 years old when Tutankhamun became pharaoh.", "set": "C"}),
-    e("The piano is invented",1700,"Music","N",{"c": true, "twist": true, "pair": "Benjamin Franklin flies his kite in a storm", "fact": "The piano is older than the United States: it had been around for about 50 years when Franklin flew his kite.", "set": "C"}),
-    e("The first cash machine opens",1967,"Money","N",{"twist": true, "pair": "The Beatles break up", "fact": "Cash machines were handing out money three years before the Beatles broke up.", "set": "C"}),
-    e("The first credit card is issued",1950,"Money","N",{"twist": true, "pair": "Watson and Crick describe DNA's double helix", "fact": "People were paying with credit cards three years before scientists worked out the structure of DNA.", "set": "C"}),
-    e("The first Wimbledon is played",1877,"Sport","N",{"twist": true, "pair": "Edison demonstrates his light bulb", "fact": "Wimbledon is two years older than Edison's light bulb.", "set": "C"}),
-    e("The first home video game console goes on sale",1972,"Games","N",{"twist": true, "pair": "Elvis Presley dies", "fact": "Home video game consoles were around five years before Elvis died.", "set": "C"}),
-    e("The Dancing Baby spreads by email",1996,"Internet","M",{"net": true, "fact": "A 3D baby doing the cha cha became one of the very first internet memes, forwarded from inbox to inbox.", "set": "C"}),
-    e("All Your Base Are Belong To Us becomes a meme",2001,"Internet","M",{"net": true, "fact": "A badly translated line from a 1989 video game became an early internet catchphrase.", "set": "C"}),
-    e("Leeroy Jenkins charges in",2005,"Internet","M",{"net": true, "fact": "A World of Warcraft player shouting his own name and charging into battle became a legend.", "set": "C"}),
-    e("Keyboard Cat starts playing people off",2009,"Internet","M",{"net": true, "fact": "A 1980s home video of a cat in a blue shirt playing a keyboard became the internet's way of ending a fail.", "set": "C"}),
-    e("The Double Rainbow video goes viral",2010,"Internet","M",{"net": true, "fact": "A hiker's overwhelmed reaction to a double rainbow in Yosemite became a sensation.", "set": "C"}),
-    e("Planking becomes a craze",2011,"Internet","E",{"net": true, "fact": "People lay face down and stiff as a board in strange places, then posted the photos.", "set": "C"}),
-    e("Fidget spinners take over schools",2017,"Internet","E",{"net": true, "fact": "Spinning gadgets became so popular that some schools banned them.", "set": "C"}),
-    e("Baby Shark becomes YouTube's most watched video",2020,"Internet","E",{"net": true, "fact": "A catchy children's song overtook Despacito to become YouTube's most viewed video.", "set": "C"}),
-    e("The skateboarding Dreams video goes viral",2020,"Internet","M",{"net": true, "fact": "A man skating to Dreams by Fleetwood Mac while sipping cranberry juice sent the song back up the charts.", "set": "C"}),
-    e("Squid Game becomes Netflix's biggest show",2021,"Internet","E",{"net": true, "fact": "A Korean survival drama became Netflix's most watched series ever at the time.", "set": "C"}),
-    e("The Chill Guy meme spreads",2024,"Internet","E",{"net": true, "fact": "A cartoon dog in a sweater, hands in pockets, became the internet's symbol of not stressing.", "set": "C"}),
-    e("The Slinky is invented",1943,"Toys","N",{"nos": true, "set": "C"}),
-    e("The hula hoop craze begins",1958,"Toys","M",{"nos": true, "set": "C"}),
-    e("Lego minifigures arrive",1978,"Toys","N",{"nos": true, "set": "C"}),
-    e("My Little Pony debuts",1982,"Toys","M",{"nos": true, "set": "C"}),
-    e("Transformers toys arrive",1984,"Toys","M",{"nos": true, "set": "C"}),
-    e("The Nintendo 64 launches",1996,"Games","M",{"nos": true, "set": "C"}),
-    e("The Teletubbies first air",1997,"TV","M",{"nos": true, "set": "C"}),
-    e("Neopets launches",1999,"Games","N",{"nos": true, "set": "C"}),
-    e("The first Xbox launches",2001,"Games","M",{"nos": true, "set": "C"}),
-    e("The Motorola Razr flip phone launches",2004,"Tech","M",{"nos": true, "set": "C"}),
-    e("Webkinz launch",2005,"Toys","N",{"nos": true, "set": "C"}),
-    e("Guitar Hero is released",2005,"Games","M",{"nos": true, "set": "C"}),
-    e("The Silly Bandz craze peaks",2010,"Toys","N",{"nos": true, "set": "C"})
-  ];
-  // Hint clues for each event: [a gentle nudge, a clue tied to a well known event, a short name].
-  const CLUES = {
-    "The Great Pyramid of Giza is completed": ["The Great Pyramid rose in the Bronze Age, during Egypt's Old Kingdom.", "The Great Pyramid was built for the pharaoh Khufu, more than 4,500 years ago.", "The Great Pyramid"],
-    "Julius Caesar is assassinated": ["Caesar was killed in the final years of the Roman Republic, before Rome had emperors.", "Rome had its first emperor, Augustus, within 20 years of Caesar's assassination.", "Caesar's assassination"],
-    "Columbus reaches the Americas": ["Columbus sailed at the dawn of the Age of Exploration.", "Columbus crossed the Atlantic only a few decades after Gutenberg started printing books.", "Columbus's first voyage"],
-    "Leonardo da Vinci begins the Mona Lisa": ["Leonardo painted the Mona Lisa at the height of the Italian Renaissance.", "The Mona Lisa was started about a decade after Columbus first crossed the Atlantic.", "The Mona Lisa"],
-    "The US Declaration of Independence is adopted": ["The Declaration of Independence was signed in an age of muskets, quill pens and powdered wigs.", "The Declaration of Independence came about a decade before the US Constitution was drafted.", "The Declaration of Independence"],
-    "The French Revolution begins": ["The French Revolution erupted in the Age of Enlightenment, when kings still ruled most of Europe.", "The French Revolution began the same year George Washington became the first US president.", "The French Revolution"],
-    "Bell makes the first telephone call": ["Bell made his first call in the Victorian era, when most homes were lit by gas or candles.", "Bell made the first phone call in America's centennial year, 100 years after independence.", "Bell's first phone call"],
-    "The Eiffel Tower opens": ["The Eiffel Tower went up in the age of steam trains and the first electric lights.", "The Eiffel Tower opened for the 100th anniversary of the French Revolution.", "The Eiffel Tower"],
-    "The Wright brothers make the first powered flight": ["The Wright brothers flew when horses still far outnumbered cars on the roads.", "The Wright brothers first flew nine years before the Titanic sank.", "The first powered flight"],
-    "The Titanic sinks": ["The Titanic sailed in the last golden years before the Great War, when liners were the only way to cross the Atlantic.", "The Titanic sank two years before World War I began.", "The sinking of the Titanic"],
-    "World War I begins": ["World War I broke out when cavalry charges and the first warplanes shared the battlefield.", "World War I broke out just two years after the Titanic sank.", "The start of World War I"],
-    "World War II begins": ["World War II began just as the world was crawling out of the Great Depression.", "World War II broke out 21 years after the previous world war ended.", "The start of World War II"],
-    "World War II ends": ["World War II ended at the dawn of the atomic age.", "World War II ended the same year the United Nations was founded.", "The end of World War II"],
-    "Hillary and Norgay summit Everest": ["Everest was first climbed in the post war years, while Britain still had food rationing.", "Everest was first climbed less than a decade after World War II ended.", "The first ascent of Everest"],
-    "Disneyland opens": ["Disneyland opened in the baby boom years, when TV was the exciting new thing in American homes.", "Disneyland opened two years after Queen Elizabeth II's coronation.", "Disneyland's opening"],
-    "The Beatles release their debut album": ["The Beatles released their first album at the start of the Swinging Sixties.", "The Beatles' first album came out the same year JFK was assassinated.", "The Beatles' debut album"],
-    "Martin Luther King Jr. gives his \"I Have a Dream\" speech": ["The \"I Have a Dream\" speech was given at the height of the civil rights movement.", "The \"I Have a Dream\" speech came a few months before JFK was assassinated.", "The \"I Have a Dream\" speech"],
-    "Apollo 11 lands on the Moon": ["The Moon landing was the peak of the Cold War Space Race.", "Apollo 11 landed on the Moon the same summer as the Woodstock festival.", "The Moon landing"],
-    "Woodstock takes place": ["Woodstock was the high point of the hippie era.", "Woodstock took place less than a month after people first walked on the Moon.", "Woodstock"],
-    "Sydney Opera House opens": ["The Sydney Opera House opened in the era of flares and platform shoes.", "The Sydney Opera House opened four years after the Moon landing.", "The Sydney Opera House"],
-    "Star Wars premieres in cinemas": ["Star Wars hit cinemas in the disco era, long before computer generated effects.", "Star Wars hit cinemas the same year Elvis Presley died.", "The first Star Wars film"],
-    "Charles and Diana marry": ["Charles and Diana married at the start of the decade of big hair and shoulder pads.", "Charles and Diana married just days before MTV launched.", "Charles and Diana's wedding"],
-    "Michael Jackson releases Thriller": ["Thriller came out in the early days of MTV and music videos.", "Thriller came out the year before Michael Jackson first moonwalked on TV.", "Thriller"],
-    "The Chernobyl nuclear disaster happens": ["Chernobyl happened in the final years of the Cold War, inside the Soviet Union.", "Chernobyl happened the same year the Space Shuttle Challenger broke apart.", "The Chernobyl disaster"],
-    "The Berlin Wall falls": ["The Berlin Wall fell as the Cold War was coming to an end.", "The Berlin Wall fell the year before Germany was officially reunified.", "The fall of the Berlin Wall"],
-    "Nelson Mandela is released from prison": ["Mandela walked free just as apartheid was starting to crumble.", "Nelson Mandela was released a few months after the Berlin Wall fell.", "Mandela's release"],
-    "Jurassic Park hits cinemas": ["Jurassic Park came out when most people had never been on the internet.", "Jurassic Park came out two years before Toy Story.", "Jurassic Park"],
-    "Toy Story is released": ["Toy Story arrived when home computers were still beige boxes with CD drives.", "Toy Story came out the same year Windows 95 launched.", "Toy Story"],
-    "Google is founded": ["Google was born in the dial up era, when the web still felt like a novelty.", "Google was founded during the dot com boom, a couple of years before Y2K.", "Google"],
-    "Facebook launches": ["Facebook launched when most people still carried flip phones.", "Facebook launched a year before YouTube.", "Facebook"],
-    "YouTube launches": ["YouTube launched before smartphones, when videos were watched on desktop computers.", "YouTube launched a year after Facebook.", "YouTube"],
-    "The first iPhone goes on sale": ["The iPhone arrived when BlackBerrys and flip phones ruled.", "The first iPhone went on sale a year before the global financial crisis hit.", "The first iPhone"],
-    "Netflix starts streaming video": ["Netflix started streaming when most people still rented DVDs.", "Netflix started streaming the same year the first iPhone went on sale.", "Netflix streaming"],
-    "Barack Obama is elected US president": ["Obama was elected in the early days of smartphones and social media.", "Barack Obama was elected in the middle of the global financial crisis.", "Obama's election"],
-    "Instagram launches": ["Instagram launched when the iPhone was only a few years old.", "Instagram launched two years before Facebook bought it.", "Instagram"],
-    "Pokémon Go takes over the world": ["Pokémon Go arrived when almost everyone had a smartphone in their pocket.", "Pokémon Go came out the same summer Harambe became a meme.", "Pokémon Go"],
-    "Fortnite Battle Royale launches": ["Fortnite took off in the age of streamers and Twitch.", "Fortnite Battle Royale launched the year after Pokémon Go took over phones.", "Fortnite Battle Royale"],
-    "The WHO declares COVID-19 a pandemic": ["The pandemic hit in the age of TikTok dances, and soon brought the age of Zoom calls.", "COVID-19 was declared a pandemic just months after a new virus was reported in Wuhan.", "The COVID-19 pandemic"],
-    "ChatGPT is released": ["ChatGPT arrived in the years just after the pandemic.", "ChatGPT came out just weeks after Elon Musk bought Twitter.", "ChatGPT"],
-    "Queen Elizabeth II dies": ["The Queen died in the years just after the pandemic.", "Queen Elizabeth II died a few months before ChatGPT was released.", "The Queen's death"],
-    "Rome is founded, according to legend": ["Rome's legendary founding dates to Iron Age Italy, centuries before the Roman Empire.", "Rome's legendary founding is dated to the same century as the first recorded Olympic Games.", "Rome's legendary founding"],
-    "Alexander the Great dies": ["Alexander lived in the golden age of ancient Greece's great philosophers.", "Alexander the Great had been tutored as a boy by the philosopher Aristotle.", "Alexander's death"],
-    "The Western Roman Empire falls": ["The Western Roman Empire fell as barbarian kingdoms carved up Europe.", "The fall of the Western Roman Empire is often used to mark the start of the Middle Ages.", "The fall of Rome"],
-    "William the Conqueror wins at Hastings": ["The Battle of Hastings was fought in the age of castles, knights and Vikings.", "The Battle of Hastings was fought almost 150 years before Magna Carta was sealed.", "The Battle of Hastings"],
-    "Magna Carta is sealed": ["Magna Carta was sealed in the age of knights and crusades.", "Magna Carta was sealed about 150 years after the Battle of Hastings.", "Magna Carta"],
-    "The Black Death reaches Europe": ["The Black Death struck in the late Middle Ages.", "The Black Death reached Europe about 130 years after Magna Carta was sealed.", "The Black Death's arrival"],
-    "Gutenberg prints his Bible": ["Gutenberg printed his Bible as the Middle Ages were giving way to the Renaissance.", "Gutenberg printed his Bible shortly after Constantinople fell to the Ottomans.", "The Gutenberg Bible"],
-    "Galileo spots the moons of Jupiter": ["Galileo pointed his telescope at the sky during the Scientific Revolution.", "Galileo found Jupiter's moons around the time Shakespeare was writing his last plays.", "Galileo's discovery"],
-    "William Shakespeare dies": ["Shakespeare died in the Jacobean era, just after Elizabeth I's reign.", "Shakespeare died four years before the Mayflower sailed to America.", "Shakespeare's death"],
-    "The Mayflower lands at Plymouth": ["The Mayflower sailed when Europeans were only beginning to settle North America.", "The Mayflower landed the year before the feast later remembered as the first Thanksgiving.", "The Mayflower's landing"],
-    "The Great Fire of London breaks out": ["The Great Fire of London broke out in Restoration England, soon after the monarchy returned.", "The Great Fire of London broke out the year after the city's Great Plague.", "The Great Fire of London"],
-    "Isaac Newton publishes the Principia": ["Newton wrote the Principia in the late Stuart era, at the height of the Scientific Revolution.", "Newton published the Principia about 20 years after the Great Fire of London.", "The Principia"],
-    "Napoleon is defeated at Waterloo": ["Waterloo was fought in the age of muskets and cannon, just before the railway age.", "Waterloo was fought ten years after the Battle of Trafalgar.", "The Battle of Waterloo"],
-    "Darwin publishes On the Origin of Species": ["Darwin published in the middle of Queen Victoria's reign.", "Darwin published his theory two years before the American Civil War began.", "On the Origin of Species"],
-    "The American Civil War begins": ["The American Civil War began in the age of steam trains and the telegraph.", "The American Civil War broke out about a month after Abraham Lincoln took office.", "The start of the Civil War"],
-    "Coca-Cola is first sold, in Atlanta": ["Coca-Cola was first sold in America's Gilded Age.", "Coca-Cola came out the same year the Statue of Liberty was dedicated.", "Coca-Cola"],
-    "The Statue of Liberty is dedicated": ["The Statue of Liberty was dedicated in the Gilded Age, as millions of immigrants sailed to America.", "The Statue of Liberty was dedicated three years before Eiffel's tower opened in Paris.", "The Statue of Liberty"],
-    "The first modern Olympics are held in Athens": ["The first modern Olympics were held in the late Victorian era.", "The first modern Olympics were held seven years after the Eiffel Tower opened.", "The first modern Olympics"],
-    "Marie Curie wins her first Nobel Prize": ["Marie Curie won her first Nobel in the Edwardian era.", "Marie Curie won her first Nobel the same year as the Wright brothers' first flight.", "Curie's first Nobel Prize"],
-    "Einstein publishes special relativity": ["Einstein published special relativity in the Edwardian era, years before World War I.", "Einstein published special relativity two years after the Wright brothers first flew.", "Special relativity"],
-    "The Ford Model T goes on sale": ["The Model T went on sale when most roads were still built for horses.", "The Model T went on sale four years before the Titanic sank.", "The Model T"],
-    "The Panama Canal opens": ["The Panama Canal opened in the age of the great ocean liners.", "The Panama Canal opened the same month World War I broke out in Europe.", "The Panama Canal"],
-    "American women win the right to vote": ["American women won the vote at the start of the Roaring Twenties.", "American women won the vote two years after World War I ended.", "Votes for American women"],
-    "Fleming discovers penicillin": ["Fleming discovered penicillin at the end of the Roaring Twenties.", "Fleming discovered penicillin the year before the Wall Street Crash.", "The discovery of penicillin"],
-    "Ferrari builds its first car": ["Ferrari built its first car in the post war years.", "Ferrari built its first car two years after World War II ended.", "Ferrari's first car"],
-    "Queen Elizabeth II is crowned": ["Queen Elizabeth II was crowned in the early days of television.", "Queen Elizabeth II was crowned just days after Everest was first climbed.", "The coronation"],
-    "Sputnik 1 reaches orbit": ["Sputnik launched at the very start of the Space Age.", "Sputnik started the Space Race about 12 years before the Moon landing.", "Sputnik"],
-    "The Hubble Space Telescope launches": ["Hubble launched right at the end of the Cold War.", "Hubble launched the same year Nelson Mandela was released.", "Hubble's launch"],
-    "The first Harry Potter book is published": ["The first Harry Potter book came out in the days of dial up internet and Tamagotchis.", "The first Harry Potter book came out the same year Princess Diana died.", "The first Harry Potter book"],
-    "Wikipedia launches": ["Wikipedia launched just after the dot com bubble burst.", "Wikipedia launched the same year as the first iPod.", "Wikipedia"],
-    "The euro enters circulation": ["Euro notes and coins arrived just after the Y2K scare.", "Euro cash arrived the year after Wikipedia launched.", "Euro notes and coins"],
-    "Usain Bolt sets the 100m world record": ["Bolt set his record in the early years of the smartphone era.", "Bolt set his world record the year after he first won Olympic gold in Beijing.", "Bolt's world record"],
-    "Minecraft gets its full release": ["Minecraft was fully released in the early days of YouTube gaming stars.", "Minecraft was fully released the year after Instagram launched.", "Minecraft's full release"],
-    "The University of Bologna is founded": ["The University of Bologna was founded in the High Middle Ages.", "The University of Bologna was founded about 20 years after the Battle of Hastings.", "The University of Bologna"],
-    "The Aztecs found Tenochtitlan": ["The Aztecs founded Tenochtitlan while Europe was in its late Middle Ages.", "Tenochtitlan was founded about two centuries before the Spanish arrived.", "Tenochtitlan"],
-    "Machu Picchu is built": ["Machu Picchu was built at the height of the Inca Empire.", "Machu Picchu was built less than a century before the Spanish conquered the Inca.", "Machu Picchu"],
-    "The first photograph is taken": ["The first photograph was taken in the early years of the Industrial Revolution's steam age.", "The first photograph was taken a few years before the first steam passenger railway opened.", "The first photograph"],
-    "Edison invents the phonograph": ["Edison invented the phonograph in the Victorian era.", "Edison's phonograph came just a year after the telephone.", "The phonograph"],
-    "The first speeding ticket is issued": ["The first speeding ticket was issued when cars were still a rare, noisy novelty.", "The first speeding ticket was issued the same year as the first modern Olympics.", "The first speeding ticket"],
-    "The first Nobel Prizes are awarded": ["The first Nobel Prizes were awarded in the year Queen Victoria died.", "The first Nobel Prizes were handed out two years before the Wright brothers' first flight.", "The first Nobel Prizes"],
-    "The first crossword puzzle is published": ["The first crossword appeared in the last peaceful years before the Great War.", "The first crossword was published the year before World War I began.", "The first crossword"],
-    "The Ottoman Empire comes to an end": ["The Ottoman Empire collapsed in the aftermath of the Great War.", "The Ottoman Empire ended a few years after World War I.", "The end of the Ottoman Empire"],
-    "The microwave oven goes on sale": ["The microwave went on sale in the early post war years.", "The first microwave ovens went on sale two years after World War II ended.", "The first microwave oven"],
-    "Velcro is patented": ["Velcro was patented in the age of rock and roll.", "Velcro was patented the same year Disneyland opened.", "Velcro"],
-    "Bubble wrap is invented": ["Bubble wrap was invented at the start of the Space Age.", "Bubble wrap was invented the same year Sputnik was launched.", "Bubble wrap"],
-    "The first email spam is sent": ["The first spam email was sent in the disco era, long before most people had heard of email.", "The first spam email was sent the year after Star Wars came out.", "The first spam email"],
-    "The first webcam is pointed at a coffee pot": ["The coffee pot webcam went live in the very early days of the web.", "The coffee pot webcam went live the same year the World Wide Web opened to the public.", "The coffee pot webcam"],
-    "The first text message is sent": ["The first text message was sent when mobile phones were still the size of bricks.", "The first text message was sent the year after the World Wide Web opened to the public.", "The first text message"],
-    "The first emoji set is designed in Japan": ["The first emoji were drawn in the days of pagers and flip phones.", "The first emoji were designed just before the Y2K bug panic.", "The first emoji"],
-    "The last woolly mammoths die out": ["The last mammoths lived on into the Bronze Age, on a remote Arctic island.", "Woolly mammoths were still alive when Egypt's pyramids were already ancient.", "The last mammoths"],
-    "Cleopatra dies": ["Cleopatra ruled in the final days of the Roman Republic.", "Cleopatra knew Julius Caesar personally.", "Cleopatra's death"],
-    "Oxford University begins teaching": ["Oxford began teaching in the age of the First Crusade.", "Oxford began teaching a few decades after the Battle of Hastings.", "Teaching at Oxford"],
-    "Harvard University is founded": ["Harvard was founded in the early days of the English colonies in America.", "Harvard was founded just 16 years after the Mayflower landed.", "Harvard"],
-    "Alexander Bain patents an early fax machine": ["The fax machine was patented early in the Victorian era.", "The fax machine came along well before the telephone was invented.", "The fax machine"],
-    "Japan bans samurai from carrying swords": ["Samurai gave up their swords in the age of steamships and the telegraph.", "Samurai lost the right to carry swords in the same year the telephone was invented.", "The samurai sword ban"],
-    "Nintendo is founded": ["Nintendo started out in Japan's Meiji era, making playing cards.", "Nintendo was founded the same year the Eiffel Tower opened.", "Nintendo"],
-    "Pepsi-Cola gets its name": ["Pepsi was invented in the age of soda fountains and horse drawn carts.", "Pepsi got its famous name nine years after the Eiffel Tower opened.", "The name Pepsi-Cola"],
-    "Oreo cookies go on sale": ["Oreos first hit shelves in the last years before the Great War.", "Oreos hit shelves the same year the Titanic sank.", "The Oreo"],
-    "Pre-sliced bread goes on sale": ["Sliced bread arrived at the tail end of the Roaring Twenties.", "Sliced bread went on sale the same year penicillin was discovered.", "Sliced bread"],
-    "The last Union veteran of the US Civil War dies": ["The last Union veteran died in the age of rock and roll.", "The last Union veteran lived long enough to see Elvis on TV.", "The last Union veteran's death"],
-    "The first video game, Tennis for Two, is shown": ["Tennis for Two was shown at the start of the Space Age.", "Tennis for Two was shown the year after Sputnik was launched.", "Tennis for Two"],
-    "Swiss women win the right to vote nationally": ["Swiss women won the national vote in the era of flared jeans.", "Swiss women won the national vote two years after the Moon landing.", "Votes for Swiss women"],
-    "Rickrolling becomes the internet's favourite prank": ["Rickrolling took off in the early days of YouTube.", "Rickrolling took off the same year the first iPhone went on sale.", "Rickrolling"],
-    "Charlie Bit My Finger is uploaded": ["Charlie Bit My Finger went viral in YouTube's early days.", "Charlie Bit My Finger was uploaded just two years after YouTube launched.", "Charlie Bit My Finger"],
-    "Gangnam Style becomes the first YouTube video to hit a billion views": ["Gangnam Style took over just as K-pop was breaking through in the West.", "Gangnam Style hit a billion views the same year as the London Olympics.", "Gangnam Style's billion views"],
-    "The Harlem Shake craze sweeps the internet": ["The Harlem Shake craze took off in the age of Vine and YouTube.", "The Harlem Shake took off the year after Gangnam Style hit a billion views.", "The Harlem Shake craze"],
-    "The Ice Bucket Challenge takes over the internet": ["The Ice Bucket Challenge spread in the golden age of Facebook videos.", "The Ice Bucket Challenge happened two years after Gangnam Style hit a billion views.", "The Ice Bucket Challenge"],
-    "The Dress splits the internet into blue and black vs white and gold": ["The Dress went viral in the Tumblr era of the internet.", "The Dress went viral the year after the Ice Bucket Challenge.", "The Dress"],
-    "Harambe the gorilla becomes a meme": ["Harambe became a meme in the same era as dabbing and the mannequin challenge.", "Harambe became a meme the same year Pokémon Go launched.", "The Harambe meme"],
-    "Skibidi Toilet's first episode is uploaded": ["Skibidi Toilet took off in the age of YouTube Shorts.", "Skibidi Toilet started a few years after the COVID-19 pandemic began.", "Skibidi Toilet"],
-    "The Grimace Shake trend takes over TikTok": ["The Grimace Shake trend took over in the TikTok era.", "The Grimace Shake took over TikTok the year after ChatGPT came out.", "The Grimace Shake trend"],
-    "\"Rizz\" is named Oxford's Word of the Year": ["Rizz became a Word of the Year in the TikTok era.", "Rizz was crowned Word of the Year the year after ChatGPT was released.", "Rizz's Word of the Year win"],
-    "The Hawk Tuah girl goes viral": ["The Hawk Tuah clip went viral in the age of podcast clips and TikTok.", "The Hawk Tuah girl went viral the same year as Moo Deng the baby hippo.", "The Hawk Tuah clip"],
-    "Moo Deng the baby pygmy hippo goes viral": ["Moo Deng became famous through TikTok and zoo livestreams.", "Moo Deng went viral the same year as the Hawk Tuah girl.", "Moo Deng"],
-    "\"6 7\" is named Word of the Year": ["6 7 is Gen Alpha slang, born in the TikTok era.", "6 7 was crowned the year after brain rot was Oxford's Word of the Year.", "6 7's Word of the Year win"],
-    "Clavicular gets frame mogged by an ASU frat leader": ["The frame mog clip comes from the very latest wave of internet streamers.", "Clavicular got frame mogged the year after 6 7 was named Word of the Year.", "The frame mog clip"],
-    "Lego patents its famous brick": ["Lego patented its brick in the age of rock and roll.", "Lego patented its brick the year after Sputnik launched.", "The Lego brick"],
-    "The Rubik's Cube is invented": ["The Rubik's Cube was invented in the era of flares and platform shoes.", "The Rubik's Cube was invented five years after the Moon landing.", "The Rubik's Cube"],
-    "Sony's Walkman goes on sale": ["The Walkman arrived at the tail end of the disco era.", "The Walkman went on sale the year before Pac-Man hit arcades.", "The Walkman"],
-    "Pac-Man hits arcades": ["Pac-Man hit arcades at the start of the golden age of video games.", "Pac-Man hit arcades the year after the Walkman went on sale.", "Pac-Man"],
-    "MTV launches": ["MTV launched in the decade of big hair and synthesisers.", "MTV launched just days after Charles and Diana married.", "MTV"],
-    "The Cabbage Patch Kids craze begins": ["The Cabbage Patch craze hit in the decade of big hair and leg warmers.", "The Cabbage Patch craze hit the year after Thriller came out.", "The Cabbage Patch craze"],
-    "Tetris is created in the Soviet Union": ["Tetris was created behind the Iron Curtain, during the Cold War.", "Tetris was made the same year the first Macintosh launched.", "Tetris"],
-    "The first Super Mario Bros. game is released": ["Super Mario Bros. arrived in the decade of arcades and big hair.", "Super Mario Bros. came out the year after Tetris was created.", "Super Mario Bros."],
-    "Live Aid is held in London and Philadelphia": ["Live Aid was the biggest concert of the decade of big hair and stadium rock.", "Live Aid came the year after the charity single Do They Know It's Christmas was released.", "Live Aid"],
-    "The Game Boy goes on sale": ["The Game Boy launched as the Cold War was ending.", "The Game Boy launched the same year the Berlin Wall fell.", "The Game Boy"],
-    "The Simpsons premieres": ["The Simpsons premiered in the final days of the Cold War.", "The Simpsons premiered as a series the same year the Berlin Wall fell.", "The Simpsons"],
-    "Beanie Babies are launched": ["Beanie Babies launched in the decade of dial up internet.", "Beanie Babies launched the same year Jurassic Park came out.", "Beanie Babies"],
-    "Friends premieres on TV": ["Friends premiered in the decade of dial up internet and grunge.", "Friends premiered the year before Toy Story came out.", "Friends"],
-    "The Tamagotchi craze begins": ["The Tamagotchi arrived in the decade of dial up internet and the Spice Girls.", "The Tamagotchi launched in Japan the same year as the first Pokémon games.", "The Tamagotchi"],
-    "Furby hits toy shelves": ["Furby arrived as the world was bracing for the Y2K bug.", "Furby hit shelves the same year Google was founded.", "Furby"],
-    "The Nokia 3310 is released": ["The Nokia 3310 arrived just after the Y2K scare.", "The Nokia 3310 came out the year after the first emoji set was designed.", "The Nokia 3310"],
-    "Mount Vesuvius buries Pompeii": ["Pompeii was buried at the height of the Roman Empire.", "Vesuvius erupted less than ten years after work began on the Colosseum.", "The eruption of Vesuvius"],
-    "Abraham Lincoln is assassinated": ["Lincoln was shot in the last days of the American Civil War.", "Lincoln was assassinated just days after the Civil War's main army surrendered.", "Lincoln's assassination"],
-    "Japan attacks Pearl Harbor": ["Pearl Harbor was attacked in the middle of World War II.", "Pearl Harbor was attacked two years after World War II began in Europe.", "Pearl Harbor"],
-    "India gains independence": ["India became independent in the post war years, as the British Empire shrank.", "India became independent two years after World War II ended.", "Indian independence"],
-    "Yuri Gagarin becomes the first person in space": ["Gagarin flew at the height of the Cold War Space Race.", "Gagarin reached space eight years before the Moon landing.", "Gagarin's flight"],
-    "JFK is assassinated": ["JFK was shot during the Cold War, in the year Beatlemania exploded in Britain.", "JFK was assassinated two years after Yuri Gagarin went to space.", "JFK's assassination"],
-    "Apple is founded": ["Apple was founded in a garage in the disco era.", "Apple was founded the year before Star Wars came out.", "Apple"],
-    "James Cameron's Titanic hits cinemas": ["James Cameron's Titanic came out in the decade of dial up internet.", "Titanic hit cinemas the same year the first Harry Potter book came out.", "The Titanic film"],
-    "Shrek is released": ["Shrek came out just after the Y2K scare.", "Shrek came out the same year as the first iPod.", "Shrek"],
-    "Twitter launches": ["Twitter launched in the early days of social media.", "Twitter launched the year before the first iPhone.", "Twitter"],
-    "Spotify launches": ["Spotify launched in the early smartphone era.", "Spotify launched the year after the first iPhone.", "Spotify"],
-    "Avatar hits cinemas": ["Avatar hit cinemas in the early smartphone era.", "Avatar came out two years after the first iPhone.", "Avatar"],
-    "Michael Jackson dies": ["Michael Jackson died in the early smartphone era.", "Michael Jackson died the year after Barack Obama was elected.", "Michael Jackson's death"],
-    "London hosts the Olympic Games": ["The London Olympics were held in the early days of Instagram.", "London hosted the Olympics the same year Gangnam Style hit a billion views.", "The London Olympics"],
-    "The UK votes for Brexit": ["Britain voted to leave the EU in the age of social media campaigns.", "The Brexit vote came the same year Pokémon Go launched.", "The Brexit vote"],
-    "Notre Dame cathedral catches fire": ["Notre Dame burned in the years just before the pandemic.", "Notre Dame caught fire the year before COVID-19 was declared a pandemic.", "The Notre Dame fire"],
-    "Taylor Swift's Eras Tour begins": ["The Eras Tour began in the TikTok era.", "The Eras Tour began the year after ChatGPT came out.", "The Eras Tour"],
-    "The Colosseum opens in Rome": ["The Colosseum opened under Rome's early emperors.", "The Colosseum opened the year after Vesuvius buried Pompeii.", "The Colosseum"],
-    "Vikings raid the monastery at Lindisfarne": ["The Lindisfarne raid kicked off the Viking Age.", "The Lindisfarne raid came seven years before Charlemagne was crowned emperor.", "The Lindisfarne raid"],
-    "Charlemagne is crowned emperor": ["Charlemagne was crowned in the early Middle Ages.", "Charlemagne was crowned on Christmas Day, seven years after the Vikings first raided Lindisfarne.", "Charlemagne's coronation"],
-    "Henry VIII breaks with the Catholic Church": ["Henry VIII split from Rome during the Tudor era.", "Henry VIII broke with Rome about 40 years after Columbus reached the Americas.", "Henry VIII's break with Rome"],
-    "Elizabeth I becomes queen": ["Elizabeth I took the throne in the Tudor era.", "Elizabeth I became queen 30 years before the Spanish Armada sailed.", "Elizabeth I's reign"],
-    "The Spanish Armada is defeated": ["The Armada sailed in the Elizabethan age.", "The Armada was defeated 30 years into Elizabeth I's reign.", "The Armada"],
-    "The Taj Mahal is completed": ["The Taj Mahal was built at the height of the Mughal Empire.", "The Taj Mahal was finished around the time the English Civil War ended.", "The Taj Mahal"],
-    "Mozart is born": ["Mozart was born in the age of powdered wigs and harpsichords.", "Mozart was born twenty years before the Declaration of Independence.", "Mozart's birth"],
-    "The Boston Tea Party": ["The Boston Tea Party happened in the age of tricorn hats and sailing ships.", "The Boston Tea Party came three years before the Declaration of Independence.", "The Boston Tea Party"],
-    "The first steam passenger railway opens": ["The first passenger railway opened at the start of the railway age.", "The first passenger railway opened seven years before Queen Victoria took the throne.", "The first passenger railway"],
-    "Queen Victoria takes the throne": ["Victoria took the throne as the railway age was getting going.", "Victoria became queen seven years after the first passenger railway opened.", "Victoria's reign"],
-    "Dickens publishes A Christmas Carol": ["A Christmas Carol was written in early Victorian London.", "A Christmas Carol came out six years into Queen Victoria's reign.", "A Christmas Carol"],
-    "The California Gold Rush begins": ["The Gold Rush began in the age of covered wagons.", "The Gold Rush began the same year revolutions swept across Europe.", "The Gold Rush"],
-    "Karl Benz patents the first car": ["Benz built his car in the age of horse drawn carriages.", "Benz patented his car three years before the Eiffel Tower opened.", "The first car"],
-    "Superman makes his comic book debut": ["Superman first appeared in the golden age of comic books.", "Superman debuted the year before World War II began.", "Superman"],
-    "The Wizard of Oz premieres": ["The Wizard of Oz came out in Hollywood's golden age.", "The Wizard of Oz premiered the same year World War II began.", "The Wizard of Oz"],
-    "Mount Rushmore is completed": ["Mount Rushmore was finished in the shadow of World War II.", "Mount Rushmore was completed a few weeks before Pearl Harbor was attacked.", "Mount Rushmore"],
-    "The first atomic bomb is tested": ["The first atomic test came at the very end of World War II.", "The first atomic bomb was tested weeks before World War II ended.", "The first atomic test"],
-    "Elvis releases Heartbreak Hotel": ["Heartbreak Hotel came out at the dawn of rock and roll.", "Heartbreak Hotel came out a year before Sputnik launched.", "Heartbreak Hotel"],
-    "The first James Bond film is released": ["The first Bond film came out at the start of the Swinging Sixties.", "The first Bond film came out a year before JFK was assassinated.", "The first Bond film"],
-    "The first Super Bowl is played": ["The first Super Bowl was played in the Swinging Sixties.", "The first Super Bowl was played two years before the Moon landing.", "The first Super Bowl"],
-    "Ray Tomlinson sends the first email": ["The first email was sent in the era of flared jeans, long before home computers.", "The first email was sent two years after the Moon landing.", "The first email"],
-    "Watergate forces Nixon to resign": ["Nixon resigned in the era of flares and platform shoes.", "Nixon resigned five years after the Moon landing he had famously phoned.", "Nixon's resignation"],
-    "Jaws becomes the first summer blockbuster": ["Jaws came out in the era of flares and disco.", "Jaws hit cinemas the year after Nixon resigned.", "Jaws"],
-    "The first Space Shuttle launches": ["The first Space Shuttle flew in the decade of big hair and synthesisers.", "The first Space Shuttle launched twelve years after the Moon landing.", "The first Space Shuttle"],
-    "The first CDs go on sale": ["CDs went on sale in the early days of MTV.", "The first CDs went on sale the same year Thriller came out.", "The CD"],
-    "The first Macintosh goes on sale": ["The first Mac arrived in the decade of big hair and synthesisers.", "The Macintosh launched the same year Tetris was created.", "The first Mac"],
-    "Tim Berners-Lee proposes the World Wide Web": ["Tim Berners-Lee proposed the web as the Cold War was ending.", "The web was proposed the same year the Berlin Wall fell.", "The web proposal"],
-    "The Channel Tunnel opens": ["The Channel Tunnel opened in the decade of dial up internet.", "The Channel Tunnel opened the same year South Africa held its first free election.", "The Channel Tunnel"],
-    "Dolly the sheep is cloned": ["Dolly the sheep was cloned in the decade of dial up internet.", "Dolly was born the year before the first Harry Potter book came out.", "Dolly the sheep"],
-    "Myspace launches": ["Myspace launched before most people had heard of Facebook.", "Myspace launched the year before Facebook.", "Myspace"],
-    "Google Maps launches": ["Google Maps launched in the days before smartphones.", "Google Maps launched the same year as YouTube.", "Google Maps"],
-    "Angry Birds is released": ["Angry Birds arrived in the early days of the App Store.", "Angry Birds came out two years after the first iPhone.", "Angry Birds"],
-    "The James Webb Space Telescope launches": ["The James Webb telescope launched during the pandemic years.", "James Webb launched the year after COVID-19 was declared a pandemic.", "The James Webb telescope"],
-    "The PlayStation launches in Japan": ["The PlayStation arrived in the decade of grunge and dial up.", "The PlayStation launched the same year the Channel Tunnel opened.", "The PlayStation"],
-    "The first newspaper is printed": ["The first newspaper was printed in the age of Shakespeare.", "The first newspaper was printed eleven years before Shakespeare died.", "The first newspaper"],
-    "The Rosetta Stone is discovered": ["The Rosetta Stone was found during Napoleon's campaign in Egypt.", "The Rosetta Stone turned up ten years after the French Revolution began.", "The Rosetta Stone"],
-    "Beethoven's Fifth Symphony premieres": ["Beethoven's Fifth premiered in the Napoleonic era.", "Beethoven's Fifth premiered seven years before the Battle of Waterloo.", "Beethoven's Fifth"],
-    "The stethoscope is invented": ["The stethoscope was invented in the years after Napoleon's defeat.", "The stethoscope was invented the year after the Battle of Waterloo.", "The stethoscope"],
-    "The first dinosaur is scientifically named": ["The first dinosaur was named in the late Georgian era.", "The first dinosaur was named six years before the first passenger railway opened.", "The first named dinosaur"],
-    "The friction match is invented": ["The friction match was invented in the late Georgian era.", "The friction match came four years before the first passenger railway opened.", "The friction match"],
-    "The first Christmas card is sent": ["The first Christmas card was sent in early Victorian England.", "The first Christmas card was sent the same year A Christmas Carol was published.", "The first Christmas card"],
-    "The first traffic light is installed": ["The first traffic light was gas powered and directed horse traffic in Victorian London.", "The first traffic light went up three years after Lincoln was assassinated.", "The first traffic light"],
-    "Levi Strauss patents blue jeans": ["Blue jeans were patented in the Wild West era for miners and workers.", "Jeans were patented three years before the telephone was invented.", "Blue jeans"],
-    "Marconi sends a radio signal across the Atlantic": ["Marconi's radio signal crossed the Atlantic in the year Queen Victoria died.", "Marconi's signal crossed the Atlantic two years before the Wright brothers first flew.", "Marconi's signal"],
-    "The teddy bear is invented": ["The teddy bear was named after a US president with a famous moustache, in the Edwardian era.", "The teddy bear appeared the year before the Wright brothers' first flight.", "The teddy bear"],
-    "The first Tour de France is held": ["The first Tour de France was raced on heavy bikes over dirt roads in the Edwardian era.", "The first Tour de France was held the same year the Wright brothers first flew.", "The first Tour de France"],
-    "Ronald Reagan is born": ["Ronald Reagan was born in the last years before the Great War.", "Reagan was born the year before the Titanic sank.", "Reagan's birth"],
-    "The first Oscars are held": ["The first Oscars were held at the end of the Roaring Twenties.", "The first Oscars were held the same year as the Wall Street Crash.", "The first Oscars"],
-    "Scotch tape is invented": ["Scotch tape was invented at the start of the Great Depression.", "Scotch tape was invented the year after the Wall Street Crash.", "Scotch tape"],
-    "Monopoly goes on sale": ["Monopoly took off during the Great Depression.", "Monopoly went on sale four years before World War II began.", "Monopoly"],
-    "The ballpoint pen is patented": ["The ballpoint pen was patented in the years just before World War II.", "The ballpoint pen was patented the same year Superman debuted.", "The ballpoint pen"],
-    "The first mobile phone call is made": ["The first mobile phone call was made in the era of flares and platform shoes.", "The first mobile call was made four years after the Moon landing.", "The first mobile call"],
-    "The first barcode is scanned in a shop": ["The first barcode scan rang up a pack of chewing gum in the era of flares.", "The first barcode was scanned the same year Nixon resigned.", "The first barcode scan"],
-    "The first computer virus spreads": ["The first computer virus spread on floppy disks in the early days of home computers.", "The first virus spread the same year Thriller came out.", "The first computer virus"],
-    "The first website goes live": ["The first website went live as the Cold War ended.", "The first website went live two years after the web was proposed.", "The first website"],
-    "Vikings reach North America": ["Vikings reached North America in the Viking Age, centuries before Columbus.", "Vikings reached North America about two centuries after they first raided Lindisfarne.", "The Viking landing in America"],
-    "The first lighter is invented": ["The first lighter was invented in the late Georgian era.", "The first lighter came a few years before the friction match.", "The first lighter"],
-    "The first selfie is taken": ["The first selfie was taken in early Victorian times.", "The first selfie was taken two years after Victoria became queen.", "The first selfie"],
-    "Ada Lovelace publishes the first computer program": ["Ada Lovelace wrote the first program in early Victorian England.", "Lovelace published the first program 13 years after the first passenger railway opened.", "The first computer program"],
-    "Harriet Tubman dies": ["Harriet Tubman died in the last years before the Great War.", "Harriet Tubman died two years after Ronald Reagan was born.", "Tubman's death"],
-    "Orville Wright dies": ["Orville Wright died in the early post war years.", "Orville Wright died three years after the first atomic bomb was tested.", "Orville Wright's death"],
-    "Post-it Notes go on sale": ["Post-it Notes arrived in the decade of big hair.", "Post-it Notes went on sale nine years after the first email was sent.", "The Post-it Note"],
-    "Salvador Dalí dies": ["Salvador Dalí died as the Cold War was ending.", "Dalí died five years before the PlayStation launched.", "Dalí's death"],
-    "The Numa Numa video goes viral": ["Numa Numa went viral before YouTube even existed.", "Numa Numa went viral the year Facebook launched.", "Numa Numa"],
-    "Nyan Cat is uploaded": ["Nyan Cat flew across screens in the early days of YouTube memes.", "Nyan Cat appeared the same year Minecraft was fully released.", "Nyan Cat"],
-    "Grumpy Cat becomes famous": ["Grumpy Cat rose to fame in the golden age of Reddit and image macros.", "Grumpy Cat went viral the same year as Gangnam Style.", "Grumpy Cat"],
-    "Doge becomes a meme": ["Doge spread in the age of Tumblr and Reddit.", "Doge took off the year after Grumpy Cat became famous.", "Doge"],
-    "Damn Daniel goes viral": ["Damn Daniel went viral in the age of Snapchat and Vine.", "Damn Daniel went viral the same year as Harambe.", "Damn Daniel"],
-    "The mannequin challenge spreads": ["The mannequin challenge spread in the same era as dabbing.", "The mannequin challenge spread the same year Pokémon Go launched.", "The mannequin challenge"],
-    "The Among Us craze peaks": ["Among Us peaked in the lockdown era.", "Among Us peaked the same year COVID-19 was declared a pandemic.", "The Among Us craze"],
-    "Wordle goes viral": ["Wordle took over in the post lockdown era.", "Wordle went viral the same year ChatGPT came out.", "Wordle"],
-    "Barbenheimer becomes a meme": ["Barbenheimer took over in the TikTok era.", "Barbenheimer happened the same summer the Grimace Shake trend took over.", "Barbenheimer"],
-    "Italian brainrot takes over TikTok": ["Italian brainrot is pure Gen Alpha TikTok humour.", "Italian brainrot took off the year after brain rot was named Oxford's Word of the Year.", "Italian brainrot"],
-    "The Labubu craze sweeps the world": ["The Labubu craze was fuelled by unboxing videos on TikTok.", "Labubu mania hit the same year as Italian brainrot.", "Labubu mania"],
-    "Barbie goes on sale": ["Barbie arrived in the age of rock and roll.", "Barbie went on sale two years after Sputnik launched.", "Barbie"],
-    "The Etch A Sketch hits shelves": ["The Etch A Sketch arrived at the start of the Swinging Sixties.", "The Etch A Sketch hit shelves the year before Gagarin went to space.", "The Etch A Sketch"],
-    "Atari releases Pong": ["Pong arrived in the era of flares and platform shoes.", "Pong came out three years after the Moon landing.", "Pong"],
-    "The Atari 2600 goes on sale": ["The Atari 2600 arrived in the disco era.", "The Atari 2600 came out the same year as Star Wars.", "The Atari 2600"],
-    "Space Invaders hits arcades": ["Space Invaders landed in arcades in the disco era.", "Space Invaders came out the year after Star Wars.", "Space Invaders"],
-    "The Care Bears first appear": ["The Care Bears first appeared in the decade of big hair.", "The Care Bears first appeared the same year the first Space Shuttle flew.", "The Care Bears"],
-    "The Ninja Turtles first appear in comics": ["The Ninja Turtles began as an indie comic in the decade of big hair.", "The Turtles first appeared the same year the first Mac went on sale.", "The Ninja Turtles"],
-    "Polly Pocket hits shelves": ["Polly Pocket arrived as the Cold War was ending.", "Polly Pocket came out the same year the web was proposed.", "Polly Pocket"],
-    "The Spice Girls release Wannabe": ["Wannabe came out in the decade of dial up internet.", "Wannabe came out the same year Dolly the sheep was born.", "Wannabe"],
-    "The first iPod is released": ["The iPod arrived just after the dot com bubble burst.", "The iPod came out the same year as Shrek.", "The first iPod"],
-    "The Nintendo DS launches": ["The Nintendo DS arrived in the days of flip phones.", "The DS launched the same year as Facebook.", "The Nintendo DS"],
-    "Club Penguin launches": ["Club Penguin launched in the early days of YouTube.", "Club Penguin launched the same year as Google Maps.", "Club Penguin"],
-    "The Hindenburg airship bursts into flames": ["The Hindenburg went down in the golden age of airships, just before World War II.", "The Hindenburg burned two years before World War II began.", "The Hindenburg disaster"],
-    "The Empire State Building opens": ["The Empire State Building rose during the Great Depression.", "The Empire State Building opened two years after the Wall Street Crash.", "The Empire State Building"],
-    "Steamboat Willie introduces Mickey Mouse": ["Steamboat Willie premiered at the end of the Roaring Twenties.", "Steamboat Willie came out the year before the Wall Street Crash.", "Steamboat Willie"],
-    "Elvis Presley dies": ["Elvis died in the disco era.", "Elvis died the same year Star Wars came out.", "Elvis's death"],
-    "The Beatles break up": ["The Beatles split at the end of the Swinging Sixties.", "The Beatles broke up the year after the Moon landing.", "The Beatles' break up"],
-    "Princess Diana dies": ["Princess Diana died in the decade of dial up internet.", "Diana died the same year the first Harry Potter book came out.", "Diana's death"],
-    "Finding Nemo is released": ["Finding Nemo came out just after the Y2K scare.", "Finding Nemo came out the same year Myspace launched.", "Finding Nemo"],
-    "Frozen is released": ["Frozen came out in the early days of Instagram.", "Frozen came out the year after the London Olympics.", "Frozen"],
-    "Avengers: Endgame becomes the biggest film ever": ["Endgame came out in the years just before the pandemic.", "Endgame hit cinemas the year before COVID-19 was declared a pandemic.", "Endgame"],
-    "TikTok launches worldwide": ["TikTok launched worldwide in the age of Snapchat and Instagram stories.", "TikTok launched worldwide the same year Fortnite Battle Royale arrived.", "TikTok"],
-    "Snapchat launches": ["Snapchat launched in the early days of Instagram.", "Snapchat launched the year after Instagram.", "Snapchat"],
-    "Amazon is founded": ["Amazon started out selling books online in the dial up era.", "Amazon was founded the year before Toy Story came out.", "Amazon"],
-    "Microsoft is founded": ["Microsoft was founded in the disco era.", "Microsoft was founded the year before Apple.", "Microsoft"],
-    "The Berlin Wall is built": ["The Berlin Wall went up at the height of the Cold War.", "The Berlin Wall went up the same year Gagarin went to space.", "The Berlin Wall's construction"],
-    "Michael Phelps wins eight Olympic golds": ["Phelps won his eight golds in the early smartphone era.", "Phelps won eight golds the same summer Usain Bolt first won Olympic gold.", "Phelps's eight golds"],
-    "The Fellowship of the Ring hits cinemas": ["The first Lord of the Rings film came out just after the dot com bubble burst.", "The first Lord of the Rings film came out the same year as the first Harry Potter film.", "The Fellowship of the Ring"],
-    "The Soviet Union collapses": ["The Soviet Union collapsed at the very end of the Cold War.", "The Soviet Union collapsed two years after the Berlin Wall fell.", "The Soviet collapse"],
-    "WhatsApp launches": ["WhatsApp launched in the early days of the App Store.", "WhatsApp launched two years after the first iPhone.", "WhatsApp"],
-    "Leicester City win the Premier League": ["Leicester's fairytale title came in the same era as dabbing.", "Leicester won the league the same year Pokémon Go launched.", "Leicester's title"],
-    "Martin Luther posts his 95 Theses": ["Luther posted his theses at the height of the Renaissance.", "Luther posted his 95 Theses 25 years after Columbus reached the Americas.", "The 95 Theses"],
-    "Copernicus publishes his sun centred model": ["Copernicus published his idea during the Renaissance.", "Copernicus published his model 26 years after Luther's 95 Theses.", "Copernicus's model"],
-    "Michelangelo finishes the Sistine Chapel ceiling": ["Michelangelo painted the ceiling at the height of the Renaissance.", "The Sistine ceiling was finished five years before Luther's 95 Theses.", "The Sistine ceiling"],
-    "Constantinople falls to the Ottomans": ["Constantinople fell in the late Middle Ages.", "Constantinople fell two years before Gutenberg's Bible was printed.", "The fall of Constantinople"],
-    "Genghis Khan founds the Mongol Empire": ["Genghis Khan rose in the age of the Crusades.", "Genghis Khan founded his empire nine years before Magna Carta.", "The Mongol Empire"],
-    "Marco Polo reaches China": ["Marco Polo travelled in the age of Kublai Khan's Mongol Empire.", "Marco Polo reached China about 70 years after Genghis Khan founded the Mongol Empire.", "Marco Polo's arrival in China"],
-    "The Salem witch trials": ["The Salem witch trials happened in colonial America.", "The witch trials came five years after Newton's Principia.", "The Salem witch trials"],
-    "Benjamin Franklin flies his kite in a storm": ["Franklin's kite experiment happened in the age of powdered wigs.", "Franklin flew his kite four years before Mozart was born.", "Franklin's kite"],
-    "The US makes the Louisiana Purchase": ["The Louisiana Purchase happened in the Napoleonic era.", "The Louisiana Purchase came 12 years before the Battle of Waterloo.", "The Louisiana Purchase"],
-    "The Great Exhibition opens in London": ["The Great Exhibition showed off Victorian Britain's inventions.", "The Great Exhibition opened eight years before Darwin's Origin of Species.", "The Great Exhibition"],
-    "The Suez Canal opens": ["The Suez Canal opened in the age of steamships.", "The Suez Canal opened four years after Lincoln was assassinated.", "The Suez Canal"],
-    "Edison demonstrates his light bulb": ["Edison lit his bulb in the Victorian era.", "Edison's bulb came three years after the telephone.", "Edison's light bulb"],
-    "The Brooklyn Bridge opens": ["The Brooklyn Bridge opened in the Gilded Age.", "The Brooklyn Bridge opened three years before the Statue of Liberty was dedicated.", "The Brooklyn Bridge"],
-    "Van Gogh paints The Starry Night": ["Van Gogh painted The Starry Night in the late Victorian era.", "The Starry Night was painted the same year the Eiffel Tower opened.", "The Starry Night"],
-    "Queen Victoria dies": ["Victoria died as the age of motor cars and radio was beginning.", "Victoria died two years before the Wright brothers first flew.", "Victoria's death"],
-    "Captain Scott reaches the South Pole": ["Scott reached the South Pole in the last years before the Great War.", "Scott reached the Pole a few months before the Titanic sank.", "Scott's arrival at the Pole"],
-    "Tutankhamun's tomb is discovered": ["Tutankhamun's tomb was found in the Roaring Twenties.", "Tutankhamun's tomb was found four years after World War I ended.", "The discovery of Tutankhamun's tomb"],
-    "Lindbergh flies solo across the Atlantic": ["Lindbergh crossed the Atlantic in the Roaring Twenties.", "Lindbergh flew the year before Steamboat Willie premiered.", "Lindbergh's flight"],
-    "Amelia Earhart disappears": ["Earhart vanished in the golden age of aviation.", "Earhart disappeared the same year the Hindenburg burned.", "Earhart's disappearance"],
-    "Watson and Crick describe DNA's double helix": ["The double helix was described in the post war years.", "DNA's structure was described the same year Everest was first climbed.", "The double helix"],
-    "Rosa Parks refuses to give up her bus seat": ["Rosa Parks took her stand at the start of the civil rights movement.", "Rosa Parks refused to move the same year Disneyland opened.", "Rosa Parks's protest"],
-    "The Cuban Missile Crisis": ["The Cuban Missile Crisis was the tensest moment of the Cold War.", "The Cuban Missile Crisis came a year before JFK was assassinated.", "The Cuban Missile Crisis"],
-    "The first heart transplant is performed": ["The first heart transplant happened in the Swinging Sixties.", "The first heart transplant came two years before the Moon landing.", "The first heart transplant"],
-    "Concorde carries its first passengers": ["Concorde started carrying passengers in the disco era.", "Concorde started flying passengers the same year Apple was founded.", "Concorde's first passenger flight"],
-    "The first IVF baby is born": ["The first IVF baby was born in the disco era.", "The first IVF baby was born the year after Star Wars came out.", "The first IVF baby"],
-    "Mount St. Helens erupts": ["Mount St. Helens blew in the decade of big hair.", "Mount St. Helens erupted the same year Pac-Man hit arcades.", "The St. Helens eruption"],
-    "Deep Blue beats Kasparov at chess": ["Deep Blue won in the decade of dial up internet.", "Deep Blue beat Kasparov the same year the first Harry Potter book came out.", "Deep Blue's win"],
-    "The Large Hadron Collider switches on": ["The Large Hadron Collider switched on in the early smartphone era.", "The Large Hadron Collider switched on the year after the first iPhone.", "The Large Hadron Collider"],
-    "SpaceX lands a rocket booster for the first time": ["SpaceX landed its first booster in the age of Instagram.", "SpaceX first landed a booster the same year The Dress went viral.", "SpaceX's first landing"],
-    "The first image of a black hole is released": ["The first black hole image came in the years just before the pandemic.", "The first black hole image came out the same year Notre Dame caught fire.", "The black hole image"],
-    "The first recorded Olympic Games": ["The first recorded Olympics were held in ancient Greece's archaic age.", "The first recorded Olympics came about 20 years before Rome's legendary founding.", "The first recorded Olympics"],
-    "Tutankhamun becomes pharaoh": ["Tutankhamun ruled in Egypt's New Kingdom, during the Bronze Age.", "Tutankhamun ruled more than 1,200 years after the Great Pyramid was built.", "Tutankhamun's reign"],
-    "Confucius is born": ["Confucius lived in ancient China's Spring and Autumn period.", "Confucius was born about 200 years after Rome's legendary founding.", "Confucius's birth"],
-    "The Parthenon is completed": ["The Parthenon was finished in ancient Athens' golden age.", "The Parthenon was finished about a century before Alexander the Great died.", "The Parthenon"],
-    "Work begins on Hadrian's Wall": ["Hadrian's Wall was built at the height of the Roman Empire.", "Hadrian's Wall was begun about 40 years after the Colosseum opened.", "Hadrian's Wall"],
-    "The Domesday Book is completed": ["The Domesday Book was compiled in Norman England.", "The Domesday Book was finished 20 years after the Battle of Hastings.", "The Domesday Book"],
-    "Work begins on the Leaning Tower of Pisa": ["Work on the Leaning Tower began in the High Middle Ages.", "Work on Pisa's tower began about 40 years before Magna Carta.", "The Leaning Tower"],
-    "Eyeglasses are invented in Italy": ["Eyeglasses were invented in medieval Italy.", "Eyeglasses appeared around the time Marco Polo was in China.", "Eyeglasses"],
-    "The flush toilet is invented for Elizabeth I": ["The first flush toilet was designed for Elizabeth I.", "The flush toilet was designed eight years after the Spanish Armada.", "The flush toilet"],
-    "London's first coffee house opens": ["London's first coffee house opened in Cromwell's England.", "London's first coffee house opened 14 years before the Great Fire.", "London's first coffee house"],
-    "The first manned hot air balloon flight": ["The first balloon flight lifted off in the age of powdered wigs.", "The first balloon flight came six years before the French Revolution.", "The first balloon flight"],
-    "Edward Jenner tests the first vaccine": ["Jenner tested his smallpox vaccine in Georgian England.", "Jenner's vaccine came seven years after the French Revolution began.", "The first vaccine"],
-    "The Penny Black, the first stamp, is issued": ["The Penny Black was issued in early Victorian Britain.", "The first stamp came out three years after Victoria became queen.", "The Penny Black"],
-    "The first Ferris wheel turns in Chicago": ["The first Ferris wheel spun at a world's fair in the Gilded Age.", "The first Ferris wheel turned four years after the Eiffel Tower opened.", "The first Ferris wheel"],
-    "The Lumière brothers screen the first film to a paying audience": ["The first paid film screening happened in the late Victorian era.", "The first film screening came a year before the first modern Olympics.", "The first film screening"],
-    "Gideon Sundback invents the modern zip": ["The modern zip was invented in the last years before the Great War.", "The modern zip was invented the year after the Titanic sank.", "The modern zip"],
-    "Insulin is first given to a patient": ["Insulin was first used in the Roaring Twenties.", "Insulin was first given to a patient the same year Tutankhamun's tomb was found.", "Insulin"],
-    "Bubble gum is invented": ["Bubble gum was invented at the end of the Roaring Twenties.", "Bubble gum was invented the same year as Steamboat Willie.", "Bubble gum"],
-    "The first jet airliner takes to the sky": ["The first jet airliner flew in the early post war years.", "The first jet airliner flew four years after World War II ended.", "The first jet airliner"],
-    "Stonehenge's great stones are raised": ["Stonehenge's big stones went up in Neolithic Britain.", "Stonehenge's great stones went up around the same time as the Great Pyramid.", "Stonehenge"],
-    "The piano is invented": ["The piano was invented in Baroque Italy.", "The piano was invented a little over a decade after Newton's Principia.", "The piano"],
-    "The first cash machine opens": ["The first cash machine opened in Swinging Sixties London.", "The first cash machine opened two years before the Moon landing.", "The first cash machine"],
-    "The first credit card is issued": ["The first credit card arrived in the post war boom.", "The Diners Club card came five years after World War II ended.", "The first credit card"],
-    "The first Wimbledon is played": ["The first Wimbledon was played in the Victorian era.", "The first Wimbledon was played the year after the telephone was invented.", "The first Wimbledon"],
-    "The first home video game console goes on sale": ["The first home console arrived in the era of flares.", "The first home console came out three years after the Moon landing.", "The first home console"],
-    "The Dancing Baby spreads by email": ["The Dancing Baby spread in the days of dial up and email chains.", "The Dancing Baby went around the same year the Spice Girls released Wannabe.", "The Dancing Baby"],
-    "All Your Base Are Belong To Us becomes a meme": ["All Your Base spread on early web forums.", "All Your Base took off the same year as the first iPod.", "All Your Base"],
-    "Leeroy Jenkins charges in": ["Leeroy Jenkins went viral in YouTube's first year.", "Leeroy Jenkins went viral the same year YouTube launched.", "Leeroy Jenkins"],
-    "Keyboard Cat starts playing people off": ["Keyboard Cat played people off in the early days of YouTube memes.", "Keyboard Cat took off the same year Angry Birds came out.", "Keyboard Cat"],
-    "The Double Rainbow video goes viral": ["Double Rainbow went viral in the early days of Instagram.", "Double Rainbow went viral the same year Instagram launched.", "Double Rainbow"],
-    "Planking becomes a craze": ["Planking spread in the age of Facebook photo albums.", "Planking took off the same year Snapchat launched.", "Planking"],
-    "Fidget spinners take over schools": ["Fidget spinners took over in the age of YouTube kids' channels.", "Fidget spinners peaked the same year TikTok launched worldwide.", "Fidget spinners"],
-    "Baby Shark becomes YouTube's most watched video": ["Baby Shark took the top spot during the lockdown era.", "Baby Shark took the top spot the same year COVID-19 was declared a pandemic.", "Baby Shark"],
-    "The skateboarding Dreams video goes viral": ["The Dreams skateboard video went viral in the lockdown era.", "The Dreams video went viral the same year Baby Shark became YouTube's most watched video.", "The Dreams video"],
-    "Squid Game becomes Netflix's biggest show": ["Squid Game took over in the pandemic era.", "Squid Game took over the same year the James Webb telescope launched.", "Squid Game"],
-    "The Chill Guy meme spreads": ["Chill Guy spread in the TikTok era.", "Chill Guy spread the same year as Moo Deng the baby hippo.", "Chill Guy"],
-    "The Slinky is invented": ["The Slinky was invented in the middle of World War II.", "The Slinky was invented two years before World War II ended.", "The Slinky"],
-    "The hula hoop craze begins": ["The hula hoop craze hit in the age of rock and roll.", "The hula hoop craze hit the year after Sputnik launched.", "The hula hoop craze"],
-    "Lego minifigures arrive": ["Lego minifigures arrived in the disco era.", "Lego minifigures arrived the year after Star Wars came out.", "Lego minifigures"],
-    "My Little Pony debuts": ["My Little Pony arrived in the decade of big hair.", "My Little Pony debuted the same year Thriller came out.", "My Little Pony"],
-    "Transformers toys arrive": ["Transformers arrived in the decade of big hair and Saturday morning cartoons.", "Transformers arrived the same year Tetris was created.", "Transformers"],
-    "The Nintendo 64 launches": ["The Nintendo 64 arrived in the decade of dial up internet.", "The N64 launched the same year the Spice Girls released Wannabe.", "The Nintendo 64"],
-    "The Teletubbies first air": ["The Teletubbies first aired in the decade of dial up internet.", "The Teletubbies first aired the same year Princess Diana died.", "The Teletubbies"],
-    "Neopets launches": ["Neopets launched as the world braced for Y2K.", "Neopets launched the year after Google was founded.", "Neopets"],
-    "The first Xbox launches": ["The first Xbox arrived just after the dot com bubble burst.", "The Xbox launched the same year as the first Lord of the Rings film.", "The first Xbox"],
-    "The Motorola Razr flip phone launches": ["The Razr was the flip phone everyone wanted in the days before smartphones.", "The Razr launched the same year as Facebook.", "The Razr"],
-    "Webkinz launch": ["Webkinz plush toys came with an online world in YouTube's early days.", "Webkinz launched the same year Leeroy Jenkins went viral.", "Webkinz"],
-    "Guitar Hero is released": ["Guitar Hero arrived in YouTube's first year.", "Guitar Hero came out the same year Leeroy Jenkins went viral.", "Guitar Hero"],
-    "The Silly Bandz craze peaks": ["Silly Bandz filled kids' wrists in the early days of Instagram.", "Silly Bandz peaked the same year the Double Rainbow video went viral.", "Silly Bandz"]
-  };
-  POOL.forEach(x=>{ x.h = CLUES[x.t] || ["","",""]; });
-  function poolFor(mode){
-    const P = POOL.filter(x=> mode==="mix" || x.set===mode);
-    return {P, TW:P.filter(x=>x.twist), NE:P.filter(x=>x.net), NO:P.filter(x=>x.nos), RG:P.filter(x=>!x.twist && !x.net && !x.nos)};
-  }
-  function generate(sd){
-    const r = rng(sd*7919 + 101);
-    const pick = a => a[Math.floor(r()*a.length)];
-    const {P, TW, NE, NO, RG} = poolFor(setMode);
-    for(let attempt=0; attempt<500; attempt++){
-      const tw = pick(TW), pr = P.find(x=>x.t===tw.pair);
-      const chosen = pr ? [tw, pr, pick(NE), pick(NO)] : [tw, pick(NE), pick(NO)];
-      const need = {E:3,M:2,N:3}, years = new Set(), topics = {};
-      let bad = false;
-      chosen.forEach(x=>{ need[x.diff]--; if(years.has(x.y)) bad = true; years.add(x.y); topics[x.topic] = (topics[x.topic]||0)+1; });
-      if(bad || Object.values(need).some(v=>v<0) || Object.values(topics).some(v=>v>2)) continue;
-      const rest = RG.slice();
-      for(let i=rest.length-1;i>0;i--){ const j = Math.floor(r()*(i+1)); [rest[i],rest[j]] = [rest[j],rest[i]]; }
-      for(const x of rest){
-        if(chosen.length===8) break;
-        if(need[x.diff]<=0 || years.has(x.y) || (topics[x.topic]||0)>=2) continue;
-        chosen.push(x); need[x.diff]--; years.add(x.y); topics[x.topic] = (topics[x.topic]||0)+1;
-      }
-      if(chosen.length!==8) continue;
-      const sorted = chosen.slice().sort((a,b)=>b.y-a.y);
-      let close = 0; for(let i=1;i<sorted.length;i++) if(sorted[i-1].y - sorted[i].y <= 10) close++;
-      if(close < 2) continue;
-      return {items: sorted};
-    }
-    return {items: RG.slice(0,8).sort((a,b)=>b.y-a.y)};
-  }
-
   const EPOCH = Date.UTC(2026,10,6);
   function dayIndex(d){ return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()) - EPOCH)/86400000); }
   const TODAY = Math.max(0, dayIndex(new Date()));
@@ -1264,8 +554,9 @@ body.dug .fade .skeleton{display:none}
     set(k,v){ mem[k]=v; try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} },
     del(k){ delete mem[k]; try{ localStorage.removeItem(k); }catch(e){} }
   };
-  let setMode = store.get("fossle:set") || "B";
-  const key = i => "fossle:v9:game:"+setMode+":"+i;
+  const setMode = "daily";
+  const key = i => "fossle:v10:game:"+i;
+  const DEV = /[?&]dev\b/.test(location.search);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = id => document.getElementById(id);
 
@@ -1443,8 +734,31 @@ body.dug .fade .skeleton{display:none}
   const isLocked = rank => game.locked.includes(rank);
   function save(){ store.set(key(game.idx), game); }
 
+  const dayCache = {};
+  let loadToken = 0;
+  function fetchDay(day){
+    if(!dayCache[day]) dayCache[day] = fetch("days/" + String(day).padStart(4,"0") + ".json", {cache:"no-cache"})
+      .then(r=>{ if(!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(d=>({items: d.cards.slice().sort((a,b)=>b.y-a.y)}))
+      .catch(err=>{ delete dayCache[day]; throw err; });
+    return dayCache[day];
+  }
+  function noDig(on){
+    document.body.classList.toggle("nodig", on);
+    $("nodig").hidden = !on;
+    if(on){
+      $("pno").textContent = "Dig " + String(viewDay+1).padStart(3,"0");
+      $("pdate").textContent = "";
+      if(DEV) $("protoLabel").textContent = "Dev · no dig file for day " + viewDay;
+    }
+  }
   function load(day, sd, snap){
-    viewDay = day; seed = sd; set = generate(sd);
+    viewDay = day; seed = sd;
+    const token = ++loadToken;
+    fetchDay(day).then(s=>{ if(token!==loadToken) return; set = s; noDig(false); show(sd, snap); },
+                       ()=>{ if(token===loadToken) noDig(true); });
+  }
+  function show(sd, snap){
     game = (snap && snap.idx===sd) ? snap : (store.get(key(sd)) || freshGame(sd));
     if(!game.hints) game.hints = [];
     selected = null; busy = false; peek = null; cmp = null;
@@ -1708,8 +1022,7 @@ body.dug .fade .skeleton{display:none}
     $("pno").textContent = viewDay===null ? "Random dig" : "Dig " + String(viewDay+1).padStart(3,"0");
     const d = new Date(EPOCH + (viewDay||0)*86400000);
     $("pdate").textContent = practice ? "practice" : d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
-    $("protoLabel").textContent = "Prototype · " + (viewDay===null ? "random dig (stats off)" : practice ? "practice dig "+(viewDay+1)+" (stats off)" : "today's dig") + " · " + (setMode==="mix" ? "all sets" : "set " + setMode);
-    document.querySelectorAll(".proto .sets button").forEach(b=>b.classList.toggle("on", b.dataset.set===setMode));
+    $("protoLabel").textContent = "Dev · " + (practice ? "dig " + (viewDay+1) + ", stats off" : "today's dig");
     $("prev").disabled = viewDay===0;
     renderBoard(animate, fromRects);
     const done = game.status !== "playing";
@@ -2196,13 +1509,10 @@ body.dug .fade .skeleton{display:none}
   document.addEventListener("pointerdown", e=>{ const pnl = $("hintPanel"); if(pnl.hidden || pnl.contains(e.target) || $("hint").contains(e.target)) return; closeHints(); });
   $("shuffle").addEventListener("click", shuffle);
   const dayLoad = d => load(d, 1000 + d);
-  const randomLoad = ()=>load(null, 1000000 + Math.floor(Math.random()*900000000));
-  $("prev").addEventListener("click", ()=>{ if(viewDay===null) dayLoad(TODAY); else if(viewDay>0) dayLoad(viewDay-1); });
-  $("next").addEventListener("click", ()=>dayLoad(viewDay===null ? TODAY : viewDay+1));
-  $("random").addEventListener("click", randomLoad);
-  document.querySelectorAll(".proto .sets button").forEach(b=>b.addEventListener("click", ()=>{ setMode = b.dataset.set; store.set("fossle:set", setMode); load(viewDay, seed); toast(setMode==="mix" ? "Mixing all sets" : "Using set " + setMode); }));
-  $("again").addEventListener("click", ()=>{ randomLoad(); window.scrollTo({top:0, behavior: reduced ? "auto" : "smooth"}); });
-  $("reset").addEventListener("click", ()=>{ store.del(key(seed)); load(viewDay, seed); toast("Dig reset"); });
+  if(DEV) document.querySelector(".proto").hidden = false;
+  $("prev").addEventListener("click", ()=>{ if(viewDay>0) dayLoad(viewDay-1); });
+  $("next").addEventListener("click", ()=>dayLoad(viewDay+1));
+  $("reset").addEventListener("click", ()=>{ store.del(key(seed)); if(viewDay===TODAY){ const c = core(); delete c[TODAY]; store.set(CORE_KEY, c); } load(viewDay, seed); toast("Dig reset"); });
 
   function tick(){
     const now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
@@ -2243,7 +1553,7 @@ body.dug .fade .skeleton{display:none}
   window.addEventListener("resize", ()=>{ clearTimeout(pitTimer); pitTimer = setTimeout(layoutPit, 150); });
   setTimeout(layoutPit, 60); setTimeout(layoutPit, 900);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(layoutPit);
-  function start(data){ data = data || {}; if(typeof data.seed==="number") load(data.viewDay===undefined ? null : data.viewDay, data.seed, data.game || null); else dayLoad(TODAY); }
+  function start(data){ data = data || {}; if(typeof data.viewDay==="number" && typeof data.seed==="number") load(data.viewDay, data.seed, data.game || null); else dayLoad(TODAY); }
   const hot = window.claude && window.claude.hot;
   if(hot && hot.snapshot) hot.snapshot(()=>({viewDay, seed, game: busy ? null : game}));
   if(hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
