@@ -381,8 +381,21 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
 .acc .otag{font-style:normal;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#E8857B;border:1.5px solid #E8857B;border-radius:5px;padding:0 4px;margin-right:6px;vertical-align:1px}
 .acc .you{color:var(--moss);font-weight:700;margin-right:5px}
 .cr-note{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.04em}
-.savecard{align-self:flex-start;background:none;border:none;padding:2px 0;font-family:var(--f-mono);font-size:.75rem;color:var(--gold);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.savecard:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+/* finished dig: results sit right under the bottom card */
+body.dug .dig-pit,body.dug .actions{display:none}
+body.dug .fade{min-height:72px;padding-bottom:6px}
+body.dug .fade .skeleton{display:none}
+.row{font:inherit;color:inherit;background:none;border:1.5px solid transparent;border-radius:10px;padding:5px 8px;margin:0 -8px;cursor:pointer;text-align:left;transition:background-color .15s,border-color .15s}
+.row:hover{background:var(--soil-2)}
+.row.on{border-color:var(--gold);background:rgba(242,184,75,.1)}
+.row:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.cmp-cta{margin-left:auto;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.was{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:38px;padding:3px 6px 2px;border-radius:8px;font-family:var(--f-display);font-size:.95rem;line-height:1;color:var(--bone);white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.was small{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:2px}
+.was.ok{background:var(--moss-deep)}
+.was.near{background:var(--gold-deep)}
+.was.far{background:var(--pole-red)}
+.card.cmp-off::after{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--pole-red)}
 </style>
 
 <div class="sky">
@@ -453,7 +466,7 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
   </div>
 
   <section class="history" id="history" hidden>
-    <p class="label">Your digs</p>
+    <p class="label">Your digs · tap to compare</p>
     <div class="rows" id="rows"></div>
   </section>
 
@@ -490,7 +503,6 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     </div>
     <div class="btnrow"><button class="btn btn-ghost btn-gold-outline" id="share" type="button">Copy result</button><button class="btn btn-primary" id="again" type="button">Random dig</button></div>
     <textarea class="fallback" id="fallback" hidden readonly aria-label="Result to copy"></textarea>
-    <button type="button" class="savecard" id="saveCard">Save result card as an image</button>
     <div class="next">Next dig in <b id="countdown">--:--:--</b></div>
   </section>
 
@@ -1427,7 +1439,7 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
   function freshGame(idx){ return {idx, order:startOrder(idx), locked:[], history:[], hints:[], status:"playing", counted:false}; }
   const fmtYear = it => (it.c ? "c. " : "") + (it.y < 0 ? (-it.y)+" BC" : String(it.y));
 
-  let viewDay = TODAY, seed = 1000 + TODAY, set, game, cards = [], selected = null, drag = null, busy = false, peek = null;
+  let viewDay = TODAY, seed = 1000 + TODAY, set, game, cards = [], selected = null, drag = null, busy = false, peek = null, cmp = null;
   const posOf = rank => game.order.indexOf(rank);
   const isLocked = rank => game.locked.includes(rank);
   function save(){ store.set(key(game.idx), game); }
@@ -1436,7 +1448,7 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     viewDay = day; seed = sd; set = generate(sd);
     game = (snap && snap.idx===sd) ? snap : (store.get(key(sd)) || freshGame(sd));
     if(!game.hints) game.hints = [];
-    selected = null; busy = false; peek = null;
+    selected = null; busy = false; peek = null; cmp = null;
     buildBoard(); renderAll(false);
     if(!reduced) cards.forEach(c=>{
       const p = posOf(Number(c.dataset.rank));
@@ -1553,7 +1565,17 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
       let yr = side.querySelector(".year");
       if(done){ if(!yr){ yr = document.createElement("span"); yr.className = "year"; yr.textContent = fmtYear(it); side.prepend(yr); } }
       else if(yr){ yr.remove(); }
-      c.setAttribute("aria-label", "Layer "+(pos+1)+": "+it.t + (done ? ", "+fmtYear(it) : ok ? ", in the right layer" : ""));
+      let was = side.querySelector(".was");
+      const cd = (done && cmp!==null) ? game.history[cmp] : null;
+      if(cd){
+        const p = cd.order.indexOf(rank), off = Math.abs(p - rank);
+        if(!was){ was = document.createElement("span"); side.prepend(was); }
+        was.className = "was " + (off===0 ? "ok" : off===1 ? "near" : "far");
+        was.innerHTML = "<small>you</small>" + (off===0 ? "✓" : ordinal(p+1));
+        was.title = off===0 ? "Right layer in dig " + (cmp+1) : "In dig " + (cmp+1) + " you had this in layer " + (p+1) + (p > rank ? ", too deep" : ", too high");
+      } else if(was) was.remove();
+      c.classList.toggle("cmp-off", !!cd && cd.order.indexOf(rank)!==rank);
+      c.setAttribute("aria-label", "Layer "+(pos+1)+": "+it.t + (done ? ", "+fmtYear(it) : ok ? ", in the right layer" : "") + (cd ? ", in dig "+(cmp+1)+" you had it in layer "+(cd.order.indexOf(rank)+1) : ""));
       c.setAttribute("aria-pressed", selected===rank ? "true" : "false");
     });
     if(animate && !reduced){
@@ -1574,7 +1596,13 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
   }
   function renderDock(live){
     const done = game.status!=="playing", h = game.history;
-    $("dock").hidden = done; $("log").hidden = done; $("status").hidden = done;
+    $("dock").hidden = done; $("log").hidden = done && !h.length; $("status").hidden = done && !h.length;
+    if(done){
+      $("log").innerHTML = h.map((d,i)=>'<button type="button" class="dchip done'+(cmp===i?' on':'')+'" data-i="'+i+'" aria-pressed="'+(cmp===i)+'" aria-label="Dig '+(i+1)+': '+d.count+' of '+N+' right. Compare with the answer"><span class="cn">'+d.count+'<small>/'+N+'</small></span><span class="cl">Dig '+(i+1)+'</span>'+bulbs(i)+'</button>').join("");
+      $("status").innerHTML = cmp===null ? 'Tap a dig to compare it' : 'Dig '+(cmp+1)+': <b>'+h[cmp].count+'</b> of '+N+' right';
+      renderHints();
+      return;
+    }
     const logHtml = Array.from({length:MAX},(_,i)=>{
       if(i<h.length) return '<button type="button" class="dchip done'+(peek===i?' on':'')+'" data-i="'+i+'" aria-label="Dig '+(i+1)+': '+h[i].count+' of '+N+' right. Show this order"><span class="cn">'+h[i].count+'<small>/'+N+'</small></span><span class="cl">Dig '+(i+1)+'</span>'+bulbs(i)+'</button>';
       if(i===h.length && live!==undefined) return '<span class="dchip live"><span class="cn">'+live+'<small>/'+N+'</small></span><span class="cl">Dig '+(i+1)+'</span>'+bulbs(i)+'</span>';
@@ -1660,7 +1688,14 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     closeHints(); peek = (peek===i) ? null : i; selected = null;
     renderBoard(true); renderDock(); Sound.tick(); buzz(6);
   }
-  $("log").addEventListener("click", e=>{ const b = e.target.closest(".dchip.done"); if(b) setPeek(Number(b.dataset.i)); });
+  function setCompare(i){
+    if(busy || game.status==="playing") return;
+    cmp = (cmp===i) ? null : i;
+    renderBoard(false); renderDock(); renderRows(); Sound.tick(); buzz(6);
+    if(cmp!==null && !reduced) cards.forEach((c,r)=>{ const w = c.querySelector(".was"); if(w) w.animate([{transform:"scale(.4)",opacity:0},{transform:"scale(1.12)",opacity:1,offset:.6},{transform:"none"}],{duration:320,delay:r*35,easing:"ease-out",fill:"backwards"}); });
+  }
+  $("log").addEventListener("click", e=>{ const b = e.target.closest(".dchip.done"); if(!b) return; const i = Number(b.dataset.i); if(game.status==="playing") setPeek(i); else setCompare(i); });
+  $("rows").addEventListener("click", e=>{ const b = e.target.closest(".row[data-i]"); if(b) setCompare(Number(b.dataset.i)); });
   $("peekBack").addEventListener("click", ()=>{ peek = null; renderBoard(true); renderDock(); Sound.tick(); });
   $("peekUse").addEventListener("click", ()=>{ if(peek===null) return; game.order = game.history[peek].order.slice(); peek = null; save(); renderBoard(true); renderDock(); Sound.drop(); buzz(10); });
   function setButtons(){ $("check").disabled = busy; $("shuffle").disabled = busy; if(game){ $("hint").disabled = busy || peek!==null; } }
@@ -1677,12 +1712,16 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     const done = game.status !== "playing";
     setButtons();
     $("history").hidden = !done || game.history.length===0;
-    $("rows").innerHTML = game.history.map((h,i)=>'<div class="row"><b>'+(i+1)+'</b>'+Array.from({length:N},(_,j)=>'<span class="sq '+(j<h.count?"ok":"far")+'"></span>').join("")+'<span class="io">'+h.count+' of '+N+'</span></div>').join("");
+    document.body.classList.toggle("dug", done);
+    renderRows();
     renderDock();
     $("result").hidden = !done;
     if(done) renderResult();
   }
 
+  function renderRows(){
+    $("rows").innerHTML = game.history.map((h,i)=>'<button type="button" class="row'+(cmp===i?' on':'')+'" data-i="'+i+'" aria-pressed="'+(cmp===i)+'" aria-label="Compare dig '+(i+1)+' with the answer"><b>'+(i+1)+'</b>'+Array.from({length:N},(_,j)=>'<span class="sq '+(j<h.count?"ok":"far")+'"></span>').join("")+'<span class="io">'+h.count+' of '+N+'</span><span class="cmp-cta">'+(cmp===i?'Hide':'Compare')+'</span></button>').join("");
+  }
   function stats(){ return store.get("fossle:stats") || {played:0,wins:0,streak:0,best:0,lastPlayed:-1,lastWin:-2}; }
   function statValues(){
     const s = stats();
@@ -2141,12 +2180,6 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
       return;
     }
     copy();
-  });
-  $("saveCard").addEventListener("click", ()=>{
-    if(!cardFile){ cardSig = ""; prepareCard(); toast("Making your card, tap again in a moment"); return; }
-    const a = document.createElement("a"); a.href = URL.createObjectURL(cardFile); a.download = cardFile.name;
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
-    toast("Card saved");
   });
   flushPending();
 
