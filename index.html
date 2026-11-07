@@ -331,6 +331,58 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
 
 @media (max-width:380px){.mark{font-size:2.2rem}.brand svg{width:32px;height:32px}.stat strong{font-size:1.7rem}.card .title{font-size:.9rem}.meta{display:none}}
 @media (prefers-reduced-motion: reduce){.worm-run .worm{display:none}.tree .crown{animation:none!important}.worm .wig{animation:none}.fossil,.fossil *,.skull-wrap .jaw{animation:none!important}.cloud,.bird,.bird span,.bird .wing{animation:none}.bird.k5{left:52%}.k4{left:12%}.k1{left:30%}.k2{left:36%}.k3{left:70%}.c1{left:4%}.c2{left:38%}.c3{left:62%}.c4{left:22%}.c5{left:78%}.card,.btn,.toast,.digs i{transition:none}.card.pop,.card.shake,.card.jitter,.year.in{animation:none}}
+
+/* core sample */
+.core{display:flex;gap:16px;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soil-2)}
+.core-col{flex:0 0 46px;display:flex;flex-direction:column;align-items:center;gap:5px}
+.core-col svg{width:46px;display:block;overflow:visible}
+.core-col .cap{font-family:var(--f-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lyr{stroke:var(--soil);stroke-width:1.5;stroke-linejoin:round}
+.k-gold{fill:var(--gold)}.k-moss{fill:var(--moss)}.k-sand{fill:var(--l2)}.k-stone{fill:#6E6660}
+.bed{fill:var(--l8)}
+.unc{fill:none;stroke:var(--muted);stroke-width:1.6;stroke-dasharray:3 3}
+.open{fill:none;stroke:var(--gold);stroke-width:1.5;stroke-dasharray:4 3}
+.lyr.fresh{transform-box:fill-box;animation:layerDrop .75s cubic-bezier(.3,1.35,.5,1) .5s backwards}
+@keyframes layerDrop{from{transform:translateY(-34px);opacity:0}}
+.core-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.core-big{margin:0;display:flex;align-items:baseline;gap:7px}
+.result .core-big{color:var(--text)}
+.core-big strong{font-family:var(--f-display);font-weight:400;font-size:2.6rem;line-height:1;color:var(--gold);text-shadow:0 3px 0 var(--gold-deep);font-variant-numeric:tabular-nums}
+.core-big span{font-family:var(--f-display);font-size:1.25rem;letter-spacing:.02em}
+.result .core-sub{font-size:.88rem}
+.core-key{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:auto;padding-top:8px;font-family:var(--f-mono);font-size:.62rem;color:var(--muted);letter-spacing:.04em}
+.core-key span{white-space:nowrap}
+.core-key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* everyone else's digs */
+.crowd{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soil-2);display:flex;flex-direction:column;gap:14px}
+.crowd .cr-body{display:flex;flex-direction:column;gap:14px;transition:opacity .3s}
+.crowd.loading .cr-body{opacity:.25}
+.cr-head{display:flex;justify-content:space-between;align-items:baseline;gap:4px 10px;flex-wrap:wrap}
+.cr-n{font-family:var(--f-display);font-size:1.3rem;letter-spacing:.02em;color:var(--text)}
+.cr-me{font-family:var(--f-mono);font-size:.75rem;font-weight:700;color:var(--gold)}
+.dist{display:flex;flex-direction:column;gap:4px}
+.dist>div{display:grid;grid-template-columns:14px 1fr;gap:8px;align-items:center;font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+.dist .bar{height:20px;border-radius:5px;background:var(--l6);box-shadow:0 2px 0 #3a281c;display:flex;align-items:center;justify-content:flex-end;padding:0 7px;color:var(--bone);font-size:.68rem;min-width:max-content;transition:width .7s cubic-bezier(.3,.9,.4,1)}
+.dist .me .bar{background:var(--gold);box-shadow:0 2px 0 var(--gold-deep);color:#2A1A08;font-weight:700}
+.dist .me>span:first-child{color:var(--gold);font-weight:700}
+.myth{border:2px dashed var(--moss);border-radius:10px;padding:10px 12px;background:rgba(143,191,85,.08);display:flex;flex-direction:column;gap:3px}
+.myth .label{color:var(--moss);font-weight:700}
+.result .myth p{color:var(--text);font-size:.95rem}
+.myth b{color:var(--moss)}
+.acc-wrap{display:flex;flex-direction:column;gap:8px}
+.acc{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.acc li{display:grid;grid-template-columns:minmax(0,1fr) 64px 36px;gap:8px;align-items:center;font-size:.85rem}
+.acc .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.acc .b{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.acc .b i{display:block;height:100%;border-radius:4px;background:var(--moss);transition:width .8s cubic-bezier(.3,.9,.4,1)}
+.acc .p{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.acc li.out .b i{background:var(--pole-red)}
+.acc li.out .p{color:#E8857B}
+.acc .otag{font-style:normal;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:#E8857B;border:1.5px solid #E8857B;border-radius:5px;padding:0 4px;margin-right:6px;vertical-align:1px}
+.acc .you{color:var(--moss);font-weight:700;margin-right:5px}
+.cr-note{font-family:var(--f-mono);font-size:.62rem;letter-spacing:.04em}
+.savecard{align-self:flex-start;background:none;border:none;padding:2px 0;font-family:var(--f-mono);font-size:.75rem;color:var(--gold);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.savecard:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 </style>
 
 <div class="sky">
@@ -410,8 +462,26 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
       <h2 id="rtitle"></h2>
       <p id="rsub"></p>
     </div>
+    <section class="crowd" id="crowd" hidden aria-live="polite">
+      <div class="cr-head"><span class="cr-n" id="crN"></span><span class="cr-me" id="crMe"></span></div>
+      <div class="cr-body">
+        <div class="dist" id="crDist" aria-label="How many digs everyone needed"></div>
+        <div class="myth" id="crMyth" hidden><span class="label">Most misplaced</span><p id="crMythText"></p></div>
+        <div class="acc-wrap" id="crAccWrap" hidden><p class="label">Right layer on the first dig</p><ol class="acc" id="crAcc"></ol></div>
+      </div>
+      <p class="cr-note" id="crNote" hidden></p>
+    </section>
     <div class="twist" id="rtwist" hidden><span class="label">Today's curveball</span><p id="rtwistText"></p></div>
     <details class="notes" id="notes" hidden><summary>Field notes</summary><ul id="notesList"></ul></details>
+    <div class="core" id="core">
+      <div class="core-col"><span class="cap">Today</span><div id="coreCol"></div></div>
+      <div class="core-info">
+        <span class="label">Your core sample</span>
+        <p class="core-big"><strong id="coreCur">0</strong><span>day streak</span></p>
+        <p class="core-sub" id="coreSub"></p>
+        <div class="core-key" aria-hidden="true"><span><i style="background:var(--gold)"></i>1 to 2 digs</span><span><i style="background:var(--moss)"></i>3 to 4</span><span><i style="background:var(--l2)"></i>5</span><span><i style="background:#6E6660"></i>Rock bottom</span></div>
+      </div>
+    </div>
     <div class="stats">
       <div class="stat"><strong id="sPlayed">0</strong><span>Played</span></div>
       <div class="stat"><strong id="sWin">0</strong><span>Win %</span></div>
@@ -420,6 +490,7 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     </div>
     <div class="btnrow"><button class="btn btn-ghost btn-gold-outline" id="share" type="button">Copy result</button><button class="btn btn-primary" id="again" type="button">Random dig</button></div>
     <textarea class="fallback" id="fallback" hidden readonly aria-label="Result to copy"></textarea>
+    <button type="button" class="savecard" id="saveCard">Save result card as an image</button>
     <div class="next">Next dig in <b id="countdown">--:--:--</b></div>
   </section>
 
@@ -1615,7 +1686,8 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
   function stats(){ return store.get("fossle:stats") || {played:0,wins:0,streak:0,best:0,lastPlayed:-1,lastWin:-2}; }
   function statValues(){
     const s = stats();
-    return {sPlayed:s.played, sWin:s.played ? Math.round(s.wins/s.played*100) : 0, sStreak:(s.lastWin===TODAY || s.lastWin===TODAY-1) ? s.streak : 0, sBest:s.best};
+    const cr = coreRuns(core());
+    return {sPlayed:s.played, sWin:s.played ? Math.round(s.wins/s.played*100) : 0, sStreak:cr.cur, sBest:cr.best};
   }
   function renderResult(){
     const won = game.status==="won", n = game.history.length;
@@ -1632,6 +1704,7 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     $("notes").hidden = !notes.length;
     $("notesList").innerHTML = notes.map(()=>'<li><span class="nt"></span><span class="ny"></span><p></p></li>').join("");
     Array.from($("notesList").children).forEach((li,i)=>{ li.querySelector(".nt").textContent = notes[i].t; li.querySelector(".ny").textContent = fmtYear(notes[i]); li.querySelector("p").textContent = notes[i].fact; });
+    renderCore(); loadCrowd(); prepareCard();
   }
   function animateStats(){
     if(reduced) return;
@@ -1656,6 +1729,9 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     if(game.status==="won"){ s.wins++; s.streak = (s.lastWin===TODAY-1) ? s.streak+1 : 1; s.best = Math.max(s.best,s.streak); s.lastWin = TODAY; }
     else s.streak = 0;
     s.lastPlayed = TODAY; store.set("fossle:stats", s); game.counted = true;
+    if(recordCore()) justLaid = true;
+    delete crowdCache[crowdKey()];
+    pendingSubmit = submitResult();
   }
 
   function landPuff(rank){
@@ -1781,20 +1857,298 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
     });
   }
 
+  /* ---------- core sample: one rock layer for every day you play ---------- */
+  const CORE_KEY = "fossle:core";
+  function core(){ return store.get(CORE_KEY) || {}; }
+  (function migrateCore(){
+    if(store.get(CORE_KEY)) return;
+    const c = {};
+    try{
+      for(let i=0;i<localStorage.length;i++){
+        const m = /^fossle:v9:game:[^:]+:(\d+)$/.exec(localStorage.key(i) || ""); if(!m) continue;
+        const day = Number(m[1]) - 1000; if(day<0 || day>TODAY || c[day]) continue;
+        const g = JSON.parse(localStorage.getItem(localStorage.key(i)));
+        if(!g || !g.counted || g.status==="playing") continue;
+        c[day] = {d:g.history.length, w:g.status==="won", h:(g.hints||[]).length};
+      }
+    }catch(e){}
+    store.set(CORE_KEY, c);
+  })();
+  function coreRuns(c){
+    const days = Object.keys(c).map(Number).sort((a,b)=>a-b);
+    let cur = 0, d = c[TODAY] ? TODAY : TODAY-1;
+    while(c[d]){ cur++; d--; }
+    let best = 0, run = 0, prev = null;
+    days.forEach(x=>{ run = (prev!==null && x===prev+1) ? run+1 : 1; best = Math.max(best, run); prev = x; });
+    return {cur, best, total:days.length, first:days.length ? days[0] : null};
+  }
+  let justLaid = false;
+  function recordCore(){
+    if(viewDay!==TODAY || game.status==="playing") return false;
+    const c = core(); if(c[TODAY]) return false;
+    c[TODAY] = {d:game.history.length, w:game.status==="won", h:game.hints.length};
+    store.set(CORE_KEY, c); return true;
+  }
+  const LAYER_FILL = {gold:"#F2B84B", moss:"#8FBF55", sand:"#C9AC7C", stone:"#6E6660"};
+  const layerKind = r => !r.w ? "stone" : r.d<=2 ? "gold" : r.d<=4 ? "moss" : "sand";
+  // newest first. A run of missed days collapses into one unconformity (a gap in the rock record).
+  function coreSlice(c, max){
+    const out = [], first = coreRuns(c).first; let gap = 0;
+    if(first===null) return c[TODAY] ? out : [{open:true}];
+    for(let d=TODAY; d>=first && out.length<max; d--){
+      if(c[d]){ if(gap){ out.push({gap}); gap = 0; if(out.length>=max) break; } out.push({day:d, r:c[d]}); }
+      else if(d===TODAY) out.push({open:true});
+      else gap++;
+    }
+    while(out.length && out[out.length-1].gap) out.pop();
+    return out;
+  }
+  function wavyTop(seedN, y, w, amp){
+    const r = rng(seedN), pts = [];
+    for(let i=0;i<=6;i++) pts.push([w*i/6, y + (i===0||i===6 ? 0 : (r()-.5)*amp)]);
+    return pts;
+  }
+  function coreSVG(c, fresh){
+    const items = coreSlice(c, 10), W = 46, LH = 16, GH = 11, parts = [];
+    let y = 2;
+    items.forEach(it=>{
+      if(it.gap){
+        const r = rng(9001 + it.gap*7 + y), pts = [];
+        for(let x=0;x<=W;x+=W/8) pts.push(x.toFixed(1)+","+(y + GH/2 + (r()-.5)*6).toFixed(1));
+        parts.push('<polyline class="unc" points="'+pts.join(" ")+'"><title>'+it.gap+' day'+(it.gap>1?'s':'')+' missed</title></polyline>');
+        y += GH; return;
+      }
+      if(it.open){ parts.push('<rect class="open" x="1" y="'+(y+1)+'" width="'+(W-2)+'" height="'+(LH-3)+'" rx="3"><title>Today, still open</title></rect>'); y += LH; return; }
+      const top = wavyTop(it.day*31 + 7, y, W, 3);
+      const d = "M" + top.map(p=>p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" L") + " L"+W+" "+(y+LH+1)+" L0 "+(y+LH+1)+"Z";
+      const date = new Date(EPOCH + it.day*86400000).toLocaleDateString("en-AU",{day:"numeric",month:"short",timeZone:"UTC"});
+      const tip = "Dig "+String(it.day+1).padStart(3,"0")+", "+date+": "+(it.r.w ? "solved in "+it.r.d+" dig"+(it.r.d>1?"s":"") : "hit rock bottom");
+      parts.push('<path class="lyr k-'+layerKind(it.r)+(fresh && it.day===TODAY ? ' fresh' : '')+'" d="'+d+'"><title>'+tip+'</title></path>');
+      y += LH;
+    });
+    parts.push('<rect class="bed" x="0" y="'+(y+1)+'" width="'+W+'" height="7" rx="2"/>');
+    y += 9;
+    return '<svg viewBox="0 0 '+W+' '+y+'" style="height:'+y+'px" role="img" aria-label="Your core sample, newest day at the top">'+parts.join("")+'</svg>';
+  }
+  function renderCore(){
+    const c = core(), cr = coreRuns(c), fresh = justLaid; justLaid = false;
+    $("coreCol").innerHTML = coreSVG(c, fresh);
+    $("coreCur").textContent = cr.cur;
+    const gaps = coreSlice(c, 10).some(it=>it.gap);
+    $("coreSub").textContent = !cr.total ? "Finish today's dig to lay your first layer."
+      : cr.total+" layer"+(cr.total>1?"s":"")+" deep. Best streak "+cr.best+". "+(c[TODAY] ? "Come back tomorrow to add layer "+(cr.total+1)+"." : "Today's layer is still open.")+(gaps ? " Gaps are days you missed." : "");
+  }
+
+  /* ---------- global stats ---------- */
+  // Paste your Supabase project URL and anon public key here (Project Settings > API) to switch on live stats.
+  // Leave them blank and the panel stays hidden. Add ?demo to the address to preview it with made up numbers.
+  const STATS_URL = "", STATS_KEY = "";
+  const LIVE = !!(STATS_URL && STATS_KEY), DEMO = /[?&]demo\b/.test(location.search);
+  function deviceId(){
+    let id = store.get("fossle:device");
+    if(!id){ id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 12); store.set("fossle:device", id); }
+    return id;
+  }
+  function api(path, body, headers){
+    return fetch(STATS_URL.replace(/\/$/, "") + "/rest/v1/" + path, {method:"POST", headers:Object.assign({"apikey":STATS_KEY, "Authorization":"Bearer "+STATS_KEY, "Content-Type":"application/json"}, headers || {}), body:JSON.stringify(body)});
+  }
+  function flushPending(){
+    const pend = store.get("fossle:pending") || [];
+    if(!LIVE || !pend.length) return Promise.resolve();
+    // one row per request: a duplicate (409, already counted) must not sink the others
+    return Promise.all(pend.map(row=>api("fossle_results", row, {"Prefer":"return=minimal"}).then(r=>r.ok || r.status===409).catch(()=>false)))
+      .then(done=>{ const left = pend.filter((_,i)=>!done[i]); if(left.length) store.set("fossle:pending", left); else store.del("fossle:pending"); });
+  }
+  function submitResult(){
+    if(!LIVE || !game.history.length) return Promise.resolve();
+    const first = game.history[0].order;
+    const row = {day:TODAY, puzzle:setMode, device:deviceId(), won:game.status==="won", digs:game.history.length, hints:game.hints.length, first_pos:Array.from({length:N},(_,r)=>first.indexOf(r))};
+    const pend = store.get("fossle:pending") || []; pend.push(row); store.set("fossle:pending", pend);
+    return flushPending();
+  }
+  function demoStats(day){
+    const r = rng(day*131 + setMode.charCodeAt(0)), base = {E:.78, M:.48, N:.24};
+    const dist = [.04,.13,.24,.25,.16,.18].map(p=>Math.round((600 + r()*1400)*p*(0.85 + r()*0.3)));
+    const players = dist.reduce((a,b)=>a+b, 0);
+    const first_ok = set.items.map(it=>Math.round(players*Math.min(.95, Math.max(.05, base[it.diff] + (r()-.5)*.2))));
+    const first_mean = set.items.map(()=>+((r()-.5)*2.4).toFixed(2));
+    const m = Math.floor(r()*N); first_ok[m] = Math.round(players*(.06 + r()*.08)); first_mean[m] = +((r()<.5?-1:1)*(1.6 + r()*1.4)).toFixed(2);
+    return {players, wins:players - dist[5], dist, first_ok, first_mean, demo:true};
+  }
+  function fetchDayStats(day){
+    if(DEMO) return new Promise(res=>setTimeout(()=>res(demoStats(day)), 450));
+    if(!LIVE) return Promise.resolve(null);
+    return api("rpc/fossle_day_stats", {p_day:day, p_puzzle:setMode}).then(r=>r.ok ? r.json() : null).catch(()=>null);
+  }
+  const crowdCache = {}, crowdInflight = {};
+  let pendingSubmit = Promise.resolve();
+  const crowdKey = () => viewDay + ":" + setMode;
+  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && viewDay===TODAY));
+  const crowdFor = () => crowdOn() ? (crowdCache[crowdKey()] || null) : null;
+  const myBucket = () => game.status==="won" ? game.history.length-1 : 5;
+  function outDugPct(s){ return Math.round(s.dist.slice(myBucket()+1).reduce((a,b)=>a+b, 0) / s.players * 100); }
+  function loadCrowd(){
+    const box = $("crowd");
+    if(!crowdOn() || game.status==="playing"){ box.hidden = true; return; }
+    const k = crowdKey(), have = crowdCache[k];
+    if(have===false){ box.hidden = true; return; }
+    if(have){ renderCrowd(have); return; }
+    box.hidden = false; box.classList.add("loading");
+    $("crN").textContent = "Counting the other diggers…"; $("crMe").textContent = "";
+    if(crowdInflight[k]) return;
+    crowdInflight[k] = pendingSubmit.then(()=>fetchDayStats(viewDay)).then(s=>{
+      delete crowdInflight[k];
+      crowdCache[k] = (s && s.players) ? s : false;
+      if(crowdKey()===k && game.status!=="playing"){ loadCrowd(); prepareCard(); }
+    });
+  }
+  function renderCrowd(s){
+    const box = $("crowd"), P = s.players, pct = v => Math.round(v/P*100), me = myBucket(), won = game.status==="won";
+    box.hidden = false; box.classList.remove("loading");
+    $("crN").textContent = P.toLocaleString("en-AU") + (P===1 ? " digger" : " diggers") + (viewDay===TODAY ? " today" : " on this dig");
+    $("crMe").textContent = P===1 ? "You're the first one here" : won ? "You out dug " + outDugPct(s) + "%" : pct(s.dist[5]) + "% hit rock bottom too";
+    const max = Math.max(1, ...s.dist);
+    $("crDist").innerHTML = s.dist.map((v,i)=>'<div class="'+(i===me?'me':'')+'"><span>'+(i<5 ? i+1 : "X")+'</span><span class="bar" style="width:0%" data-w="'+Math.max(6, v/max*100).toFixed(1)+'">'+v.toLocaleString("en-AU")+'</span></div>').join("");
+    requestAnimationFrame(()=>requestAnimationFrame(()=>$("crDist").querySelectorAll(".bar").forEach(b=>{ b.style.width = b.dataset.w + "%"; })));
+    const ok = (s.first_ok || []).map(v=>Number(v)||0), mean = (s.first_mean || []).map(v=>Number(v)||0);
+    const firstMine = game.history.length ? game.history[0].order : null;
+    let out = 0; ok.forEach((v,i)=>{ if(v < ok[out]) out = i; });
+    let myth = -1; mean.forEach((v,i)=>{ if(ok[i]/P < .5 && Math.abs(v) >= 1 && (myth<0 || Math.abs(v) > Math.abs(mean[myth]))) myth = i; });
+    const pick = myth>=0 ? myth : out, it = set.items[pick];
+    $("crMyth").hidden = !ok.length;
+    if(ok.length){
+      const t = $("crMythText"); t.textContent = "";
+      const b = document.createElement("b"); b.textContent = strip((it.h && it.h[2]) || it.t).replace(/^(The|A|An) /, w=>w.toLowerCase());
+      if(myth>=0){ t.append("Most diggers thought ", b, " came " + (mean[pick] > 0 ? "earlier" : "later") + " than it really did."); }
+      else { t.append("Hardest layer today: ", b, "."); }
+      t.append(" Only " + pct(ok[pick]) + "% put it in the right layer on their first dig.");
+    }
+    $("crAcc").innerHTML = ""; $("crAccWrap").hidden = !ok.length;
+    set.items.forEach((item,rank)=>{
+      const li = document.createElement("li"); if(rank===out) li.className = "out";
+      const mine = firstMine && firstMine.indexOf(rank)===rank;
+      li.innerHTML = '<span class="t"></span><span class="b"><i style="width:0%"></i></span><span class="p"></span>';
+      li.querySelector(".t").textContent = item.t;
+      if(rank===out){ const tg = document.createElement("em"); tg.className = "otag"; tg.textContent = "Outlier"; li.querySelector(".t").prepend(tg); }
+      if(mine){ const y = document.createElement("span"); y.className = "you"; y.title = "You got this one on your first dig"; y.textContent = "✓"; li.querySelector(".t").prepend(y); }
+      li.querySelector(".p").textContent = pct(ok[rank]||0) + "%";
+      li.setAttribute("aria-label", item.t + ": " + pct(ok[rank]||0) + "% placed it right on the first dig" + (mine ? ", including you" : ""));
+      $("crAcc").appendChild(li);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ li.querySelector(".b i").style.width = pct(ok[rank]||0) + "%"; }));
+    });
+    const note = $("crNote");
+    note.hidden = !(s.demo || P < 20);
+    note.textContent = s.demo ? "Demo numbers. Live stats switch on once the database is connected." : "Early results. More diggers on the way.";
+  }
+
+  /* ---------- share card ---------- */
+  function shareURL(){ return (location.protocol==="https:" && !/claude|localhost/.test(location.hostname)) ? location.origin + location.pathname : ""; }
   function shareText(){
-    const n = game.status==="won" ? game.history.length : "X";
-    const em = {ok:"🟩", far:"🟫"};
-    return "Fossle "+(viewDay===null ? "random dig" : "Dig "+(viewDay+1))+(viewDay!==TODAY?" (practice)":"")+"  "+n+"/"+MAX+"\n"+game.history.map((h,i)=>em.ok.repeat(h.count)+em.far.repeat(N-h.count)+"💡".repeat(game.hints.filter(x=>x.turn===i).length)).join("\n");
+    const won = game.status==="won", n = won ? game.history.length : "X";
+    const head = "Fossle " + (viewDay===null ? "random dig" : "Dig " + String(viewDay+1).padStart(3,"0")) + (viewDay!==null && viewDay!==TODAY ? " (practice)" : "") + "  ⛏️ " + n + "/" + MAX;
+    const rows = game.history.map((h,i)=>"🟩".repeat(h.count) + "🟫".repeat(N-h.count) + "💡".repeat(game.hints.filter(x=>x.turn===i).length));
+    const extra = [];
+    if(viewDay===TODAY){ const cr = coreRuns(core()); if(cr.cur > 1) extra.push("🪨 " + cr.cur + " day streak"); }
+    const s = crowdFor(); if(s && won && s.players > 1) extra.push("out dug " + outDugPct(s) + "%");
+    return [head].concat(rows, [extra.join(" · "), shareURL()]).filter(Boolean).join("\n");
+  }
+  function roundRect(x, X, Y, w, h, r){ x.beginPath(); x.moveTo(X+r, Y); x.arcTo(X+w, Y, X+w, Y+h, r); x.arcTo(X+w, Y+h, X, Y+h, r); x.arcTo(X, Y+h, X, Y, r); x.arcTo(X, Y, X+w, Y, r); x.closePath(); }
+  function drawCard(){
+    const W = 1080, H = 1080, cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    const x = cv.getContext("2d"), won = game.status==="won", rows = game.history;
+    const DISP = '"Lilita One", "Arial Rounded MT Bold", sans-serif', MONO = '"IBM Plex Mono", ui-monospace, monospace';
+    let g = x.createLinearGradient(0, 0, 0, 260); g.addColorStop(0, "#3A8BDA"); g.addColorStop(1, "#9FD3F5");
+    x.fillStyle = g; x.fillRect(0, 0, W, 270);
+    const L = ["#D8C398","#C9AC7C","#B69161","#9D754B","#845F3D","#6B4B32","#563C2A","#443127"], top = 290, bh = (H - top)/8;
+    L.forEach((c,i)=>{ const y0 = top + i*bh; x.fillStyle = c; x.beginPath(); x.moveTo(0, y0); for(let px=0; px<=W; px+=40) x.lineTo(px, y0 + Math.sin(px/85 + i*1.7)*6); x.lineTo(W, H); x.lineTo(0, H); x.closePath(); x.fill(); });
+    x.fillStyle = "#6F9541"; x.beginPath(); x.moveTo(0, 252); for(let px=0; px<=W; px+=24) x.lineTo(px, 252 + (px/24 % 2 ? -7 : 3)); x.lineTo(W, 300); x.lineTo(0, 300); x.closePath(); x.fill();
+    x.fillStyle = "#4D6C2B"; x.fillRect(0, 290, W, 10);
+    x.lineJoin = "round"; x.textBaseline = "alphabetic";
+    x.font = "128px " + DISP; x.lineWidth = 16; x.strokeStyle = "#6B3F0C";
+    x.strokeText("Fossle", 70, 178); x.strokeText("Fossle", 70, 170); x.fillStyle = "#F2B84B"; x.fillText("Fossle", 70, 170);
+    x.textAlign = "right";
+    x.font = "700 34px " + MONO; x.fillStyle = "#173552";
+    x.fillText((viewDay===null ? "RANDOM DIG" : "DIG " + String(viewDay+1).padStart(3,"0")) + (viewDay!==null && viewDay!==TODAY ? " · PRACTICE" : ""), W-70, 96);
+    x.font = "112px " + DISP; x.lineWidth = 12; x.strokeStyle = "#173552";
+    const score = (won ? rows.length : "X") + "/" + MAX;
+    x.strokeText(score, W-70, 206); x.fillStyle = "#FFFFFF"; x.fillText(score, W-70, 200);
+    x.textAlign = "left";
+    // the digs
+    const cell = 62, gap = 12, rgap = 18, gx = 70, gy = 340, gw = 8*cell + 7*gap + 56;
+    const coreItems = coreSlice(core(), 7), LH = 44, GH = 24;
+    const coreH = coreItems.reduce((a,it)=>a + (it.gap ? GH : LH), 0);
+    const ph = Math.max(110 + rows.length*cell + (rows.length-1)*rgap, 110 + coreH + 140);
+    x.fillStyle = "rgba(27,19,16,.88)"; roundRect(x, gx, gy, gw, ph, 30); x.fill();
+    x.font = "700 24px " + MONO; x.fillStyle = "#B7A28A"; x.fillText("YOUR DIGS", gx+28, gy+50);
+    rows.forEach((h,i)=>{
+      const y = gy + 82 + i*(cell + rgap);
+      for(let j=0;j<N;j++){
+        const cx = gx + 28 + j*(cell + gap), ok = j < h.count;
+        x.fillStyle = ok ? "#4E7A25" : "#2E1F16"; roundRect(x, cx, y+6, cell, cell, 12); x.fill();
+        x.fillStyle = ok ? "#8FBF55" : "#6B4B32"; roundRect(x, cx, y, cell, cell, 12); x.fill();
+      }
+    });
+    // the core sample
+    const kx = gx + gw + 34, kw = W - 70 - kx;
+    x.fillStyle = "rgba(27,19,16,.88)"; roundRect(x, kx, gy, kw, ph, 30); x.fill();
+    x.fillStyle = "#B7A28A"; x.font = "700 24px " + MONO; x.textAlign = "center"; x.fillText("CORE", kx + kw/2, gy+50);
+    const cw = 110, cx0 = kx + (kw - cw)/2; let cy = gy + 78;
+    coreItems.forEach(it=>{
+      if(it.gap){ x.strokeStyle = "#B7A28A"; x.lineWidth = 4; x.setLineDash([10,8]); x.beginPath(); const r = rng(77 + cy); for(let i=0;i<=8;i++){ const px = cx0 + cw*i/8, py = cy + GH/2 + (r()-.5)*12; i ? x.lineTo(px, py) : x.moveTo(px, py); } x.stroke(); x.setLineDash([]); cy += GH; return; }
+      if(it.open){ x.strokeStyle = "#F2B84B"; x.lineWidth = 4; x.setLineDash([12,9]); roundRect(x, cx0+2, cy+3, cw-4, LH-6, 8); x.stroke(); x.setLineDash([]); cy += LH; return; }
+      const pts = wavyTop(it.day*31 + 7, cy, cw, 8);
+      x.fillStyle = LAYER_FILL[layerKind(it.r)]; x.strokeStyle = "#1B1310"; x.lineWidth = 4;
+      x.beginPath(); pts.forEach((p,i)=> i ? x.lineTo(cx0 + p[0], p[1]) : x.moveTo(cx0 + p[0], p[1])); x.lineTo(cx0 + cw, cy + LH + 2); x.lineTo(cx0, cy + LH + 2); x.closePath(); x.fill(); x.stroke();
+      cy += LH;
+    });
+    x.fillStyle = "#443127"; roundRect(x, cx0, cy + 4, cw, 18, 5); x.fill();
+    const cr = coreRuns(core());
+    x.font = "64px " + DISP; x.fillStyle = "#F2B84B"; x.fillText(String(cr.cur), kx + kw/2, gy + ph - 52);
+    x.font = "700 20px " + MONO; x.fillStyle = "#B7A28A"; x.fillText(cr.cur===1 ? "DAY" : "DAY STREAK", kx + kw/2, gy + ph - 22);
+    // footer
+    const s = crowdFor(), line = s && s.players > 1 ? (won ? "Out dug " + outDugPct(s) + "% of diggers" : "Rock bottom, like " + Math.round(s.dist[5]/s.players*100) + "% of diggers") : (won ? "Every layer found" : "Rock bottom");
+    x.textAlign = "left"; x.font = "56px " + DISP; x.fillStyle = "#F6EEE1"; x.fillText(line, 70, H - 92);
+    const url = shareURL().replace(/^https:\/\//, "").replace(/\/$/, "");
+    if(url){ x.font = "700 26px " + MONO; x.fillStyle = "#D8C398"; x.fillText(url, 70, H - 46); }
+    return cv;
+  }
+  let cardFile = null, cardSig = "";
+  function prepareCard(){
+    if(!game || game.status==="playing") return;
+    const s = crowdFor(), sig = game.idx + ":" + game.history.length + ":" + setMode + ":" + (s ? s.players : 0) + ":" + coreRuns(core()).cur;
+    if(sig===cardSig) return; cardSig = sig; cardFile = null;
+    const fonts = document.fonts ? Promise.all([document.fonts.load('100px "Lilita One"'), document.fonts.load('700 30px "IBM Plex Mono"')]).catch(()=>{}) : Promise.resolve();
+    fonts.then(()=>new Promise(res=>drawCard().toBlob(res, "image/png"))).then(b=>{
+      if(b && sig===cardSig) cardFile = new File([b], "fossle-dig-" + (viewDay===null ? "random" : String(viewDay+1).padStart(3,"0")) + ".png", {type:"image/png"});
+    }).catch(()=>{});
   }
   function toast(msg){ const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toast._t); toast._t = setTimeout(()=>t.classList.remove("show"), 1800); }
+  const shareSheet = !!navigator.share && matchMedia("(pointer: coarse)").matches;
+  if(shareSheet) $("share").textContent = "Share";
   $("share").addEventListener("click", ()=>{
     const text = shareText();
     const fallback = ()=>{ const f = $("fallback"); f.value = text; f.hidden = false; f.focus(); f.select(); toast("Select and copy the text below"); };
-    try{
-      if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>{ toast("Result copied"); Sound.found(4); }, fallback);
-      else fallback();
-    }catch(err){ fallback(); }
+    const copy = ()=>{
+      try{
+        if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(()=>{ toast("Result copied"); Sound.found(4); }, fallback);
+        else fallback();
+      }catch(err){ fallback(); }
+    };
+    if(shareSheet){
+      let data = {text};
+      try{ if(cardFile && navigator.canShare && navigator.canShare({files:[cardFile]})) data = {files:[cardFile], text}; }catch(e){}
+      navigator.share(data).then(()=>Sound.found(4), err=>{ if(!err || err.name!=="AbortError") copy(); });
+      return;
+    }
+    copy();
   });
+  $("saveCard").addEventListener("click", ()=>{
+    if(!cardFile){ cardSig = ""; prepareCard(); toast("Making your card, tap again in a moment"); return; }
+    const a = document.createElement("a"); a.href = URL.createObjectURL(cardFile); a.download = cardFile.name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href), 4000);
+    toast("Card saved");
+  });
+  flushPending();
 
   document.addEventListener("click", e=>{
     const f = e.target.closest && e.target.closest(".fossil");
