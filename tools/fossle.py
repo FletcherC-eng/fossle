@@ -37,7 +37,7 @@ def load_events():
 def load_ledger():
     if LEDGER.exists():
         return json.loads(LEDGER.read_text())
-    return {"epoch": "2026-11-06", "days": []}
+    return {"epoch": "day 0 is launch day (LAUNCH in index.html)", "days": []}
 
 
 def validate(events, quiet=False):

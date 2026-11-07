@@ -544,9 +544,14 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   const MAX = 5;
   const N = 8;
   function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
-  const EPOCH = Date.UTC(2026,10,6);
+  // Launch day: set this to the date the daily digs start, e.g. "2026-12-01". That day is Dig 001.
+  // Until then the game runs as a preview: everyone plays Dig 001, and nothing counts towards stats or streaks.
+  const LAUNCH = "";
+  const EPOCH = /^\d{4}-\d{2}-\d{2}$/.test(LAUNCH) ? Date.UTC(+LAUNCH.slice(0,4), +LAUNCH.slice(5,7)-1, +LAUNCH.slice(8,10)) : NaN;
   function dayIndex(d){ return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()) - EPOCH)/86400000); }
-  const TODAY = Math.max(0, dayIndex(new Date()));
+  const PREVIEW = isNaN(EPOCH) || dayIndex(new Date()) < 0;
+  const TODAY = PREVIEW ? 0 : dayIndex(new Date());
+  const RUN = PREVIEW ? "preview" : LAUNCH;   // keeps preview progress apart from the real run
 
   const mem = {};
   const store = {
@@ -555,7 +560,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     del(k){ delete mem[k]; try{ localStorage.removeItem(k); }catch(e){} }
   };
   const setMode = "daily";
-  const key = i => "fossle:v10:game:"+i;
+  const key = i => "fossle:v10:" + RUN + ":game:" + i;
   const DEV = /[?&]dev\b/.test(location.search);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = id => document.getElementById(id);
@@ -1021,7 +1026,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     const practice = viewDay !== TODAY;
     $("pno").textContent = viewDay===null ? "Random dig" : "Dig " + String(viewDay+1).padStart(3,"0");
     const d = new Date(EPOCH + (viewDay||0)*86400000);
-    $("pdate").textContent = practice ? "practice" : d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
+    $("pdate").textContent = PREVIEW ? "preview" : practice ? "practice" : d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
     $("protoLabel").textContent = "Dev · " + (practice ? "dig " + (viewDay+1) + ", stats off" : "today's dig");
     $("prev").disabled = viewDay===0;
     renderBoard(animate, fromRects);
@@ -1033,7 +1038,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     if(done) renderResult();
   }
 
-  function stats(){ return store.get("fossle:stats") || {played:0,wins:0,streak:0,best:0,lastPlayed:-1,lastWin:-2}; }
+  function stats(){ return store.get("fossle:stats:" + RUN) || {played:0,wins:0,streak:0,best:0,lastPlayed:-1,lastWin:-2}; }
   function statValues(){
     const s = stats();
     const cr = coreRuns(core());
@@ -1074,11 +1079,11 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     });
   }
   function countStats(){
-    if(viewDay!==TODAY || game.counted) return;
+    if(PREVIEW || viewDay!==TODAY || game.counted) return;
     const s = stats(); s.played++;
     if(game.status==="won"){ s.wins++; s.streak = (s.lastWin===TODAY-1) ? s.streak+1 : 1; s.best = Math.max(s.best,s.streak); s.lastWin = TODAY; }
     else s.streak = 0;
-    s.lastPlayed = TODAY; store.set("fossle:stats", s); game.counted = true;
+    s.lastPlayed = TODAY; store.set("fossle:stats:" + RUN, s); game.counted = true;
     if(recordCore()) justLaid = true;
     delete crowdCache[crowdKey()];
     pendingSubmit = submitResult();
@@ -1208,22 +1213,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
 
   /* ---------- core sample: one rock layer for every day you play ---------- */
-  const CORE_KEY = "fossle:core";
+  const CORE_KEY = "fossle:core:" + RUN;
   function core(){ return store.get(CORE_KEY) || {}; }
-  (function migrateCore(){
-    if(store.get(CORE_KEY)) return;
-    const c = {};
-    try{
-      for(let i=0;i<localStorage.length;i++){
-        const m = /^fossle:v9:game:[^:]+:(\d+)$/.exec(localStorage.key(i) || ""); if(!m) continue;
-        const day = Number(m[1]) - 1000; if(day<0 || day>TODAY || c[day]) continue;
-        const g = JSON.parse(localStorage.getItem(localStorage.key(i)));
-        if(!g || !g.counted || g.status==="playing") continue;
-        c[day] = {d:g.history.length, w:g.status==="won", h:(g.hints||[]).length};
-      }
-    }catch(e){}
-    store.set(CORE_KEY, c);
-  })();
   function coreRuns(c){
     const days = Object.keys(c).map(Number).sort((a,b)=>a-b);
     let cur = 0, d = c[TODAY] ? TODAY : TODAY-1;
@@ -1333,7 +1324,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   const crowdCache = {}, crowdInflight = {};
   let pendingSubmit = Promise.resolve();
   const crowdKey = () => viewDay + ":" + setMode;
-  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && viewDay===TODAY));
+  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && !PREVIEW && viewDay===TODAY));
   const crowdFor = () => crowdOn() ? (crowdCache[crowdKey()] || null) : null;
   const myBucket = () => game.status==="won" ? game.history.length-1 : 5;
   function outDugPct(s){ return Math.round(s.dist.slice(myBucket()+1).reduce((a,b)=>a+b, 0) / s.players * 100); }
@@ -1395,7 +1386,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   function shareURL(){ return (location.protocol==="https:" && !/claude|localhost/.test(location.hostname)) ? location.origin + location.pathname : ""; }
   function shareText(){
     const won = game.status==="won", n = won ? game.history.length : "X";
-    const head = "Fossle " + (viewDay===null ? "random dig" : "Dig " + String(viewDay+1).padStart(3,"0")) + (viewDay!==null && viewDay!==TODAY ? " (practice)" : "") + "  ⛏️ " + n + "/" + MAX;
+    const head = "Fossle " + (viewDay===null ? "random dig" : "Dig " + String(viewDay+1).padStart(3,"0")) + (PREVIEW ? " (preview)" : viewDay!==null && viewDay!==TODAY ? " (practice)" : "") + "  ⛏️ " + n + "/" + MAX;
     const rows = game.history.map((h,i)=>"🟩".repeat(h.count) + "🟫".repeat(N-h.count) + "💡".repeat(game.hints.filter(x=>x.turn===i).length));
     const extra = [];
     if(viewDay===TODAY){ const cr = coreRuns(core()); if(cr.cur > 1) extra.push("🪨 " + cr.cur + " day streak"); }
@@ -1514,7 +1505,9 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   $("next").addEventListener("click", ()=>dayLoad(viewDay+1));
   $("reset").addEventListener("click", ()=>{ store.del(key(seed)); if(viewDay===TODAY){ const c = core(); delete c[TODAY]; store.set(CORE_KEY, c); } load(viewDay, seed); toast("Dig reset"); });
 
+  if(PREVIEW) $("countdown").parentNode.textContent = "Preview: the daily digs haven't started yet";
   function tick(){
+    if(PREVIEW) return;
     const now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
     const s = Math.max(0, Math.floor((next-now)/1000));
     $("countdown").textContent = [Math.floor(s/3600), Math.floor(s%3600/60), s%60].map(v=>String(v).padStart(2,"0")).join(":");

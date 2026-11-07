@@ -5,7 +5,7 @@ Every event is used once, ever. Days that are already scheduled never change.
 - `events.json` is the pool. Edit text here, never delete an event that has been used.
 - `batches/` holds new events in a one line per event format (see `tools/import_batch.py`).
 - `schedule.json` records which events each day used. It is generated; don't edit it.
-- `../days/NNNN.json` is what the game loads for day NNNN (day 0 is 6 Nov 2026).
+- `../days/NNNN.json` is what the game loads for day NNNN (day 0 is launch day, set by `LAUNCH` in index.html).
 
 ## Adding more days
 
