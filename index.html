@@ -407,6 +407,54 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
 .nodig-msg{display:flex;flex-direction:column;gap:4px;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,.45);border:1.5px solid rgba(255,255,255,.9);color:var(--sky-ink)}
 .nodig-msg strong{font-family:var(--f-display);font-weight:400;font-size:1.4rem;letter-spacing:.02em}
 .btnrow #share{flex:1}
+/* the dig bar stays on screen on phones and short laptop screens */
+@media (max-width:640px), (max-height:940px){
+  body.playing{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  body.playing .dock{position:fixed;left:0;right:0;bottom:0;z-index:60;margin:0;padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:var(--soil);box-shadow:0 -1px 0 var(--line),0 -14px 24px -6px rgba(0,0,0,.55)}
+  body.playing .dock-in{max-width:31rem;margin:0 auto}
+  body.playing .fade{min-height:0}
+}
+/* phones: the layout tightens so all eight cards fit above the bar */
+@media (max-width:640px){
+  .brief-lead{display:none}
+  .brief p strong{display:block}
+  .brief p strong::first-letter{text-transform:uppercase}
+  .dock-status{max-width:calc(100% - 96px)}
+}
+@media (max-width:640px) and (max-height:900px){
+  .wrap-upper{padding-block:10px 4px;gap:9px}
+  .mark{font-size:2.15rem}
+  .brand svg{width:30px;height:30px}
+  .icon-btn{width:38px;height:38px}
+  .brief p{font-size:.88rem}
+  .log{gap:5px}
+  .dchip{padding:4px 2px 3px;gap:1px}
+  .dchip .cn{font-size:1.1rem}
+  .dock-status{font-size:.8rem;line-height:1.3}
+  .surface-label{margin-top:2px}
+  .birds{display:none}
+  .tree{transform:scale(.62);transform-origin:50% 120px}
+  .slot{min-height:48px;padding-block:3px}
+  .st-more{display:none}
+  .card{min-height:42px;padding-block:5px}
+  .card .title{font-size:.9rem;line-height:1.2}
+  .btn-primary{font-size:1.35rem;padding:9px 14px 7px}
+  .btn-ghost{font-size:1.15rem;padding:8px 14px 6px}
+  .btn-hint{padding:8px 11px 6px}
+}
+.btn{white-space:nowrap}
+@media (min-width:641px) and (max-height:940px){
+  .wrap-upper{padding-top:14px}
+  .surface-label{margin-top:20px}
+  .birds{bottom:14px;height:50px}
+  .slot{min-height:52px;padding-block:4px}
+}
+@media (max-width:360px){
+  .btn-primary{font-size:1.2rem;padding-inline:10px}
+  .btn-ghost{font-size:1rem;padding-inline:10px}
+  .btnrow{gap:8px}
+  .card .title{font-size:.86rem}
+}
 </style>
 
 <div class="sky">
@@ -431,7 +479,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   </header>
 
   <div class="brief">
-    <p>Sort the layers: <strong>newest at the surface, oldest at the bedrock.</strong></p>
+    <p><span class="brief-lead">Sort the layers: </span><strong>newest at the surface, oldest at the bedrock.</strong></p>
   </div>
   <div class="nodig-msg" id="nodig" hidden><strong>Still excavating</strong><span>Today's dig isn't ready yet. Check back soon.</span></div>
   <div class="log" id="log" role="group" aria-label="Your digs. Tap one to see the order you tried"></div>
@@ -914,7 +962,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
   function renderDock(live){
     const done = game.status!=="playing", h = game.history;
-    $("dock").hidden = done; $("log").hidden = done && !h.length; $("status").hidden = done && !h.length;
+    $("dock").hidden = done; document.body.classList.toggle("playing", !done); $("log").hidden = done && !h.length; $("status").hidden = done && !h.length;
     $("log").classList.toggle("picker", done);
     if(done){
       const seg = (i, top, sub, label) => '<button type="button" class="seg'+((i<0 ? cmp===null : cmp===i) ? ' on' : '')+'" data-i="'+i+'" role="radio" aria-checked="'+(i<0 ? cmp===null : cmp===i)+'" aria-label="'+label+'"><b>'+top+'</b><span>'+sub+'</span></button>';
@@ -934,8 +982,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     let st;
     if(peek!==null) st = 'Viewing dig '+(peek+1)+': <b>'+h[peek].count+'</b> of '+N+' in the right layer';
     else if(live!==undefined) st = 'Brushing off the layers: <b>'+live+'</b> right so far';
-    else if(h.length) st = 'Last dig: <b>'+h[h.length-1].count+'</b> of '+N+' right. Tap a dig to see it.';
-    else st = 'Stack the layers, then dig. You have '+MAX+' digs.';
+    else if(h.length) st = 'Last dig: <b>'+h[h.length-1].count+'</b> of '+N+' right<span class="st-more">. Tap a dig to see it</span>';
+    else st = MAX+' digs to get every layer right';
     $("status").innerHTML = st;
     $("playBtns").hidden = peek!==null; $("peekBtns").hidden = peek===null;
     $("check").textContent = "Dig (" + (MAX-h.length) + " left)";
@@ -1156,22 +1204,32 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
   function clearTargets(){ cards.forEach(c=>c.classList.remove("is-target")); }
 
+  let edgeRAF = 0;
+  function edgeScroll(){
+    cancelAnimationFrame(edgeRAF);
+    const step = ()=>{
+      if(!drag || !drag.active){ edgeRAF = 0; return; }
+      const dock = $("dock"), bar = getComputedStyle(dock).position==="fixed" ? dock.getBoundingClientRect().top : innerHeight;
+      const zone = 64; let v = 0;
+      const board = $("slots").getBoundingClientRect();
+      if(drag.cy > bar - zone && board.bottom > bar - 8) v = Math.min(16, 2 + (drag.cy - (bar - zone))/4, board.bottom - (bar - 8));
+      else if(drag.cy < zone && board.top < 8) v = -Math.min(16, 2 + (zone - drag.cy)/4, 8 - board.top);
+      if(v){ const before = scrollY; scrollBy(0, v); if(scrollY!==before) drag.follow(); }
+      edgeRAF = requestAnimationFrame(step);
+    };
+    edgeRAF = requestAnimationFrame(step);
+  }
   function bindCard(c, rank){
     c.addEventListener("pointerdown", e=>{
       if(game.status!=="playing" || busy || peek!==null || isLocked(rank) || e.button!==0) return;
-      drag = {rank, x:e.clientX, y:e.clientY, active:false, target:null, from:posOf(rank), slots:Array.from($("slots").children).map(li=>li.getBoundingClientRect())};
+      drag = {rank, x:e.clientX, y:e.clientY, cx:e.clientX, cy:e.clientY, sy:scrollY, active:false, target:null, from:posOf(rank), slots:Array.from($("slots").children).map(li=>li.getBoundingClientRect())};
       try{ c.setPointerCapture(e.pointerId); }catch(err){}
     });
-    c.addEventListener("pointermove", e=>{
-      if(!drag || drag.rank!==rank) return;
-      const dx = e.clientX-drag.x, dy = e.clientY-drag.y;
-      if(!drag.active && Math.hypot(dx,dy) > 6){
-        drag.active = true; c.classList.add("is-dragging"); Sound.pick(); buzz(6);
-        if(selected!==null){ selected = null; cards.forEach(k=>k.classList.remove("is-selected")); }
-      }
-      if(!drag.active) return;
+    const follow = ()=>{
+      // everything is measured against where the page was when the drag began
+      const sc = scrollY - drag.sy, dx = drag.cx-drag.x, dy = drag.cy-drag.y + sc;
       c.style.transform = "translate("+dx+"px,"+dy+"px) rotate("+Math.max(-3,Math.min(3,dx/30))+"deg) scale(1.03)";
-      const from = drag.from, sl = drag.slots, y = e.clientY;
+      const from = drag.from, sl = drag.slots, y = drag.cy + sc;
       let target = 0, best = Infinity;
       sl.forEach((r,i)=>{ const dd = Math.abs(y - (r.top + r.height/2)); if(dd < best){ best = dd; target = i; } });
       if(target!==drag.target){
@@ -1185,6 +1243,16 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
           cards[rk].style.transform = shift ? "translateY(" + shift + "px)" : "";
         });
       }
+    };
+    c.addEventListener("pointermove", e=>{
+      if(!drag || drag.rank!==rank) return;
+      drag.cx = e.clientX; drag.cy = e.clientY;
+      if(!drag.active && Math.hypot(drag.cx-drag.x, drag.cy-drag.y) > 6){
+        drag.active = true; drag.follow = follow; c.classList.add("is-dragging"); Sound.pick(); buzz(6);
+        if(selected!==null){ selected = null; cards.forEach(k=>k.classList.remove("is-selected")); }
+        edgeScroll();
+      }
+      if(drag.active) follow();
     });
     const end = cancelled=>{
       if(!drag || drag.rank!==rank) return;
