@@ -2,7 +2,28 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fossle</title>
+<title>Fossle: the daily history puzzle</title>
+<meta name="description" content="A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock. Five digs to get it right.">
+<meta name="theme-color" content="#3A8BDA">
+<link rel="canonical" href="https://fossle.app/">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Fossle">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Fossle">
+<meta property="og:title" content="Fossle: the daily history puzzle">
+<meta property="og:description" content="A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock. Five digs to get it right.">
+<meta property="og:url" content="https://fossle.app/">
+<meta property="og:image" content="https://fossle.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Fossle logo above a stack of history cards sorted into rock layers">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Fossle: the daily history puzzle">
+<meta name="twitter:description" content="A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock. Five digs to get it right.">
+<meta name="twitter:image" content="https://fossle.app/og.png">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1451,7 +1472,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
 
   /* ---------- share card ---------- */
-  function shareURL(){ return (location.protocol==="https:" && !/claude|localhost/.test(location.hostname)) ? location.origin + location.pathname : ""; }
+  function shareURL(){ return (location.protocol==="https:" && !/claude|localhost/.test(location.hostname)) ? location.origin + location.pathname.replace(/\/(index\.html)?$/, "") : ""; }
   function shareText(){
     const won = game.status==="won", n = won ? game.history.length : "X";
     const head = "Fossle " + (viewDay===null ? "random dig" : "Dig " + String(viewDay+1).padStart(3,"0")) + (PREVIEW ? " (preview)" : viewDay!==null && viewDay!==TODAY ? " (practice)" : "") + "  ⛏️ " + n + "/" + MAX;

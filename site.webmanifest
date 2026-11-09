@@ -1,0 +1,27 @@
+{
+ "name": "Fossle",
+ "short_name": "Fossle",
+ "description": "A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock.",
+ "start_url": "/",
+ "display": "standalone",
+ "background_color": "#1B1310",
+ "theme_color": "#3A8BDA",
+ "icons": [
+  {
+   "src": "/icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png"
+  },
+  {
+   "src": "/icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
