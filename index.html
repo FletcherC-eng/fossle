@@ -1159,7 +1159,11 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     });
   }
   function countStats(){
-    if(PREVIEW || viewDay!==TODAY || game.counted) return;
+    if(PREVIEW){
+      if(STATS_TEST && LIVE && !testSent.has(viewDay)){ testSent.add(viewDay); delete crowdCache[crowdKey()]; pendingSubmit = submitResult(); }
+      return;
+    }
+    if(viewDay!==TODAY || game.counted) return;
     const s = stats(); s.played++;
     if(game.status==="won"){ s.wins++; s.streak = (s.lastWin===TODAY-1) ? s.streak+1 : 1; s.best = Math.max(s.best,s.streak); s.lastWin = TODAY; }
     else s.streak = 0;
@@ -1383,15 +1387,19 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   /* ---------- global stats ---------- */
   // Paste your Supabase project URL and anon public key here (Project Settings > API) to switch on live stats.
   // Leave them blank and the panel stays hidden. Add ?demo to the address to preview it with made up numbers.
-  const STATS_URL = "", STATS_KEY = "";
+  const STATS_URL = "https://rxhdhzgwmsuoqkmdtgnl.supabase.co", STATS_KEY = "";
   const LIVE = !!(STATS_URL && STATS_KEY), DEMO = /[?&]demo\b/.test(location.search);
+  // Before launch, ?dev sends results to a separate "test" bucket so testing never mixes with real launch stats
+  const STATS_TEST = PREVIEW && DEV;
+  const statsPuzzle = () => STATS_TEST ? "test" : setMode;
+  const testSent = new Set();
   function deviceId(){
     let id = store.get("fossle:device");
     if(!id){ id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 12); store.set("fossle:device", id); }
     return id;
   }
   function api(path, body, headers){
-    return fetch(STATS_URL.replace(/\/$/, "") + "/rest/v1/" + path, {method:"POST", headers:Object.assign({"apikey":STATS_KEY, "Authorization":"Bearer "+STATS_KEY, "Content-Type":"application/json"}, headers || {}), body:JSON.stringify(body)});
+    return fetch(STATS_URL.replace(/\/$/, "") + "/rest/v1/" + path, {method:"POST", headers:Object.assign({"apikey":STATS_KEY, "Content-Type":"application/json"}, /^sb_/.test(STATS_KEY) ? {} : {"Authorization":"Bearer "+STATS_KEY}, headers || {}), body:JSON.stringify(body)});
   }
   function flushPending(){
     const pend = store.get("fossle:pending") || [];
@@ -1403,7 +1411,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   function submitResult(){
     if(!LIVE || !game.history.length) return Promise.resolve();
     const first = game.history[0].order;
-    const row = {day:TODAY, puzzle:setMode, device:deviceId(), won:game.status==="won", digs:game.history.length, hints:game.hints.length, first_pos:Array.from({length:N},(_,r)=>first.indexOf(r))};
+    const row = {day:STATS_TEST ? viewDay : TODAY, puzzle:statsPuzzle(), device:deviceId(), won:game.status==="won", digs:game.history.length, hints:game.hints.length, first_pos:Array.from({length:N},(_,r)=>first.indexOf(r))};
     const pend = store.get("fossle:pending") || []; pend.push(row); store.set("fossle:pending", pend);
     return flushPending();
   }
@@ -1419,12 +1427,12 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   function fetchDayStats(day){
     if(DEMO) return new Promise(res=>setTimeout(()=>res(demoStats(day)), 450));
     if(!LIVE) return Promise.resolve(null);
-    return api("rpc/fossle_day_stats", {p_day:day, p_puzzle:setMode}).then(r=>r.ok ? r.json() : null).catch(()=>null);
+    return api("rpc/fossle_day_stats", {p_day:day, p_puzzle:statsPuzzle()}).then(r=>r.ok ? r.json() : null).catch(()=>null);
   }
   const crowdCache = {}, crowdInflight = {};
   let pendingSubmit = Promise.resolve();
   const crowdKey = () => viewDay + ":" + setMode;
-  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && !PREVIEW && viewDay===TODAY));
+  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && (STATS_TEST || (!PREVIEW && viewDay===TODAY))));
   const crowdFor = () => crowdOn() ? (crowdCache[crowdKey()] || null) : null;
   const myBucket = () => game.status==="won" ? game.history.length-1 : 5;
   function outDugPct(s){ return Math.round(s.dist.slice(myBucket()+1).reduce((a,b)=>a+b, 0) / s.players * 100); }
