@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /days/
+
+Sitemap: https://fossle.app/sitemap.xml

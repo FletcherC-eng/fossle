@@ -1,7 +1,7 @@
 {
  "name": "Fossle",
  "short_name": "Fossle",
- "description": "A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock.",
+ "description": "Which came first? A daily history puzzle. Stack eight moments in order, newest at the surface, oldest at the bedrock.",
  "start_url": "/",
  "display": "standalone",
  "background_color": "#1B1310",

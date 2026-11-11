@@ -2,8 +2,8 @@
 <html lang="en">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Fossle: the daily history puzzle</title>
-<meta name="description" content="A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock. Five digs to get it right.">
+<title>Fossle: which came first? A daily history puzzle</title>
+<meta name="description" content="Which came first? Stack eight moments from history, pop culture and the internet in order, newest at the surface, oldest at the bedrock. A new dig every day, five digs to get it right.">
 <meta name="theme-color" content="#3A8BDA">
 <link rel="canonical" href="https://fossle.app/">
 <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -13,22 +13,31 @@
 <meta name="apple-mobile-web-app-title" content="Fossle">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Fossle">
-<meta property="og:title" content="Fossle: the daily history puzzle">
-<meta property="og:description" content="A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock. Five digs to get it right.">
+<meta property="og:title" content="Fossle: which came first? A daily history puzzle">
+<meta property="og:description" content="Which came first? Stack eight moments from history, pop culture and the internet in order, newest at the surface, oldest at the bedrock. A new dig every day, five digs to get it right.">
 <meta property="og:url" content="https://fossle.app/">
 <meta property="og:image" content="https://fossle.app/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="The Fossle logo above a stack of history cards sorted into rock layers">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Fossle: the daily history puzzle">
-<meta name="twitter:description" content="A daily history puzzle. Stack eight events in order, newest at the surface, oldest at the bedrock. Five digs to get it right.">
+<meta name="twitter:title" content="Fossle: which came first? A daily history puzzle">
+<meta name="twitter:description" content="Which came first? Stack eight moments from history, pop culture and the internet in order, newest at the surface, oldest at the bedrock. A new dig every day, five digs to get it right.">
 <meta name="twitter:image" content="https://fossle.app/og.png">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;700&display=swap">
+<link rel="preload" href="/fonts/lilita-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/figtree-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Fossle","url":"https://fossle.app/","applicationCategory":"GameApplication","genre":"Puzzle","operatingSystem":"Any","isAccessibleForFree":true,"description":"Which came first? Stack eight moments from history, pop culture and the internet in order, newest at the surface, oldest at the bedrock. A new dig every day, five digs to get it right.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
 <style>
+/* Fonts are served from fossle.app (SIL Open Font License, see /fonts/LICENSE.txt) */
+@font-face{font-family:"Lilita One";font-style:normal;font-weight:400;font-display:swap;src:url("/fonts/lilita-one-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Figtree";font-style:normal;font-weight:400;font-display:swap;src:url("/fonts/figtree-latin-400-normal.woff2") format("woff2")}
+@font-face{font-family:"Figtree";font-style:normal;font-weight:500;font-display:swap;src:url("/fonts/figtree-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"Figtree";font-style:normal;font-weight:600;font-display:swap;src:url("/fonts/figtree-latin-600-normal.woff2") format("woff2")}
+@font-face{font-family:"Figtree";font-style:normal;font-weight:700;font-display:swap;src:url("/fonts/figtree-latin-700-normal.woff2") format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:500;font-display:swap;src:url("/fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2")}
+@font-face{font-family:"IBM Plex Mono";font-style:normal;font-weight:700;font-display:swap;src:url("/fonts/ibm-plex-mono-latin-700-normal.woff2") format("woff2")}
 /* Layout: one narrow column; the board is a cross-section of earth, eight strata from grassy surface (newest) down to bedrock (oldest), with an excavation ranging pole down the left edge. Committed dark-soil look. */
 :root{
   --soil:#1B1310; --soil-2:#261B16; --line:#3D2E26;
@@ -62,9 +71,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .brief{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .brief p{margin:0;color:var(--muted);font-size:.95rem;max-width:21rem}
 .brief p strong{color:var(--text);font-weight:600}
-.digs{display:flex;align-items:center;gap:7px;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
-.digs i{display:block;width:15px;height:12px;border-radius:55% 45% 50% 50%/60% 55% 45% 40%;background:var(--gold);box-shadow:0 2px 0 var(--gold-deep);transition:background-color .3s,box-shadow .3s,transform .3s}
-.digs i.used{background:var(--line);box-shadow:0 2px 0 #241a15;transform:scale(.85)}
 
 .sky{position:relative;overflow:hidden;background:linear-gradient(180deg,var(--sky-top) 0%,var(--sky-mid) 55%,var(--sky-low) 100%)}
 .wrap-upper{position:relative;z-index:1;padding-block:20px 8px}
@@ -98,14 +104,12 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 @keyframes flapw{from{transform:scaleY(1)}to{transform:scaleY(-.9)}}
 @keyframes fly{from{transform:translateX(-60px)}to{transform:translateX(calc(100vw + 60px))}}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@keyframes flap{from{transform:scaleY(1)}to{transform:scaleY(-.35)}}
 @keyframes drift{from{transform:translateX(-200px)}to{transform:translateX(calc(100vw + 40px))}}
 .sky .meta{color:rgba(255,255,255,.85)}
 .sky .meta b{color:#FFFFFF}
 .sky .icon-btn{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.7);color:#FFFFFF}
 .sky .brief p{color:var(--sky-ink)}
 .sky .brief p strong{color:#0C2238}
-.sky .digs{color:var(--sky-ink)}
 .sky .log{margin-top:2px}
 .sky .dock-status{color:var(--sky-ink);text-align:left;font-size:.85rem}
 .sky .dock-status b{color:var(--moss-deep)}
@@ -134,7 +138,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .layer-label{display:flex;justify-content:space-between;font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 4px}
 .board{position:relative;display:flex;flex-direction:column}
 .grass{position:relative;z-index:2;height:16px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 10' preserveAspectRatio='none'%3E%3Cpath d='M0 10V6l3-4 2 4 3-5 3 4 3-2 3 4 3-5 3 3 3-4 3 5 3-3 3 3 3-4 2 3v4z' fill='%236F9541'/%3E%3C/svg%3E") 0 0/40px 10px repeat-x,linear-gradient(var(--grass-deep),var(--grass-deep)) 0 8px/100% 8px no-repeat}
-.bedrock{height:16px;border-radius:0 0 14px 14px;background-color:#2C221D;background-image:radial-gradient(ellipse 9px 5px at 12px 7px,#3A2E28 90%,transparent 100%),radial-gradient(ellipse 7px 4px at 34px 10px,#241B17 90%,transparent 100%);background-size:46px 16px}
 .slots{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
 .slot{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:0;align-items:center;min-height:58px;padding-block:5px;padding-left:max(16px,env(safe-area-inset-left,0px),calc((100% - 31rem)/2 + 16px));padding-right:max(16px,env(safe-area-inset-right,0px),calc((100% - 31rem)/2 + 16px));background-image:radial-gradient(rgba(0,0,0,.13) 1px,transparent 1.6px),radial-gradient(rgba(255,255,255,.09) 1px,transparent 1.6px);background-size:9px 9px,13px 13px;background-position:0 0,5px 7px}
 .slot+.slot::before{content:"";position:absolute;left:0;right:0;top:-3px;height:6px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 6' preserveAspectRatio='none'%3E%3Cpath d='M0 3c8-3 14 2 22 0s14-3 22 0 12 2 16 0v3H0z' fill='rgba(0,0,0,0.22)'/%3E%3C/svg%3E") 0 0/60px 6px repeat-x;pointer-events:none}
@@ -188,12 +191,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 @keyframes snap{0%,100%{transform:rotate(0)}30%{transform:rotate(22deg)}60%{transform:rotate(0)}80%{transform:rotate(12deg)}}
 @keyframes boing{0%,100%{transform:rotate(var(--r,0deg)) scale(var(--s,1))}40%{transform:rotate(calc(var(--r,0deg) - 10deg)) scale(calc(var(--s,1) * 1.3))}70%{transform:rotate(calc(var(--r,0deg) + 6deg)) scale(calc(var(--s,1) * .92))}}
 .fade{position:relative}
-.fade .skeleton{position:absolute;left:50%;top:44px;width:min(420px,90%);height:150px;transform:translateX(-50%);background:no-repeat center/contain;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-6 0 196 70'%3E%3Cg fill='none' stroke='rgba(246,238,225,0.32)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10 40c30-12 60-14 92-10s40 4 52 0'/%3E%3Cpath d='M154 30c8-6 18-6 24 0l8 8-10 4-14-2'/%3E%3Cpath d='M40 34v20M52 31v24M64 30v25M76 29v25M88 29v24M100 30v22'/%3E%3Cpath d='M28 38l-8 22M120 31l4 22M136 31l-2 22'/%3E%3Cpath d='M10 40C4 44 0 46-4 46'/%3E%3C/g%3E%3C/svg%3E");opacity:.55;pointer-events:none}
-@keyframes glint{0%,100%{opacity:.75}50%{opacity:1}}
-.burrow{position:relative;z-index:1;align-self:stretch;width:18px;margin:-5px 0}
-.burrow svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible}
-.burrow .bt{fill:none;stroke:rgba(30,18,12,.42);stroke-width:7;stroke-linecap:round;vector-effect:non-scaling-stroke}
-.burrow .bi{fill:none;stroke:rgba(255,236,205,.12);stroke-width:2.5;stroke-linecap:round;vector-effect:non-scaling-stroke}
 .worm-run{position:absolute;top:0;bottom:0;left:0;right:0;z-index:1;pointer-events:none;overflow:hidden}
 .worm-run .tunnel{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
 .worm-run .tunnel .route{fill:none;stroke:none}
@@ -213,8 +210,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .card .title{font-size:.95rem;font-weight:600;line-height:1.25}
 .card .fact{font-size:.78rem;line-height:1.4;color:var(--ink-soft);margin-top:4px;text-wrap:pretty}
 .card .side{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.chip{display:flex;align-items:center;gap:4px;font-family:var(--f-mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;font-weight:700;color:var(--moss-ink);white-space:nowrap}
-.chip svg{width:14px;height:14px}
 .grip{width:12px;height:18px;opacity:.35;background:radial-gradient(circle,var(--ink) 1.3px,transparent 1.6px) 0 0/6px 6px}
 .sheen{position:absolute;inset:0;pointer-events:none;background:linear-gradient(100deg,transparent 25%,rgba(255,255,255,.85) 50%,transparent 75%);opacity:0;transform:translateX(-120%)}
 .card.is-selected{transform:translateY(-3px) rotate(-.8deg);box-shadow:0 0 0 3px var(--gold),0 14px 22px -10px rgba(0,0,0,.8)}
@@ -224,11 +219,7 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .card.fb-ok .grip,.done .card .grip{display:none}
 .done .card{cursor:default}
 .card.pop{animation:pop .45s cubic-bezier(.3,1.6,.5,1)}
-.card.shake{animation:shake .42s ease}
-.card.jitter{animation:jitter .28s ease}
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.06) rotate(-.6deg)}100%{transform:scale(1)}}
-@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-5px) rotate(-.6deg)}40%{transform:translateX(5px) rotate(.6deg)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
-@keyframes jitter{0%,100%{transform:none}25%{transform:translate(-3px,1px) rotate(-1deg)}50%{transform:translate(3px,-1px) rotate(1deg)}75%{transform:translate(-2px,0)}}
 
 .year{font-family:var(--f-display);font-size:1rem;letter-spacing:.03em;color:var(--bone);background:var(--ink);border-radius:7px;padding:3px 8px 2px;transform:rotate(-4deg);white-space:nowrap;font-variant-numeric:tabular-nums;box-shadow:0 2px 0 rgba(0,0,0,.3)}
 .year.in{animation:yearin .38s cubic-bezier(.25,1.5,.5,1) both}
@@ -238,8 +229,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .btnrow{display:flex;gap:10px}
 .btn-hint{display:flex;align-items:center;gap:5px;padding:10px 12px 8px}
 .btn-hint svg{width:20px;height:20px}
-.btn-view{display:flex;align-items:center;justify-content:center;padding:10px 11px 8px}
-.btn-view svg{width:22px;height:22px}
 .btnwrap{position:relative}
 .hint-panel{position:absolute;left:0;right:0;bottom:calc(100% + 14px);z-index:50;display:flex;flex-direction:column;gap:8px;text-align:left;background:#2A1F19;border:3px solid #0E0907;border-radius:14px;padding:12px;box-shadow:0 0 0 1.5px rgba(242,184,75,.55) inset,0 20px 40px -12px rgba(0,0,0,.85);animation:hintin .25s cubic-bezier(.3,1.4,.5,1)}
 .hint-panel::after{content:"";position:absolute;bottom:-9px;left:var(--caret,50%);width:14px;height:14px;background:#2A1F19;border-right:3px solid #0E0907;border-bottom:3px solid #0E0907;transform:translateX(-50%) rotate(45deg)}
@@ -286,13 +275,6 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .dchip.bump .cn{animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
 .dchip:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .board.peeking .card{cursor:default;box-shadow:0 0 0 2px rgba(242,184,75,.7),0 7px 14px -7px rgba(0,0,0,.7)}
-.tally{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:rgba(0,0,0,.28);border:1.5px solid var(--line);border-radius:12px;padding:10px 14px}
-.tally p{margin:0;color:var(--text);font-size:.95rem;display:flex;align-items:baseline;gap:6px}
-.tally strong{font-family:var(--f-display);font-weight:400;font-size:1.7rem;line-height:1;color:var(--moss);font-variant-numeric:tabular-nums}
-.tally.bump strong{animation:pop .3s cubic-bezier(.3,1.6,.5,1)}
-.pips{display:flex;gap:4px}
-.pips i{display:block;width:12px;height:12px;border-radius:3px;background:var(--l7);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08);transition:background-color .15s,box-shadow .15s}
-.pips i.on{background:var(--moss);box-shadow:0 0 8px var(--moss-glow)}
 .btn{font:inherit;cursor:pointer;border:none;border-radius:12px;transition:transform .08s,box-shadow .08s,opacity .2s}
 .btn:focus-visible{outline:3px solid var(--text);outline-offset:3px}
 .btn:disabled{opacity:.45;cursor:not-allowed}
@@ -300,15 +282,9 @@ header{display:flex;justify-content:space-between;align-items:center;gap:12px}
 .btn-primary:not(:disabled):active{transform:translateY(4px);box-shadow:0 1px 0 var(--gold-deep)}
 .btn-ghost{background:var(--soil-2);color:var(--text);font-family:var(--f-display);font-size:1.25rem;letter-spacing:.03em;padding:10px 16px 8px;box-shadow:0 0 0 2px var(--line) inset,0 5px 0 #120c0a}
 .btn-ghost:not(:disabled):active{transform:translateY(4px);box-shadow:0 0 0 2px var(--line) inset,0 1px 0 #120c0a}
-.btn-gold-outline{background:transparent;color:var(--gold);box-shadow:0 0 0 2px var(--gold) inset,0 5px 0 var(--gold-deep)}
-.btn-gold-outline:not(:disabled):active{transform:translateY(4px);box-shadow:0 0 0 2px var(--gold) inset,0 1px 0 var(--gold-deep)}
 .help{margin:0;font-size:.85rem;color:var(--muted);text-align:center}
 
-.history{display:flex;flex-direction:column;gap:8px}
 .label{font-family:var(--f-mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0}
-.io{font-family:var(--f-mono);font-size:.72rem;color:var(--muted);margin-left:6px}
-.sq{width:20px;height:20px;border-radius:5px}
-.sq.ok{background:var(--moss);box-shadow:0 2px 0 var(--moss-deep)}.sq.far{background:var(--l6);box-shadow:0 2px 0 #3a281c}
 
 .result{border-top:2px dashed var(--line);padding-top:18px;display:flex;flex-direction:column;gap:16px}
 .result h2{font-family:var(--f-display);font-weight:400;font-size:2.4rem;line-height:1;color:var(--gold);text-shadow:0 3px 0 var(--gold-deep);margin:0 0 6px;text-wrap:balance}
@@ -352,7 +328,7 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
 .dust{position:absolute;border-radius:50%}
 
 @media (max-width:380px){.mark{font-size:2.2rem}.brand svg{width:32px;height:32px}.stat strong{font-size:1.7rem}.card .title{font-size:.9rem}.meta{display:none}}
-@media (prefers-reduced-motion: reduce){.worm-run .worm{display:none}.tree .crown{animation:none!important}.worm .wig{animation:none}.fossil,.fossil *,.skull-wrap .jaw{animation:none!important}.cloud,.bird,.bird span,.bird .wing{animation:none}.bird.k5{left:52%}.k4{left:12%}.k1{left:30%}.k2{left:36%}.k3{left:70%}.c1{left:4%}.c2{left:38%}.c3{left:62%}.c4{left:22%}.c5{left:78%}.card,.btn,.toast,.digs i{transition:none}.card.pop,.card.shake,.card.jitter,.year.in{animation:none}}
+@media (prefers-reduced-motion: reduce){.worm-run .worm{display:none}.tree .crown{animation:none!important}.worm .wig{animation:none}.fossil,.fossil *,.skull-wrap .jaw{animation:none!important}.cloud,.bird,.bird span,.bird .wing{animation:none}.bird.k5{left:52%}.k4{left:12%}.k1{left:30%}.k2{left:36%}.k3{left:70%}.c1{left:4%}.c2{left:38%}.c3{left:62%}.c4{left:22%}.c5{left:78%}.card,.btn,.toast{transition:none}.card.pop,.year.in{animation:none}}
 
 /* core sample */
 .core{display:flex;gap:16px;align-items:stretch;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soil-2)}
@@ -406,7 +382,6 @@ kbd{font-family:var(--f-mono);font-size:.78rem;border:1px solid var(--line);bord
 /* finished dig: results sit right under the bottom card */
 body.dug .dig-pit,body.dug .actions{display:none}
 body.dug .fade{min-height:72px;padding-bottom:6px}
-body.dug .fade .skeleton{display:none}
 .was{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:38px;padding:3px 6px 2px;border-radius:8px;font-family:var(--f-display);font-size:.95rem;line-height:1;color:var(--bone);white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25)}
 .was small{font-family:var(--f-mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;opacity:.85;margin-bottom:2px}
 .was.ok{background:var(--moss-deep)}
@@ -481,6 +456,102 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
 .tip:hover,.tip:focus-visible{border-color:var(--gold);background-color:rgba(242,184,75,.06)}
 .tip-cup{font-size:1.35rem;flex-shrink:0;line-height:1}
 .tip strong{color:var(--gold);font-weight:600;white-space:nowrap}
+
+/* ---- legibility ---- */
+.layer-label.surface-label{color:#0C2238;font-weight:700}
+.card .tag{font-size:.6875rem;letter-spacing:.1em}
+.icon-btn{width:44px;height:44px}
+.sky .meta{color:var(--sky-ink)}
+.sky .meta b{color:#0C2238}
+.sky .icon-btn{background:rgba(255,255,255,.9);border-color:rgba(23,53,82,.35);color:var(--sky-ink)}
+.sky .dchip{background:rgba(255,255,255,.78)}
+.sky .dchip.future{background:rgba(255,255,255,.55);border-color:rgba(23,53,82,.32);opacity:1}
+.digline{display:flex;flex-direction:column;gap:10px}
+.st-less{display:none}
+/* ---- streak beside the logo ---- */
+.mini-core{font:inherit;display:flex;align-items:center;gap:5px;min-height:44px;padding:3px 9px 2px 8px;border-radius:13px;background:rgba(255,255,255,.9);border:2px solid rgba(23,53,82,.35);color:#0C2238;cursor:pointer;flex-shrink:0}
+.mini-core svg{display:block;width:16px;flex-shrink:0}
+.mini-core b{font-family:var(--f-display);font-weight:400;font-size:1.25rem;line-height:1;font-variant-numeric:tabular-nums}
+.mini-core:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+/* ---- past digs, new day ---- */
+.pastbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:5px 6px 5px 12px;border-radius:11px;background:rgba(255,255,255,.82);border:1.5px solid rgba(23,53,82,.3);color:#0C2238;font-size:.82rem;font-weight:600}
+.pastbar button,.newday{font:inherit;font-family:var(--f-display);font-size:.95rem;letter-spacing:.02em;color:#2A1A08;background:var(--gold);border:none;border-radius:8px;padding:5px 10px 3px;box-shadow:0 3px 0 var(--gold-deep);cursor:pointer;white-space:nowrap}
+.newday{align-self:flex-start;font-size:1rem;padding:7px 12px 5px}
+.archive p,.about p,.backup p{margin:10px 0 0;color:var(--muted);font-size:.92rem}
+.arch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;max-height:236px;overflow-y:auto;margin-top:10px;padding:2px}
+.arch{font:inherit;font-family:var(--f-display);font-size:1rem;min-height:44px;border-radius:9px;border:1.5px solid var(--line);background:var(--soil-2);color:var(--text);cursor:pointer;font-variant-numeric:tabular-nums}
+.arch.a-gold{background:var(--gold);border-color:var(--gold-deep);color:#2A1A08}
+.arch.a-moss{background:var(--moss);border-color:var(--moss-deep);color:#1D3409}
+.arch.a-sand{background:var(--l2);border-color:var(--l4);color:var(--ink)}
+.arch.a-stone{background:#6E6660;border-color:#4d4743;color:var(--bone)}
+.arch.a-going{border:2px dashed var(--gold);color:var(--gold)}
+.arch.on{outline:3px solid var(--text);outline-offset:1px}
+.arch:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+.arch-key{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:10px;font-family:var(--f-mono);font-size:.62rem;color:var(--muted);letter-spacing:.04em}
+.arch-key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* ---- result extras ---- */
+.minor{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap}
+.linkbtn{font:inherit;font-size:.88rem;background:none;border:none;padding:6px 0;color:var(--muted);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:hover,.linkbtn:focus-visible{color:var(--gold)}
+.a2hs{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--soil-2);display:flex;flex-direction:column;gap:10px}
+.result .a2hs p{color:var(--text);font-size:.92rem}
+.a2hs-btns{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.btn-small{font-size:1.05rem;padding:8px 14px 6px;box-shadow:0 0 0 2px var(--line) inset,0 4px 0 #120c0a}
+.bk-row{display:flex;margin-top:10px}
+.bk-in{min-height:64px;margin-top:10px}
+.bk-msg{min-height:1.3em}
+/* ---- first dig tip ---- */
+.coach{position:absolute;left:0;right:0;bottom:calc(100% + 14px);z-index:49;display:flex;align-items:center;gap:12px;background:var(--bone);color:var(--ink);border-radius:14px;padding:10px 12px 10px 14px;box-shadow:0 0 0 3px var(--gold),0 20px 40px -12px rgba(0,0,0,.85);animation:hintin .3s cubic-bezier(.3,1.4,.5,1)}
+.coach p{margin:0;font-size:.88rem;line-height:1.35;font-weight:500}
+.coach p b{font-weight:700}
+.coach button{font:inherit;font-family:var(--f-display);font-size:1rem;color:#2A1A08;background:var(--gold);border:none;border-radius:8px;padding:6px 10px 4px;box-shadow:0 3px 0 var(--gold-deep);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.coach::after{content:"";position:absolute;bottom:-8px;right:25%;width:14px;height:14px;background:var(--bone);border-right:3px solid var(--gold);border-bottom:3px solid var(--gold);transform:rotate(45deg)}
+@media (prefers-reduced-motion: reduce){.coach{animation:none}}
+/* ---- phones: everything above the board is one compact band ---- */
+@media (max-width:640px){
+  .wrap-upper{padding-block:8px 2px;gap:6px}
+  header{min-height:44px}
+  .brand{gap:8px}
+  .mark{font-size:2rem}
+  .brand svg{width:28px;height:28px}
+  .icon-btn{width:44px;height:44px}
+  .head-right{gap:8px}
+  .brief p{font-size:.84rem;line-height:1.3}
+  .surface-label{display:none}
+  .birds{display:none}
+  .tree{left:auto;right:-30px;transform:scale(.5);transform-origin:50% 120px}
+  .slot{min-height:48px;padding-block:3px}
+  .card{min-height:42px;padding-block:5px}
+  .card .title{font-size:.9rem;line-height:1.2}
+  .st-more{display:none}.st-less{display:inline}
+  .sky .dock-status{max-width:none;min-width:0;font-size:.8rem;line-height:1.25;white-space:nowrap}
+  .coach p{font-size:.82rem}
+  .pastbar{padding:3px 4px 3px 10px}
+  .pastbar button{font-size:.88rem;padding:4px 8px 2px}
+  body.past .brief{display:none}
+  .digline{max-width:calc(100% - 62px)}
+  body:not(.dug) .digline{flex-direction:row;align-items:center;gap:9px;min-height:26px}
+  body:not(.dug) .log{display:flex;gap:3px;flex:none;margin:0}
+  body:not(.dug) .dchip{flex-direction:row;justify-content:center;width:27px;height:25px;padding:0;border-radius:7px}
+  body:not(.dug) .dchip .cl,body:not(.dug) .dchip .cn small{display:none}
+  body:not(.dug) .dchip .cn{font-size:1rem}
+  body:not(.dug) .dchip .hb{top:-5px;right:-4px}
+  body:not(.dug) .dchip .hb svg{width:9px;height:9px}
+  .pastbar{font-size:.78rem}
+}
+@media (max-width:380px){.brief p{font-size:.8rem}.mini-core{padding-inline:6px}}
+@media (max-width:640px) and (max-height:600px){
+  .wrap-upper{padding-block:5px 2px;gap:3px}
+  .grass{height:12px}
+  .slot{min-height:42px;padding-block:2px}
+  .card{min-height:38px;padding-block:3px}
+  .card .tag{font-size:.625rem}
+  .btn-primary{font-size:1.2rem;padding:7px 12px 5px}
+  .btn-ghost{font-size:1.05rem;padding:6px 12px 4px}
+  .btn-hint{padding:6px 10px 4px}
+  body.playing .dock{padding-top:7px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+  body.playing{padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+}
 </style>
 
 <div class="sky">
@@ -499,17 +570,22 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       <h1 class="mark">Fossle</h1>
     </div>
     <div class="head-right">
+      <button class="mini-core" id="mini" type="button" hidden></button>
       <div class="meta"><b id="pno">Dig 001</b><br><span id="pdate"></span></div>
       <button class="icon-btn" id="mute" type="button" aria-label="Sound on" aria-pressed="false"></button>
     </div>
   </header>
 
+  <button class="newday" id="newday" type="button" hidden>A new dig is ready. Tap to play it</button>
+  <div class="pastbar" id="pastbar" hidden><span id="pastLabel"></span><button type="button" id="backToday">Today's dig</button></div>
   <div class="brief">
     <p><span class="brief-lead">Sort the layers: </span><strong>newest at the surface, oldest at the bedrock.</strong></p>
   </div>
   <div class="nodig-msg" id="nodig" hidden><strong>Still excavating</strong><span>Today's dig isn't ready yet. Check back soon.</span></div>
+  <div class="digline">
   <div class="log" id="log" role="group" aria-label="Your digs. Tap one to see the order you tried"></div>
   <div class="dock-status" id="status" aria-live="polite"></div>
+  </div>
 
   <div class="layer-label surface-label"><span>Surface</span><span>Newest</span></div>
 </div>
@@ -524,10 +600,11 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   <div class="dock" id="dock" hidden>
     <div class="dock-in">
       <div class="btnwrap">
+      <div class="coach" id="coach" hidden role="note"><p>Drag the cards into order, then press <b>Dig</b>. Each dig tells you how many cards are in the right layer, but not which.</p><button type="button" id="coachOk">Got it</button></div>
       <div class="hint-panel" id="hintPanel" hidden role="dialog" aria-label="Hints">
         <div class="hp-head"><span class="hp-title">Hints</span><span class="hp-count" id="hpCount"></span><button type="button" class="hp-get" id="hpGet">Get a hint</button><button type="button" class="hp-close" id="hpClose" aria-label="Close hints">&times;</button></div>
         <div class="hints" id="hintList"></div>
-        <p class="hp-empty" id="hpEmpty">No hints yet. Each one is a little more helpful than the last.</p>
+        <p class="hp-empty" id="hpEmpty">No hints yet. Each one reads the order you have right now, and each is a little more helpful than the last.</p>
       </div>
       <div class="btnrow" id="playBtns">
         <button class="btn btn-ghost" id="shuffle" type="button">Shuffle</button>
@@ -557,6 +634,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       <h2 id="rtitle"></h2>
       <p id="rsub"></p>
     </div>
+    <div class="btnrow"><button class="btn btn-primary" id="share" type="button">Copy result</button></div>
+    <textarea class="fallback" id="fallback" hidden readonly aria-label="Result to copy"></textarea>
     <section class="crowd" id="crowd" hidden aria-live="polite">
       <div class="cr-head"><span class="cr-n" id="crN"></span><span class="cr-me" id="crMe"></span></div>
       <div class="cr-body">
@@ -566,8 +645,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       </div>
       <p class="cr-note" id="crNote" hidden></p>
     </section>
-    <div class="twist" id="rtwist" hidden><span class="label">Today's curveball</span><p id="rtwistText"></p></div>
-    <details class="notes" id="notes" hidden><summary>Field notes</summary><ul id="notesList"></ul></details>
+    <div class="twist" id="rtwist" hidden><span class="label" id="rtwistLabel">Today's curveball</span><p id="rtwistText"></p></div>
     <div class="core" id="core">
       <div class="core-col"><span class="cap">Today</span><div id="coreCol"></div></div>
       <div class="core-info">
@@ -583,21 +661,29 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       <div class="stat"><strong id="sStreak">0</strong><span>Streak</span></div>
       <div class="stat"><strong id="sBest">0</strong><span>Best</span></div>
     </div>
-    <div class="btnrow"><button class="btn btn-primary" id="share" type="button">Copy result</button></div>
-    <textarea class="fallback" id="fallback" hidden readonly aria-label="Result to copy"></textarea>
     <div class="next">Next dig in <b id="countdown">--:--:--</b></div>
+    <div class="a2hs" id="a2hs" hidden><p id="a2hsText"></p><div class="a2hs-btns"><button type="button" class="btn btn-ghost btn-small" id="a2hsGo">Add to home screen</button><button type="button" class="linkbtn" id="a2hsNo">Not now</button></div></div>
+    <details class="notes" id="notes" hidden><summary>Field notes</summary><ul id="notesList"></ul></details>
+    <div class="minor"><button type="button" class="linkbtn" id="openArchive" hidden>Play past digs</button><a class="linkbtn" id="mistake" href="mailto:admin@fossle.app">Spotted a mistake?</a></div>
     <a class="tip" href="https://ko-fi.com/fossle" target="_blank" rel="noopener">
       <span class="tip-cup" aria-hidden="true">☕</span>
       <span>I'm a uni student making Fossle in my spare time. If you're enjoying it, you're welcome to <strong>buy me a coffee</strong>. No pressure at all!</span>
     </a>
   </section>
 
+  <details class="archive" id="archive" hidden>
+    <summary>Past digs</summary>
+    <p>Missed a day? Play any past dig. Past digs don't change your streak or your stats.</p>
+    <div class="arch-grid" id="archGrid"></div>
+    <div class="arch-key" aria-hidden="true"><span><i style="background:var(--gold)"></i>1 to 2 digs</span><span><i style="background:var(--moss)"></i>3 to 4</span><span><i style="background:var(--l2)"></i>5</span><span><i style="background:#6E6660"></i>Rock bottom</span><span><i style="background:var(--soil-2);box-shadow:0 0 0 1.5px var(--line)"></i>Not played</span></div>
+  </details>
+
   <details>
     <summary>How to play</summary>
     <ul>
       <li>Stack the eight events like layers of rock: the newest at the top, the oldest at the bottom.</li>
       <li>Drag a card up or down to move it, and the others slide out of the way. You can also tap a card, then tap the spot it should go. Shuffle mixes them all up.</li>
-      <li>Stuck? You get up to 3 hints: a nudge about one card, then clues linking two more cards to famous events, then three more. Tap the bulb to open your hints, then Get a hint for a new one. A bulb appears on the dig where you used one.</li>
+      <li>Stuck? You get up to 3 hints, each about the order you have at that moment: how many cards need to move, then one card to move and which way, then a clue about another card. Tap the bulb to open your hints, then Get a hint for a new one. A bulb appears on the dig where you used one.</li>
       <li>You get 5 digs. After each one you see how many cards are in the right layer, but not which ones.</li>
       <li>Tap a past dig in the row at the top to see the order you tried. Tap "Use this order" to go back to it.</li>
       <li>Keyboard: focus a card, press <kbd>Enter</kbd> to pick it up and <kbd>Enter</kbd> on another to swap, or use <kbd>Alt</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd>.</li>
@@ -605,15 +691,33 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     </ul>
   </details>
 
+  <details class="backup" id="backup">
+    <summary>Streak backup</summary>
+    <p>Your streak lives in this browser. Moving to a new phone, or adding Fossle to your home screen? Copy your code here, then paste it into Fossle in the new place.</p>
+    <div class="bk-row"><button type="button" class="btn btn-ghost btn-small" id="bkCopy">Copy my streak code</button></div>
+    <textarea class="fallback bk-in" id="bkIn" placeholder="Paste a streak code here" aria-label="Streak code" autocapitalize="off" autocomplete="off" spellcheck="false"></textarea>
+    <div class="bk-row"><button type="button" class="btn btn-ghost btn-small" id="bkRestore">Restore streak</button></div>
+    <p class="bk-msg" id="bkMsg" role="status"></p>
+  </details>
+
+  <details class="about">
+    <summary>About Fossle</summary>
+    <p>Fossle is a free daily history puzzle that asks one question eight times over: which came first? Each day brings eight moments, from ancient empires to internet memes, and you stack them like layers of rock, with the newest at the surface and the oldest at the bedrock.</p>
+    <p>You get five digs. After each one Fossle tells you how many cards sit in the right layer, but not which ones. Solve it and you lay a new layer in your core sample, a streak made of rock that grows every day you play.</p>
+    <p>Every dig hides a curveball: something that happened far earlier or later than almost everyone expects. When you finish you can see how every other digger placed each card, and which event fooled the most people.</p>
+    <p>A new dig opens at midnight wherever you are. Fossle is made by one uni student in their spare time.</p>
+  </details>
+
   <details class="privacy">
     <summary>Privacy</summary>
     <ul>
-      <li>Your progress, streak and settings are saved only in this browser. Clearing your browser's site data resets them.</li>
-      <li>When you finish a daily dig, Fossle sends an anonymous result so everyone can see the day's stats: a random ID made by your browser, the dig number, whether you solved it, how many digs and hints you used, and where you first placed each card. It contains no name, email or account.</li>
+      <li>Your progress, streak and settings are saved only in this browser. Clearing your browser's site data resets them, so keep a streak code (see Streak backup) if your streak matters to you.</li>
+      <li>When you finish a daily dig, Fossle sends an anonymous result so everyone can see the day's stats: a random ID made by your browser, the dig number, whether you solved it, how many digs and hints you used, and where you first placed each card. It contains no name, email or account. These results are stored with Supabase.</li>
       <li>Fossle counts visits with Cloudflare Web Analytics, which uses no cookies and doesn't follow you to other sites.</li>
-      <li>No ads, no tracking cookies, and your data is never sold.</li>
+      <li>The game, its fonts and its sounds are all served from fossle.app. Nothing is loaded from ad or social networks.</li>
+      <li>No tracking cookies, and your data is never sold.</li>
       <li>Questions or feedback? Email <a href="mailto:admin@fossle.app">admin@fossle.app</a>.</li>
-      <li>Fossle is free and always will be. If you'd like to support it, you can <a href="https://ko-fi.com/fossle" target="_blank" rel="noopener">buy me a coffee</a>.</li>
+      <li>The daily dig is free and always will be. If you'd like to support Fossle, you can <a href="https://ko-fi.com/fossle" target="_blank" rel="noopener">buy me a coffee</a>.</li>
     </ul>
   </details>
 
@@ -626,6 +730,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     </span>
   </div>
 </div>
+<noscript><div style="max-width:31rem;margin:0 auto;padding:24px 16px;color:#F3E9D8"><h2>Fossle needs JavaScript</h2><p>Fossle is a daily history puzzle: which came first? Stack eight moments in order, newest at the surface, oldest at the bedrock. Turn on JavaScript to play today's dig.</p></div></noscript>
 <div class="fx" id="fx" aria-hidden="true"></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -634,9 +739,14 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   const MAX = 5;
   const N = 8;
   function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed>>>15, 1|seed); t = t + Math.imul(t ^ t>>>7, 61|t) ^ t; return ((t ^ t>>>14)>>>0)/4294967296; }; }
-  // Launch day: set this to the date the daily digs start, e.g. "2026-12-01". That day is Dig 001.
+  // Launch day: set LAUNCH_DATE to the date the daily digs start, e.g. "2026-12-01". That day is Dig 001.
   // Until then the game runs as a preview: everyone plays Dig 001, and nothing counts towards stats or streaks.
-  const LAUNCH = "";
+  const LAUNCH_DATE = "";
+  function cyrb(str){ let h1 = 0xdeadbeef, h2 = 0x41c6ce57; for(let i=0;i<str.length;i++){ const ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909); h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909); return 4294967296 * (2097151 & h2) + (h1>>>0); }
+  // Dev tools open only with the private key (?dev=<key>, kept in the content repo). Only its fingerprint is stored here.
+  const DEV = (()=>{ const m = location.search.match(/[?&]dev=([^&#]+)/); return !!m && cyrb(decodeURIComponent(m[1])) === 5738211232152528; })();
+  // With the dev key, &launch=YYYY-MM-DD pretends the daily digs started that day (its progress is kept apart, stats go to the test bucket).
+  const LAUNCH = (DEV && (location.search.match(/[?&]launch=(\d{4}-\d{2}-\d{2})/) || [])[1]) || LAUNCH_DATE;
   const EPOCH = /^\d{4}-\d{2}-\d{2}$/.test(LAUNCH) ? Date.UTC(+LAUNCH.slice(0,4), +LAUNCH.slice(5,7)-1, +LAUNCH.slice(8,10)) : NaN;
   function dayIndex(d){ return Math.floor((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()) - EPOCH)/86400000); }
   const PREVIEW = isNaN(EPOCH) || dayIndex(new Date()) < 0;
@@ -650,8 +760,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     del(k){ delete mem[k]; try{ localStorage.removeItem(k); }catch(e){} }
   };
   const setMode = "daily";
-  const key = i => "fossle:v10:" + RUN + ":game:" + i;
-  const DEV = /[?&]dev\b/.test(location.search);
+  const key = i => "fossle:v11:" + RUN + ":game:" + i;
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = id => document.getElementById(id);
 
@@ -815,18 +924,19 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
 
   /* ---------- game state ---------- */
+  // how tangled an order is: 0 = already solved, 28 = exactly upside down
+  function tangles(o){ let k = 0; for(let i=0;i<o.length;i++) for(let j=i+1;j<o.length;j++) if(o[i]>o[j]) k++; return k; }
   function startOrder(idx){
     const r = rng(idx*9973 + 17); let o;
     do { o = Array.from({length:N},(_,i)=>i); for(let i=o.length-1;i>0;i--){ const j = Math.floor(r()*(i+1)); [o[i],o[j]] = [o[j],o[i]]; } }
-    while (o.filter((v,i)=>v===i).length > 1);
+    while (o.filter((v,i)=>v===i).length > 1 || tangles(o) < 5 || tangles(o) > 23);
     return o;
   }
-  function freshGame(idx){ return {idx, order:startOrder(idx), locked:[], history:[], hints:[], status:"playing", counted:false}; }
+  function freshGame(idx){ return {idx, order:startOrder(idx), history:[], hints:[], status:"playing", counted:false}; }
   const fmtYear = it => (it.c ? "c. " : "") + (it.y < 0 ? (-it.y)+" BC" : String(it.y));
 
   let viewDay = TODAY, seed = 1000 + TODAY, set, game, cards = [], selected = null, drag = null, busy = false, peek = null, cmp = null;
   const posOf = rank => game.order.indexOf(rank);
-  const isLocked = rank => game.locked.includes(rank);
   function save(){ store.set(key(game.idx), game); }
 
   // Day files are encoded so the answers can't be read by opening them in a browser.
@@ -868,7 +978,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     game = (snap && snap.idx===sd) ? snap : (store.get(key(sd)) || freshGame(sd));
     if(!game.hints) game.hints = [];
     selected = null; busy = false; peek = null; cmp = null;
-    buildBoard(); renderAll(false);
+    buildBoard(); renderAll(false); renderCoach();
     if(!reduced) cards.forEach(c=>{
       const p = posOf(Number(c.dataset.rank));
       c.animate([{transform:"translateY(-46px) rotate(-2deg)",opacity:0},{transform:"translateY(5px)",opacity:1,offset:.7},{transform:"none",opacity:1}],{duration:480,delay:p*65,easing:"cubic-bezier(.3,.8,.4,1)",fill:"backwards"});
@@ -883,7 +993,6 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     '<i class="fossil fr f-tri" aria-hidden="true" style="--x:140px;--m:-14px;top:10%;--r:12deg;--s:1"><svg viewBox="0 0 54 66"><g class="crawl"><g class="legs" stroke="#5A4030" stroke-width="2.2" stroke-linecap="round"><path d="M8 26l-6-3M7 34H1M8 42l-6 3M46 26l6-3M47 34h6M46 42l6 3"/></g><path d="M27 4c13 0 21 9 21 18 0 16-8 40-21 40S6 38 6 22C6 13 14 4 27 4z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.8"/><path d="M27 6v54M10 22h34M9 31h36M11 40h32M15 49h24" fill="none" stroke="#5A4030" stroke-width="2" stroke-linecap="round"/><circle cx="19" cy="14" r="2.6" fill="#5A4030"/><circle cx="35" cy="14" r="2.6" fill="#5A4030"/></g></svg></i><i class="fossil fl f-fish" aria-hidden="true" style="--x:360px;--m:-60px;top:26%;--r:-12deg;--s:0.8"><svg viewBox="0 0 90 44"><g class="swim"><g class="tail"><path d="M70 22l16-12-3 12 3 12z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.4" stroke-linejoin="round"/></g><path d="M22 22h50" stroke="#5A4030" stroke-width="3" stroke-linecap="round"/><path d="M30 10q-3 12 0 24M38 8q-3 14 0 28M46 8q-3 14 0 28M54 9q-3 13 0 26M62 12q-2 10 0 20" fill="none" stroke="#5A4030" stroke-width="2.4" stroke-linecap="round"/><path d="M4 22q4-14 20-14 4 7 4 14t-4 14Q8 36 4 22z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.6" stroke-linejoin="round"/><circle cx="14" cy="19" r="3.4" fill="#5A4030"/><circle cx="15" cy="18" r="1" fill="#EADFC8"/></g></svg></i>',
     '<i class="fossil fr f-bone" aria-hidden="true" style="--x:360px;--m:-60px;top:44%;--r:-8deg;--s:0.9"><svg viewBox="0 0 76 30"><path d="M15 15a8 8 0 1 1 8-9h30a8 8 0 1 1 8 9 8 8 0 1 1-8 9H23a8 8 0 1 1-8-9z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.6" stroke-linejoin="round"/><path d="M25 11h26" stroke="#FFFFFF" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/></svg></i><i class="fossil fl f-amm" aria-hidden="true" style="--x:190px;--m:-40px;top:6%;--r:20deg;--s:1"><svg viewBox="0 0 60 60"><g class="spin"><circle cx="30" cy="30" r="26" fill="#EADFC8" stroke="#5A4030" stroke-width="3"/><path d="M14 18l5 4M10 30h6M14 43l5-4M30 8v6M46 16l-4 4M50 30h-6" stroke="#B9A47F" stroke-width="2" stroke-linecap="round"/><path d="M30 30c0-3 3-5 6-3s3 7-1 10-11 2-13-4 2-13 10-14 15 3 16 11-4 17-13 19-20-3-22-12" fill="none" stroke="#5A4030" stroke-width="2.6" stroke-linecap="round"/></g></svg></i>',
     '<i class="fossil fr f-fish" aria-hidden="true" style="--x:240px;--m:-50px;top:18%;--r:-6deg;--s:1"><svg viewBox="0 0 90 44"><g class="swim"><g class="tail"><path d="M70 22l16-12-3 12 3 12z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.4" stroke-linejoin="round"/></g><path d="M22 22h50" stroke="#5A4030" stroke-width="3" stroke-linecap="round"/><path d="M30 10q-3 12 0 24M38 8q-3 14 0 28M46 8q-3 14 0 28M54 9q-3 13 0 26M62 12q-2 10 0 20" fill="none" stroke="#5A4030" stroke-width="2.4" stroke-linecap="round"/><path d="M4 22q4-14 20-14 4 7 4 14t-4 14Q8 36 4 22z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.6" stroke-linejoin="round"/><circle cx="14" cy="19" r="3.4" fill="#5A4030"/><circle cx="15" cy="18" r="1" fill="#EADFC8"/></g></svg></i><i class="fossil fl f-tri" aria-hidden="true" style="--x:80px;--m:-14px;top:8%;--r:-25deg;--s:0.9"><svg viewBox="0 0 54 66"><g class="crawl"><g class="legs" stroke="#5A4030" stroke-width="2.2" stroke-linecap="round"><path d="M8 26l-6-3M7 34H1M8 42l-6 3M46 26l6-3M47 34h6M46 42l6 3"/></g><path d="M27 4c13 0 21 9 21 18 0 16-8 40-21 40S6 38 6 22C6 13 14 4 27 4z" fill="#EADFC8" stroke="#5A4030" stroke-width="2.8"/><path d="M27 6v54M10 22h34M9 31h36M11 40h32M15 49h24" fill="none" stroke="#5A4030" stroke-width="2" stroke-linecap="round"/><circle cx="19" cy="14" r="2.6" fill="#5A4030"/><circle cx="35" cy="14" r="2.6" fill="#5A4030"/></g></svg></i>' ];
-  const BURROW = "M9 0C9 14 3 18 3 30C3 44 15 54 15 68C15 82 9 86 9 100";
   const WORM = '<span class="worm-run" aria-hidden="true"><svg class="tunnel"><g class="trail"></g><path class="route" d=""/></svg><i class="fossil worm" data-junk="worm"><svg viewBox="0 0 30 16"><g class="wig"><path d="M3 10c4-6 8 2 12-2s8-6 12-2" fill="none" stroke="#3A2416" stroke-width="7" stroke-linecap="round"/><path d="M3 10c4-6 8 2 12-2s8-6 12-2" fill="none" stroke="#E98B8B" stroke-width="4.6" stroke-linecap="round"/><path d="M9 7.5v4M14 7v4M19 5v4" stroke="#C86E6E" stroke-width="1" stroke-linecap="round"/><circle cx="26.5" cy="6.6" r="1.2" fill="#3A2416"/></g></svg></i></span>';
   const SVGNS = "http://www.w3.org/2000/svg";
   function wormRoute(run, dir){
@@ -953,7 +1062,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     cards = set.items.map((it,rank)=>{
       const c = document.createElement("div");
       c.className = "card"; c.tabIndex = 0; c.setAttribute("role","button"); c.dataset.rank = rank;
-      c.innerHTML = '<span class="txt"><span class="tag"></span><span class="title"></span><span class="fact" hidden></span></span><span class="side"><span class="chip"></span><span class="grip" aria-hidden="true"></span></span><span class="sheen" aria-hidden="true"></span>';
+      c.innerHTML = '<span class="txt"><span class="tag"></span><span class="title"></span><span class="fact" hidden></span></span><span class="side"><span class="grip" aria-hidden="true"></span></span><span class="sheen" aria-hidden="true"></span>';
       c.querySelector(".title").textContent = it.t;
       c.querySelector(".tag").textContent = it.topic;
       bindCard(c, rank);
@@ -972,12 +1081,10 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     $("board").classList.toggle("peeking", peek!==null);
     cards.forEach((c,rank)=>{
       const pos = ord.indexOf(rank), it = set.items[rank];
-      const ok = isLocked(rank) || (done && game.status==="won");
+      const ok = done && game.status==="won";
       c.classList.remove("fb-ok","is-selected","is-target");
       if(ok) c.classList.add("fb-ok");
       if(selected===rank) c.classList.add("is-selected");
-      const chip = c.querySelector(".chip");
-      chip.innerHTML = (!done && ok) ? AMMONITE + "Found" : "";
       const fxEl = c.querySelector(".fact");
       fxEl.hidden = true;
       const side = c.querySelector(".side");
@@ -994,7 +1101,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
         was.title = off===0 ? "Right layer in dig " + (cmp+1) : "In dig " + (cmp+1) + " you had this in layer " + (p+1) + (p > rank ? ", too deep" : ", too high");
       } else if(was) was.remove();
       c.classList.toggle("cmp-off", !!cd && cd.order.indexOf(rank)!==rank);
-      c.setAttribute("aria-label", "Layer "+(pos+1)+": "+it.t + (done ? ", "+fmtYear(it) : ok ? ", in the right layer" : "") + (cd ? ", in dig "+(cmp+1)+" you had it in layer "+(cd.order.indexOf(rank)+1) : ""));
+      c.setAttribute("aria-label", "Layer "+(pos+1)+": "+it.t + (done ? ", "+fmtYear(it) : "") + (cd ? ", in dig "+(cmp+1)+" you had it in layer "+(cd.order.indexOf(rank)+1) : ""));
       c.setAttribute("aria-pressed", selected===rank ? "true" : "false");
     });
     if(animate && !reduced){
@@ -1009,10 +1116,6 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     }
   }
 
-  function setTally(n){
-    $("tallyNum").textContent = n;
-    $("pips").innerHTML = Array.from({length:N},(_,j)=>'<i class="'+(j<n?"on":"")+'"></i>').join("");
-  }
   function renderDock(live){
     const done = game.status!=="playing", h = game.history;
     $("dock").hidden = done; document.body.classList.toggle("playing", !done); $("log").hidden = done && !h.length; $("status").hidden = done && !h.length;
@@ -1033,17 +1136,17 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     }).join("");
     $("log").innerHTML = logHtml;
     let st;
-    if(peek!==null) st = 'Viewing dig '+(peek+1)+': <b>'+h[peek].count+'</b> of '+N+' in the right layer';
-    else if(live!==undefined) st = 'Brushing off the layers: <b>'+live+'</b> right so far';
-    else if(h.length) st = 'Last dig: <b>'+h[h.length-1].count+'</b> of '+N+' right<span class="st-more">. Tap a dig to see it</span>';
-    else st = MAX+' digs to get every layer right';
+    if(peek!==null) st = '<span class="st-more">Viewing dig </span><span class="st-less">Dig </span>'+(peek+1)+': <b>'+h[peek].count+'</b> of '+N+'<span class="st-more"> in the right layer</span>';
+    else if(live!==undefined) st = '<span class="st-more">Brushing off the layers: </span><b>'+live+'</b> right so far';
+    else if(h.length) st = '<span class="st-more">Last dig: </span><b>'+h[h.length-1].count+'</b> of '+N+' right<span class="st-more">. Tap a dig to see it</span>';
+    else st = MAX+' digs to <span class="st-more">get every layer right</span><span class="st-less">solve it</span>';
     $("status").innerHTML = st;
     $("playBtns").hidden = peek!==null; $("peekBtns").hidden = peek===null;
     $("check").textContent = "Dig (" + (MAX-h.length) + " left)";
     renderHints();
   }
   const BULB = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5a4.5 4.5 0 0 0-2.6 8.2c.4.3.6.7.6 1.2V12h4v-1.1c0-.5.2-.9.6-1.2A4.5 4.5 0 0 0 8 1.5z" fill="#F2B84B" stroke="#7A4A0E" stroke-width="1.1"/><path d="M6.2 13.5h3.6M6.8 15h2.4" stroke="#7A4A0E" stroke-width="1.2" stroke-linecap="round"/></svg>';
-  const HINT_LABELS = ["Hint 1 · one card","Hint 2 · two more","Hint 3 · three more"];
+  const HINT_LABELS = ["Hint 1 · how close","Hint 2 · which card","Hint 3 · a clue"];
   function bulbs(i){
     const n = game.hints.filter(x=>x.turn===i).length;
     return n ? '<span class="hb" aria-label="'+n+' hint'+(n>1?"s":"")+' used">'+BULB.repeat(n)+'</span>' : "";
@@ -1067,6 +1170,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     $("hint").setAttribute("aria-label", "Hints, " + left + " left");
   }
   function openHints(fresh){
+    endCoach(false);
     const pnl = $("hintPanel"); pnl.hidden = false;
     const w = $("hint").getBoundingClientRect(), b = pnl.parentNode.getBoundingClientRect();
     pnl.style.setProperty("--caret", (w.left + w.width/2 - b.left) + "px");
@@ -1074,30 +1178,30 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
   function closeHints(){ note = ""; if(!$("hintPanel").hidden){ $("hintPanel").hidden = true; renderHints(); } }
   function ordinal(n){ const sfx = ["th","st","nd","rd"], v = n%100; return n + (sfx[(v-20)%10] || sfx[v] || sfx[0]); }
-  function eraPhrase(it){
-    const y = it.y;
-    const part = r => r<=33 ? "early" : r<=66 ? "mid" : "late";
-    if(y < 0){ const c = Math.ceil(-y/100); return "to around the " + part(c*100 + y) + " " + ordinal(c) + " century BC"; }
-    if(y < 1000) return "from the " + part(y%100) + " " + ordinal(Math.floor(y/100)+1) + " century";
-    const dec = Math.floor(y/10)*10, r = y%10;
-    return "from the " + (r<=3 ? "early" : r<=6 ? "mid" : "late") + " " + dec + "s";
-  }
-  function lowerStart(t){ return /^(The|A|An)/.test(t) ? t[0].toLowerCase() + t.slice(1) : t; }
   function strip(t){ return t.replace(/\.$/, ""); }
+  // Hints read the order on the board right now. The fewest cards that must move = 8 minus the longest run of cards already in the right order.
+  function moveInfo(order){
+    const n = order.length, L = Array(n).fill(1), R = Array(n).fill(1);
+    for(let i=0;i<n;i++) for(let j=0;j<i;j++) if(order[j] < order[i]) L[i] = Math.max(L[i], L[j]+1);
+    for(let i=n-1;i>=0;i--) for(let j=n-1;j>i;j--) if(order[j] > order[i]) R[i] = Math.max(R[i], R[j]+1);
+    const best = Math.max(...L);
+    // a card that sits in no longest run has to move whatever else you do
+    const must = order.map((r,i)=>({r, pos:i, must: L[i]+R[i]-1 < best})).filter(x=>x.r!==x.pos);
+    return {moves: n - best, movers: must.sort((a,b)=> (b.must-a.must) || Math.abs(b.r-b.pos)-Math.abs(a.r-a.pos))};
+  }
   function makeHint(level){
-    const want = level + 1, seen = new Set();
-    game.hints.forEach(x=>(x.cards||[]).forEach(c=>seen.add(c)));
-    const all = game.order.map((r,p)=>({r, off:Math.abs(r-p)}));
-    if(!all.some(x=>x.off>0)) return null;
-    const chosen = all.filter(x=>!seen.has(set.items[x.r].t)).sort((a,b)=> b.off-a.off || Math.random()-.5).slice(0, want).map(x=>set.items[x.r]);
-    if(!chosen.length) return null;
-    const c1 = it => (it.h && it.h[0]) || ("One of your cards comes from the world of " + it.topic.toLowerCase() + ".");
-    const c2 = it => (it.h && it.h[1]) || c1(it);
-    let text;
-    if(level===0 || chosen.length===1) text = level===0 ? c1(chosen[0]) : c2(chosen[0]);
-    else if(chosen.length===2) text = strip(c2(chosen[0])) + ", while " + lowerStart(c2(chosen[1]));
-    else text = c2(chosen[0]) + " " + strip(c2(chosen[1])) + ", and " + lowerStart(c2(chosen[2]));
-    return {cards: chosen.map(it=>it.t), text};
+    const info = moveInfo(game.order);
+    if(!info.moves) return null;
+    if(level===0){
+      const m = info.moves, rest = N - m;
+      return {cards: [], text: (m===1 ? "Just 1 card needs to move." : m + " cards need to move.") + " The other " + rest + (rest===1 ? " is" : " are") + " already in the right order."};
+    }
+    const seen = new Set(); game.hints.forEach(x=>(x.cards||[]).forEach(c=>seen.add(c)));
+    const pick = info.movers.find(x=>!seen.has(set.items[x.r].t)) || info.movers[0];
+    const it = set.items[pick.r], way = pick.r > pick.pos ? "down, towards the bedrock" : "up, towards the surface";
+    if(level===1) return {cards: [it.t], text: "“" + it.t + "” is in the wrong layer. It needs to move " + way + "."};
+    const clue = (it.h && it.h[1]) || ("“" + it.t + "” is out of place.");
+    return {cards: [it.t], text: clue + " Right now it sits too " + (pick.r > pick.pos ? "high" : "deep") + "."};
   }
   function useHint(){
     if(game.status!=="playing" || busy || peek!==null || game.hints.length>=3) return;
@@ -1127,7 +1231,10 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     const practice = viewDay !== TODAY;
     $("pno").textContent = viewDay===null ? "Random dig" : "Dig " + String(viewDay+1).padStart(3,"0");
     const d = new Date(EPOCH + (viewDay||0)*86400000);
-    $("pdate").textContent = PREVIEW ? "preview" : practice ? "practice" : d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
+    $("pdate").textContent = PREVIEW ? "preview" : d.toLocaleDateString("en-AU",{weekday:"short",day:"numeric",month:"short",timeZone:"UTC"});
+    $("pastbar").hidden = !practice; document.body.classList.toggle("past", practice);
+    $("pastLabel").textContent = viewDay > TODAY ? "Dev: a future dig" : "Past dig. Your streak is not affected";
+    renderMini(); renderArchive();
     $("protoLabel").textContent = "Dev · " + (practice ? "dig " + (viewDay+1) + ", stats off" : "today's dig");
     $("prev").disabled = viewDay===0;
     renderBoard(animate, fromRects);
@@ -1139,7 +1246,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     if(done) renderResult();
   }
 
-  function stats(){ return store.get("fossle:stats:" + RUN) || {played:0,wins:0,streak:0,best:0,lastPlayed:-1,lastWin:-2}; }
+  function stats(){ return store.get("fossle:stats:" + RUN) || {played:0,wins:0,lastPlayed:-1}; }
   function statValues(){
     const s = stats();
     const cr = coreRuns(core());
@@ -1160,7 +1267,9 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     $("notes").hidden = !notes.length;
     $("notesList").innerHTML = notes.map(()=>'<li><span class="nt"></span><span class="ny"></span><p></p></li>').join("");
     Array.from($("notesList").children).forEach((li,i)=>{ li.querySelector(".nt").textContent = notes[i].t; li.querySelector(".ny").textContent = fmtYear(notes[i]); li.querySelector("p").textContent = notes[i].fact; });
-    renderCore(); loadCrowd(); prepareCard();
+    $("rtwistLabel").textContent = viewDay===TODAY ? "Today's curveball" : "This dig's curveball";
+    $("mistake").href = "mailto:admin@fossle.app?subject=" + encodeURIComponent("Fossle Dig " + String(viewDay+1).padStart(3,"0") + ": spotted a mistake");
+    renderCore(); loadCrowd(); prepareCard(); renderInstall();
   }
   function animateStats(){
     if(reduced) return;
@@ -1185,9 +1294,10 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       return;
     }
     if(viewDay!==TODAY || game.counted) return;
+    // today was already laid on another device and brought over by a streak code: nothing to count twice
+    if(core()[TODAY]){ game.counted = true; return; }
     const s = stats(); s.played++;
-    if(game.status==="won"){ s.wins++; s.streak = (s.lastWin===TODAY-1) ? s.streak+1 : 1; s.best = Math.max(s.best,s.streak); s.lastWin = TODAY; }
-    else s.streak = 0;
+    if(game.status==="won") s.wins++;
     s.lastPlayed = TODAY; store.set("fossle:stats:" + RUN, s); game.counted = true;
     if(recordCore()) justLaid = true;
     delete crowdCache[crowdKey()];
@@ -1212,7 +1322,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     if(game.status!=="playing" || busy || peek!==null) return;
     closeHints();
     selected = null;
-    const free = game.order.map((r,p)=>p).filter(p=>!isLocked(game.order[p]));
+    const free = game.order.map((r,p)=>p);
     if(free.length < 2) return;
     const before = free.map(p=>game.order[p]); let ranks;
     for(let t=0;t<10;t++){ ranks = before.slice(); for(let i=ranks.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [ranks[i],ranks[j]] = [ranks[j],ranks[i]]; } if(ranks.some((r,i)=>r!==before[i])) break; }
@@ -1223,6 +1333,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
 
   function check(){
     if(game.status!=="playing" || busy || peek!==null) return;
+    endCoach(true);
     closeHints(); busy = true; selected = null; renderBoard(false); setButtons();
     const row = game.order.map((rank,pos)=> rank===pos ? "ok" : "far");
     const count = row.filter(v=>v==="ok").length, solved = count===N;
@@ -1254,7 +1365,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
 
   function tap(rank){
-    if(game.status!=="playing" || busy || peek!==null || isLocked(rank)) return;
+    if(game.status!=="playing" || busy || peek!==null) return;
     if(selected===null){ selected = rank; renderBoard(false); Sound.pick(); buzz(6); return; }
     if(selected===rank){ selected = null; renderBoard(false); Sound.tick(); return; }
     const a = posOf(selected), b = posOf(rank); selected = null; swap(a,b);
@@ -1278,7 +1389,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   }
   function bindCard(c, rank){
     c.addEventListener("pointerdown", e=>{
-      if(game.status!=="playing" || busy || peek!==null || isLocked(rank) || e.button!==0) return;
+      if(game.status!=="playing" || busy || peek!==null || e.button!==0) return;
+      endCoach(false);
       drag = {rank, x:e.clientX, y:e.clientY, cx:e.clientX, cy:e.clientY, sy:scrollY, active:false, target:null, from:posOf(rank), slots:Array.from($("slots").children).map(li=>li.getBoundingClientRect())};
       try{ c.setPointerCapture(e.pointerId); }catch(err){}
     });
@@ -1329,9 +1441,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       if(game.status!=="playing" || busy || peek!==null) return;
       if(e.key==="Enter" || e.key===" "){ e.preventDefault(); tap(rank); c.focus(); }
       else if(e.altKey && (e.key==="ArrowUp" || e.key==="ArrowDown")){
-        e.preventDefault(); if(isLocked(rank)) return;
+        e.preventDefault();
         const st = e.key==="ArrowUp" ? -1 : 1; let p = posOf(rank) + st;
-        while(p>=0 && p<N && isLocked(game.order[p])) p += st;
         if(p>=0 && p<N){ swap(posOf(rank), p); c.focus(); }
       } else if(e.key==="Escape" && selected!==null){ selected = null; renderBoard(false); }
     });
@@ -1411,7 +1522,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   const STATS_URL = "https://rxhdhzgwmsuoqkmdtgnl.supabase.co", STATS_KEY = "sb_publishable_VEYAgOmnE5n8U7qVkjq2ew_iy-oX_mR";
   const LIVE = !!(STATS_URL && STATS_KEY), DEMO = /[?&]demo\b/.test(location.search);
   // Before launch, ?dev sends results to a separate "test" bucket so testing never mixes with real launch stats
-  const STATS_TEST = PREVIEW && DEV;
+  const STATS_TEST = DEV;
   const statsPuzzle = () => STATS_TEST ? "test" : setMode;
   const testSent = new Set();
   function deviceId(){
@@ -1450,10 +1561,11 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     if(!LIVE) return Promise.resolve(null);
     return api("rpc/fossle_day_stats", {p_day:day, p_puzzle:statsPuzzle()}).then(r=>r.ok ? r.json() : null).catch(()=>null);
   }
+  const MIN_CROWD = 30;   // below this many results, show the count only
   const crowdCache = {}, crowdInflight = {};
   let pendingSubmit = Promise.resolve();
   const crowdKey = () => viewDay + ":" + setMode;
-  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && (STATS_TEST || (!PREVIEW && viewDay===TODAY))));
+  const crowdOn = () => viewDay!==null && (DEMO || (LIVE && (STATS_TEST || (!PREVIEW && viewDay<=TODAY))));
   const crowdFor = () => crowdOn() ? (crowdCache[crowdKey()] || null) : null;
   const myBucket = () => game.status==="won" ? game.history.length-1 : 5;
   function outDugPct(s){ return Math.round(s.dist.slice(myBucket()+1).reduce((a,b)=>a+b, 0) / s.players * 100); }
@@ -1473,14 +1585,14 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     });
   }
   function renderCrowd(s){
-    const box = $("crowd"), P = s.players, pct = v => Math.round(v/P*100), me = myBucket(), won = game.status==="won";
+    const box = $("crowd"), P = s.players, pct = v => Math.round(v/P*100), me = myBucket(), won = game.status==="won", thin = !s.demo && P < MIN_CROWD;
     box.hidden = false; box.classList.remove("loading");
     $("crN").textContent = P.toLocaleString("en-AU") + (P===1 ? " digger" : " diggers") + (viewDay===TODAY ? " today" : " on this dig");
-    $("crMe").textContent = P===1 ? "You're the first one here" : won ? "You out dug " + outDugPct(s) + "%" : pct(s.dist[5]) + "% hit rock bottom too";
+    $("crMe").textContent = P===1 ? "You're the first one here" : thin ? "" : won ? "You out dug " + outDugPct(s) + "%" : pct(s.dist[5]) + "% hit rock bottom too";
     const max = Math.max(1, ...s.dist);
     $("crDist").innerHTML = s.dist.map((v,i)=>'<div class="'+(i===me?'me':'')+'"><span>'+(i<5 ? i+1 : "X")+'</span><span class="bar" style="width:0%" data-w="'+Math.max(6, v/max*100).toFixed(1)+'">'+v.toLocaleString("en-AU")+'</span></div>').join("");
     requestAnimationFrame(()=>requestAnimationFrame(()=>$("crDist").querySelectorAll(".bar").forEach(b=>{ b.style.width = b.dataset.w + "%"; })));
-    const ok = (s.first_ok || []).map(v=>Number(v)||0), mean = (s.first_mean || []).map(v=>Number(v)||0);
+    const ok = thin ? [] : (s.first_ok || []).map(v=>Number(v)||0), mean = (s.first_mean || []).map(v=>Number(v)||0);
     const firstMine = game.history.length ? game.history[0].order : null;
     let out = 0; ok.forEach((v,i)=>{ if(v < ok[out]) out = i; });
     let myth = -1; mean.forEach((v,i)=>{ if(ok[i]/P < .5 && Math.abs(v) >= 1 && (myth<0 || Math.abs(v) > Math.abs(mean[myth]))) myth = i; });
@@ -1507,19 +1619,151 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
       requestAnimationFrame(()=>requestAnimationFrame(()=>{ li.querySelector(".b i").style.width = pct(ok[rank]||0) + "%"; }));
     });
     const note = $("crNote");
-    note.hidden = !(s.demo || P < 20);
-    note.textContent = s.demo ? "Demo numbers. Live stats switch on once the database is connected." : "Early results. More diggers on the way.";
+    note.hidden = !(s.demo || thin);
+    note.textContent = s.demo ? "Demo numbers. Live stats switch on once the database is connected." : "Early results. Percentages appear once " + MIN_CROWD + " diggers have finished.";
   }
+
+
+  /* ---------- streak beside the logo ---------- */
+  function renderMini(){
+    const b = $("mini"), c = core(), cr = coreRuns(c);
+    if(!cr.total){ b.hidden = true; return; }
+    const items = coreSlice(c, 6).filter(it=>!it.gap).slice(0, 4);
+    let y = 1;
+    const parts = items.map(it=>{
+      const one = it.open ? '<rect x="1.5" y="'+(y+.5)+'" width="13" height="4" rx="1.5" fill="none" stroke="#B97A16" stroke-width="1" stroke-dasharray="2 1.5"/>'
+                          : '<rect x="1" y="'+y+'" width="14" height="5" rx="1.5" fill="'+LAYER_FILL[layerKind(it.r)]+'" stroke="#173552" stroke-width=".8"/>';
+      y += 6; return one;
+    }).join("");
+    b.innerHTML = '<svg viewBox="0 0 16 '+(y+3)+'" style="height:'+((y+3)*1.2)+'px" aria-hidden="true">'+parts+'<rect x="0" y="'+y+'" width="16" height="3" rx="1" fill="#443127"/></svg><b>'+cr.cur+'</b>';
+    b.hidden = false;
+    b.setAttribute("aria-label", "Your core sample: " + cr.cur + " day streak, " + cr.total + " layer" + (cr.total>1?"s":"") + " in all");
+  }
+  $("mini").addEventListener("click", ()=>{
+    const cr = coreRuns(core());
+    if(game && game.status!=="playing" && viewDay===TODAY){ $("core").scrollIntoView({behavior: reduced ? "auto" : "smooth", block:"center"}); return; }
+    toast(core()[TODAY] ? cr.cur + " day streak. Next layer tomorrow" : cr.cur ? cr.cur + " day streak. Dig today to keep it" : "Dig today to start a new streak");
+  });
+
+  /* ---------- past digs ---------- */
+  // Free for everyone for now. A paid unlock would be checked here.
+  function archiveOpen(day){ return true; }
+  function renderArchive(){
+    const on = !PREVIEW && TODAY >= 1;
+    $("archive").hidden = !on; $("openArchive").hidden = !on;
+    if(!on) return;
+    const c = core(); let html = "";
+    for(let d=TODAY-1; d>=0; d--){
+      const g = store.get(key(1000 + d)), r = c[d];
+      let kind = "new", say = "not played";
+      if(r || (g && g.status==="won")){ const digs = r ? r.d : g.history.length, w = r ? r.w : true; kind = layerKind({w, d:digs}); say = w ? "solved in " + digs : "hit rock bottom"; }
+      else if(g && g.status==="lost"){ kind = "stone"; say = "hit rock bottom"; }
+      else if(g && g.history && g.history.length){ kind = "going"; say = "in progress"; }
+      html += '<button type="button" class="arch a-'+kind+(d===viewDay ? ' on' : '')+'" data-d="'+d+'" aria-label="Dig '+(d+1)+', '+say+'">'+(d+1)+'</button>';
+    }
+    $("archGrid").innerHTML = html;
+  }
+  $("archGrid").addEventListener("click", e=>{
+    const b = e.target.closest(".arch"); if(!b || busy) return;
+    const d = Number(b.dataset.d); if(!archiveOpen(d)) return;
+    dayLoad(d); Sound.tick(); scrollTo({top:0, behavior: reduced ? "auto" : "smooth"});
+  });
+  $("openArchive").addEventListener("click", ()=>{ const a = $("archive"); a.open = true; a.scrollIntoView({behavior: reduced ? "auto" : "smooth", block:"start"}); });
+  $("backToday").addEventListener("click", ()=>{ if(busy) return; dayLoad(TODAY); Sound.tick(); });
+
+  /* ---------- first dig tip ---------- */
+  function renderCoach(){
+    $("coach").hidden = !(game && game.status==="playing" && !game.history.length && viewDay===TODAY && !stats().played && (store.get("fossle:coach") || 0) < 2);
+  }
+  // forGood: they pressed Dig or Got it. Otherwise they just started moving cards, so it may show once more next visit.
+  function endCoach(forGood){
+    if($("coach").hidden) return;
+    $("coach").hidden = true;
+    store.set("fossle:coach", forGood ? 9 : (store.get("fossle:coach") || 0) + 1);
+  }
+  $("coachOk").addEventListener("click", ()=>{ endCoach(true); Sound.tick(); });
+
+  /* ---------- add to home screen, offered after a second finished dig ---------- */
+  let installEvt = null;
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==="MacIntel" && navigator.maxTouchPoints > 1);
+  window.addEventListener("beforeinstallprompt", e=>{ e.preventDefault(); installEvt = e; if(game && game.status!=="playing") renderInstall(); });
+  function renderInstall(){
+    const ok = !standalone && !store.get("fossle:a2hs") && viewDay===TODAY && stats().played >= 2 && (installEvt || isIOS);
+    $("a2hs").hidden = !ok; if(!ok) return;
+    $("a2hsGo").hidden = !installEvt;
+    $("a2hsText").textContent = installEvt ? "Keep tomorrow's dig one tap away: add Fossle to your home screen."
+      : "Keep tomorrow's dig one tap away: tap the Share button in Safari, then Add to Home Screen. Copy your streak code first (Streak backup, below) so your streak comes with you.";
+  }
+  $("a2hsGo").addEventListener("click", ()=>{
+    if(!installEvt) return;
+    const ev = installEvt; installEvt = null;
+    try{ ev.prompt(); Promise.resolve(ev.userChoice).catch(()=>{}).then(()=>{ store.set("fossle:a2hs", 1); $("a2hs").hidden = true; }); }catch(e){ $("a2hs").hidden = true; }
+  });
+  $("a2hsNo").addEventListener("click", ()=>{ store.set("fossle:a2hs", 1); $("a2hs").hidden = true; });
+
+  /* ---------- streak backup: a code that carries the core sample to another browser ---------- */
+  function backupCode(){
+    const c = core(), days = Object.keys(c).map(Number).sort((a,b)=>a-b);
+    return "FSL1-" + btoa(RUN + "|" + days.map(d=>d.toString(36) + "." + c[d].d + (c[d].w ? "w" : "l") + (c[d].h || 0)).join("_")).replace(/=+$/, "");
+  }
+  // returns how many days were added, or a message when the code can't be used
+  function restoreCode(text){
+    const m = String(text).replace(/\s+/g, "").match(/^FSL1-([A-Za-z0-9+/]+)$/);
+    if(!m) return "That doesn't look like a Fossle streak code.";
+    let raw; try{ raw = atob(m[1]); }catch(e){ return "That code is incomplete. Copy it again and paste the whole thing."; }
+    const cut = raw.indexOf("|"); if(cut < 0) return "That code is incomplete. Copy it again and paste the whole thing.";
+    if(raw.slice(0, cut) !== RUN) return "That code comes from a different run of Fossle, so it can't be used here.";
+    const c = core(); let added = 0;
+    raw.slice(cut + 1).split("_").forEach(part=>{
+      const q = part.match(/^([0-9a-z]+)\.([1-5])([wl])([0-3])$/); if(!q) return;
+      const d = parseInt(q[1], 36); if(!(d >= 0 && d <= TODAY) || c[d]) return;
+      c[d] = {d:+q[2], w:q[3]==="w", h:+q[4]}; added++;
+    });
+    if(!added) return "Nothing new in that code. This browser already has those days.";
+    store.set(CORE_KEY, c);
+    const all = Object.keys(c), s = stats();
+    s.played = Math.max(s.played, all.length); s.wins = Math.max(s.wins, all.filter(d=>c[d].w).length);
+    store.set("fossle:stats:" + RUN, s);
+    return added;
+  }
+  $("bkCopy").addEventListener("click", ()=>{
+    const code = backupCode(), show = ()=>{ const f = $("bkIn"); f.value = code; f.focus(); f.select(); $("bkMsg").textContent = "Select and copy the code above."; };
+    if(!coreRuns(core()).total){ $("bkMsg").textContent = "Nothing to back up yet. Finish a daily dig first."; return; }
+    try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(code).then(()=>{ $("bkMsg").textContent = "Code copied. Paste it into Streak backup on your other device."; toast("Streak code copied"); }, show); else show(); }catch(e){ show(); }
+  });
+  $("bkRestore").addEventListener("click", ()=>{
+    const out = restoreCode($("bkIn").value);
+    if(typeof out === "string"){ $("bkMsg").textContent = out; return; }
+    $("bkIn").value = ""; $("bkMsg").textContent = "Streak restored: " + out + " day" + (out>1?"s":"") + " added to your core sample.";
+    if(game){ renderAll(false); } Sound.found(4);
+  });
+
+  /* ---------- a new day: reload so nobody is left on yesterday's dig ---------- */
+  let stale = false;
+  function rollover(){
+    if(isNaN(EPOCH)) return;
+    const now = dayIndex(new Date());
+    if(PREVIEW ? now < 0 : now === TODAY) return;
+    // mid dig at midnight: let them finish, and offer the new one
+    if(!PREVIEW && game && viewDay===TODAY && game.status==="playing" && game.history.length){ if(!stale){ stale = true; $("newday").hidden = false; } return; }
+    if(busy || (drag && drag.active)) return;
+    location.reload();
+  }
+  $("newday").addEventListener("click", ()=>location.reload());
+  document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) rollover(); });
+  window.addEventListener("pageshow", rollover);
+  window.addEventListener("focus", rollover);
 
   /* ---------- share card ---------- */
   function shareURL(){ return (location.protocol==="https:" && !/claude|localhost/.test(location.hostname)) ? location.origin + location.pathname.replace(/\/(index\.html)?$/, "") : ""; }
   function shareText(){
     const won = game.status==="won", n = won ? game.history.length : "X";
-    const head = "Fossle " + (viewDay===null ? "random dig" : "Dig " + String(viewDay+1).padStart(3,"0")) + (PREVIEW ? " (preview)" : viewDay!==null && viewDay!==TODAY ? " (practice)" : "") + "  ⛏️ " + n + "/" + MAX;
+    const head = "Fossle " + (viewDay===null ? "random dig" : "Dig " + String(viewDay+1).padStart(3,"0")) + (PREVIEW ? " (preview)" : viewDay!==null && viewDay!==TODAY ? " (past dig)" : "") + "  ⛏️ " + n + "/" + MAX;
     const rows = game.history.map((h,i)=>"🟩".repeat(h.count) + "🟫".repeat(N-h.count) + "💡".repeat(game.hints.filter(x=>x.turn===i).length));
     const extra = [];
     if(viewDay===TODAY){ const cr = coreRuns(core()); if(cr.cur > 1) extra.push("🪨 " + cr.cur + " day streak"); }
-    const s = crowdFor(); if(s && won && s.players > 1) extra.push("out dug " + outDugPct(s) + "%");
+    const s = crowdFor(); if(s && won && (s.demo || s.players >= MIN_CROWD)) extra.push("out dug " + outDugPct(s) + "%");
     return [head].concat(rows, [extra.join(" · "), shareURL()]).filter(Boolean).join("\n");
   }
   function roundRect(x, X, Y, w, h, r){ x.beginPath(); x.moveTo(X+r, Y); x.arcTo(X+w, Y, X+w, Y+h, r); x.arcTo(X+w, Y+h, X, Y+h, r); x.arcTo(X, Y+h, X, Y, r); x.arcTo(X, Y, X+w, Y, r); x.closePath(); }
@@ -1538,7 +1782,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     x.strokeText("Fossle", 70, 178); x.strokeText("Fossle", 70, 170); x.fillStyle = "#F2B84B"; x.fillText("Fossle", 70, 170);
     x.textAlign = "right";
     x.font = "700 34px " + MONO; x.fillStyle = "#173552";
-    x.fillText((viewDay===null ? "RANDOM DIG" : "DIG " + String(viewDay+1).padStart(3,"0")) + (viewDay!==null && viewDay!==TODAY ? " · PRACTICE" : ""), W-70, 96);
+    x.fillText((viewDay===null ? "RANDOM DIG" : "DIG " + String(viewDay+1).padStart(3,"0")) + (viewDay!==null && viewDay!==TODAY ? " · PAST DIG" : ""), W-70, 96);
     x.font = "112px " + DISP; x.lineWidth = 12; x.strokeStyle = "#173552";
     const score = (won ? rows.length : "X") + "/" + MAX;
     x.strokeText(score, W-70, 206); x.fillStyle = "#FFFFFF"; x.fillText(score, W-70, 200);
@@ -1576,7 +1820,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     x.font = "64px " + DISP; x.fillStyle = "#F2B84B"; x.fillText(String(cr.cur), kx + kw/2, gy + ph - 52);
     x.font = "700 20px " + MONO; x.fillStyle = "#B7A28A"; x.fillText(cr.cur===1 ? "DAY" : "DAY STREAK", kx + kw/2, gy + ph - 22);
     // footer
-    const s = crowdFor(), line = s && s.players > 1 ? (won ? "Out dug " + outDugPct(s) + "% of diggers" : "Rock bottom, like " + Math.round(s.dist[5]/s.players*100) + "% of diggers") : (won ? "Every layer found" : "Rock bottom");
+    const s = crowdFor(), line = s && (s.demo || s.players >= MIN_CROWD) ? (won ? "Out dug " + outDugPct(s) + "% of diggers" : "Rock bottom, like " + Math.round(s.dist[5]/s.players*100) + "% of diggers") : (won ? "Every layer found" : "Rock bottom");
     x.textAlign = "left"; x.font = "56px " + DISP; x.fillStyle = "#F6EEE1"; x.fillText(line, 70, H - 92);
     const url = shareURL().replace(/^https:\/\//, "").replace(/\/$/, "");
     if(url){ x.font = "700 26px " + MONO; x.fillStyle = "#D8C398"; x.fillText(url, 70, H - 46); }
@@ -1636,6 +1880,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
 
   if(PREVIEW) $("countdown").parentNode.textContent = "Preview: the daily digs haven't started yet";
   function tick(){
+    rollover();
     if(PREVIEW) return;
     const now = new Date(), next = new Date(now.getFullYear(), now.getMonth(), now.getDate()+1);
     const s = Math.max(0, Math.floor((next-now)/1000));
@@ -1675,7 +1920,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   window.addEventListener("resize", ()=>{ clearTimeout(pitTimer); pitTimer = setTimeout(layoutPit, 150); });
   setTimeout(layoutPit, 60); setTimeout(layoutPit, 900);
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(layoutPit);
-  function start(data){ data = data || {}; if(typeof data.viewDay==="number" && typeof data.seed==="number") load(data.viewDay, data.seed, data.game || null); else dayLoad(TODAY); }
+  function start(data){ data = data || {}; if(typeof data.viewDay==="number" && typeof data.seed==="number") load(data.viewDay, data.seed, data.game || null); else { const want = Number((location.search.match(/[?&]dig=(\d+)/) || [])[1]); dayLoad(!PREVIEW && want >= 1 && want <= TODAY ? want - 1 : TODAY); } }
   const hot = window.claude && window.claude.hot;
   if(hot && hot.snapshot) hot.snapshot(()=>({viewDay, seed, game: busy ? null : game}));
   if(hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});

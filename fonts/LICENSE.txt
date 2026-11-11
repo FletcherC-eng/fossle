@@ -1,0 +1,7 @@
+The fonts in this folder are used under the SIL Open Font License, Version 1.1 (https://openfontlicense.org).
+
+Lilita One: Copyright (c) 2011 Juan Montoreano, with Reserved Font Name "Lilita One".
+Figtree: Copyright 2022 The Figtree Project Authors (https://github.com/erikdkennedy/figtree).
+IBM Plex Mono: Copyright 2017 IBM Corp. All rights reserved.
+
+Files are the Latin subsets as packaged by Fontsource (https://fontsource.org).
