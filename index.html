@@ -1333,7 +1333,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
 
   function check(){
     if(game.status!=="playing" || busy || peek!==null) return;
-    endCoach(true);
+    endCoach(true); logEvent("start");
     closeHints(); busy = true; selected = null; renderBoard(false); setButtons();
     const row = game.order.map((rank,pos)=> rank===pos ? "ok" : "far");
     const count = row.filter(v=>v==="ok").length, solved = count===N;
@@ -1390,7 +1390,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   function bindCard(c, rank){
     c.addEventListener("pointerdown", e=>{
       if(game.status!=="playing" || busy || peek!==null || e.button!==0) return;
-      endCoach(false);
+      endCoach(false); logEvent("start");
       drag = {rank, x:e.clientX, y:e.clientY, cx:e.clientX, cy:e.clientY, sy:scrollY, active:false, target:null, from:posOf(rank), slots:Array.from($("slots").children).map(li=>li.getBoundingClientRect())};
       try{ c.setPointerCapture(e.pointerId); }catch(err){}
     });
@@ -1524,6 +1524,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   // Before launch, ?dev sends results to a separate "test" bucket so testing never mixes with real launch stats
   const STATS_TEST = DEV;
   const statsPuzzle = () => STATS_TEST ? "test" : setMode;
+  // true once supabase/upgrade-2026-11.sql has been run: results and funnel events go through checked, rate limited functions
+  const STATS_V2 = false;
   const testSent = new Set();
   function deviceId(){
     let id = store.get("fossle:device");
@@ -1537,8 +1539,19 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     const pend = store.get("fossle:pending") || [];
     if(!LIVE || !pend.length) return Promise.resolve();
     // one row per request: a duplicate (409, already counted) must not sink the others
-    return Promise.all(pend.map(row=>api("fossle_results", row, {"Prefer":"return=minimal"}).then(r=>r.ok || r.status===409).catch(()=>false)))
+    const send = row => STATS_V2
+      ? api("rpc/fossle_submit", {p_day:row.day, p_puzzle:row.puzzle, p_device:row.device, p_won:row.won, p_digs:row.digs, p_hints:row.hints, p_first_pos:row.first_pos}).then(r=>r.ok)
+      : api("fossle_results", row, {"Prefer":"return=minimal"}).then(r=>r.ok || r.status===409);
+    return Promise.all(pend.map(row=>send(row).catch(()=>false)))
       .then(done=>{ const left = pend.filter((_,i)=>!done[i]); if(left.length) store.set("fossle:pending", left); else store.del("fossle:pending"); });
+  }
+  // anonymous funnel counts: one "start" and one "share" per device per dig
+  function logEvent(kind){
+    if(!STATS_V2 || !LIVE || viewDay===null || !(STATS_TEST || (!PREVIEW && viewDay===TODAY))) return;
+    const k = "fossle:ev:" + RUN + ":" + viewDay + ":" + kind;
+    if(store.get(k)) return;
+    store.set(k, 1);
+    api("rpc/fossle_event", {p_day:viewDay, p_puzzle:statsPuzzle(), p_device:deviceId(), p_kind:kind}).catch(()=>{});
   }
   function submitResult(){
     if(!LIVE || !game.history.length) return Promise.resolve();
@@ -1840,6 +1853,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   const shareSheet = !!navigator.share && matchMedia("(pointer: coarse)").matches;
   if(shareSheet) $("share").textContent = "Share";
   $("share").addEventListener("click", ()=>{
+    logEvent("share");
     const text = shareText();
     const fallback = ()=>{ const f = $("fallback"); f.value = text; f.hidden = false; f.focus(); f.select(); toast("Select and copy the text below"); };
     const copy = ()=>{
