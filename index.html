@@ -713,6 +713,7 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
     <ul>
       <li>Your progress, streak and settings are saved only in this browser. Clearing your browser's site data resets them, so keep a streak code (see Streak backup) if your streak matters to you.</li>
       <li>When you finish a daily dig, Fossle sends an anonymous result so everyone can see the day's stats: a random ID made by your browser, the dig number, whether you solved it, how many digs and hints you used, and where you first placed each card. It contains no name, email or account. These results are stored with Supabase.</li>
+      <li>Fossle also counts, with the same random ID, that a dig was started and that a result was shared, so I can see how many people finish and share. To block spam, a scrambled form of your network address is counted for a day or two and then deleted. It is never stored with your results.</li>
       <li>Fossle counts visits with Cloudflare Web Analytics, which uses no cookies and doesn't follow you to other sites.</li>
       <li>The game, its fonts and its sounds are all served from fossle.app. Nothing is loaded from ad or social networks.</li>
       <li>No tracking cookies, and your data is never sold.</li>
@@ -1524,8 +1525,8 @@ body.nodig .earth,body.nodig #log,body.nodig #status,body.nodig #result,body.nod
   // Before launch, ?dev sends results to a separate "test" bucket so testing never mixes with real launch stats
   const STATS_TEST = DEV;
   const statsPuzzle = () => STATS_TEST ? "test" : setMode;
-  // true once supabase/upgrade-2026-11.sql has been run: results and funnel events go through checked, rate limited functions
-  const STATS_V2 = false;
+  // supabase/upgrade-2026-11.sql was run on 13 Nov 2026: results and funnel events go through checked, rate limited functions (false = the old direct insert, which the upgrade switched off)
+  const STATS_V2 = true;
   const testSent = new Set();
   function deviceId(){
     let id = store.get("fossle:device");
